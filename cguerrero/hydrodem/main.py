@@ -49,48 +49,48 @@ def main():
     print "Processing SRTM: First Iteration."
     srtm_proc1 = utDEM.process_srtm(srtm_fourier, TREE_CLASS_AREA)
 
-    # DELETE
-    utDEM.array2raster_simple(
-        '../resources/images/temp/10dem_corrected_FourierTreesIntOut.tif',
-        srtm_proc1)
+    # # DELETE
+    # utDEM.array2raster_simple(
+    #     '../resources/images/temp/10dem_corrected_FourierTreesIntOut.tif',
+    #     srtm_proc1)
 
     print "Processing SRTM: Second Iteration."
     srtm_proc2 = utDEM.process_srtm(srtm_proc1, TREE_CLASS_AREA)
 
-    # DELETE
-    utDEM.array2raster_simple(
-        '../resources/images/temp/10.5dem_corrected_FourierTreesIntOut2.tif',
-        srtm_proc2)
+    # # DELETE
+    # utDEM.array2raster_simple(
+    #     '../resources/images/temp/10.5dem_corrected_FourierTreesIntOut2.tif',
+    #     srtm_proc2)
 
     print "Processing SRTM: Third Iteration."
     srtm_proc = utDEM.process_srtm(srtm_proc2, TREE_CLASS_AREA)
 
-    # DELETE
-    utDEM.array2raster_simple(
-        '../resources/images/temp/10.6dem_corrected_FourierTreesIntOut2.tif',
-        srtm_proc)
+    # # DELETE
+    # utDEM.array2raster_simple(
+    #     '../resources/images/temp/10.6dem_corrected_FourierTreesIntOut2.tif',
+    #     srtm_proc)
 
     print "Processing HSHEDS."
     hydro_sheds = gdal.Open(HSHEDS_AREA_INTEREST_OVER).ReadAsArray()
 
-    # DELETE
-    utDEM.array2raster_simple(
-        '../resources/images/temp/11HdydroSHEDSOrig.tif', hydro_sheds)
+    # # DELETE
+    # utDEM.array2raster_simple(
+    #     '../resources/images/temp/11HdydroSHEDSOrig.tif', hydro_sheds)
 
     print "Processing HSHEDS: Getting Lagoons."
     hsheds_mask_lagoons_values = utDEM.get_lagoons_hsheds(hydro_sheds)
 
-    # DELETE
-    utDEM.array2raster_simple(
-        '../resources/images/temp/12hsheds_mask_lagoons_values.tif',
-        hsheds_mask_lagoons_values)
+    # # DELETE
+    # utDEM.array2raster_simple(
+    #     '../resources/images/temp/12hsheds_mask_lagoons_values.tif',
+    #     hsheds_mask_lagoons_values)
 
     hsheds_mask_lagoons = (hsheds_mask_lagoons_values > 0.0) * 1
 
-    # DELETE
-    utDEM.array2raster_simple(
-        '../resources/images/temp/13hsheds_mask_lagoons.tif',
-        hsheds_mask_lagoons)
+    # # DELETE
+    # utDEM.array2raster_simple(
+    #     '../resources/images/temp/13hsheds_mask_lagoons.tif',
+    #     hsheds_mask_lagoons)
 
     print "Processing Rivers."
     rivers_routed_closing = utDEM.process_rivers(RIVERS_SHAPE,
@@ -101,10 +101,10 @@ def main():
     snd_term_hsheds_lagoons = hsheds_mask_lagoons_values
     mask_canyons_lagoons = rivers_routed_closing + hsheds_mask_lagoons
 
-    # DELETE
-    utDEM.array2raster_simple(
-        '../resources/images/temp/17mask_canyons_lagoons.tif',
-        mask_canyons_lagoons)
+    # # DELETE
+    # utDEM.array2raster_simple(
+    #     '../resources/images/temp/17mask_canyons_lagoons.tif',
+    #     mask_canyons_lagoons)
 
     not_mask_canyons_lagoons = 1 - mask_canyons_lagoons
     trd_term_srtm_fourier_tree = srtm_proc * not_mask_canyons_lagoons
