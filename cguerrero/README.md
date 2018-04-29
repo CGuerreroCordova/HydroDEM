@@ -19,10 +19,5 @@ Table of Contents
 
 ### How to run the demo
 
-
-
-### DEVELPMENT HELPER
-
-
 ## Wikis
 
