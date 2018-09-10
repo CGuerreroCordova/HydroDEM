@@ -36,6 +36,9 @@ def array2raster(rasterfn, new_rasterfn, array):
     pixel_height = geo_transform[5]
     cols = raster.RasterXSize
     rows = raster.RasterYSize
+    a = 0
+    if a == 1:
+        b = a
     driver = gdal.GetDriverByName('GTiff')
     out_raster = driver.Create(new_rasterfn, cols, rows, 1, gdal.GDT_Float32)
     out_raster.SetGeoTransform((origin_x, pixel_width, 0, origin_y, 0,
@@ -64,35 +67,35 @@ def array2raster_simple(new_rasterfn, array):
     outband.FlushCache()
 
 
-def homo_regions(image_array, window_size):
-    """
-    Get a mask of windowSize x windowSize Homogeneous Regions.
-    :param image_array: raw image
-    :param window_size: kernelSize
-    :return: Image with the same size of input matrix containing homogeneous
-    mask
-    """
-    ny = image_array.shape[0]
-    nx = image_array.shape[1]
-    mask_homogeneous = np.zeros((ny, nx))
-    right_up_side = window_size / 2
-    left_down_side = window_size / 2 + 1
-    for j in range(2, ny - 2):
-        for i in range(2, nx - 2):
-            vertical_kernel = image_array[
-                              j - right_up_side: j + left_down_side,
-                              i - (right_up_side - 1): i + (left_down_side - 1)
-                              ]
-            horizontal_kernel = image_array[
-                                j - (right_up_side - 1):j + (
-                                        left_down_side - 1),
-                                i - right_up_side: i + left_down_side]
-            v = set(vertical_kernel.flatten())
-            h = set(horizontal_kernel.flatten())
-            t = v | h
-            if len(t) == 1:
-                mask_homogeneous[j, i] = 1
-    return mask_homogeneous
+# def homo_regions(image_array, window_size):
+#     """
+#     Get a mask of windowSize x windowSize Homogeneous Regions.
+#     :param image_array: raw image
+#     :param window_size: kernelSize
+#     :return: Image with the same size of input matrix containing homogeneous
+#     mask
+#     """
+#     ny = image_array.shape[0]
+#     nx = image_array.shape[1]
+#     mask_homogeneous = np.zeros((ny, nx))
+#     right_up_side = window_size / 2
+#     left_down_side = window_size / 2 + 1
+#     for j in range(2, ny - 2):
+#         for i in range(2, nx - 2):
+#             vertical_kernel = image_array[
+#                               j - right_up_side: j + left_down_side,
+#                               i - (right_up_side - 1): i + (left_down_side - 1)
+#                               ]
+#             horizontal_kernel = image_array[
+#                                 j - (right_up_side - 1):j + (
+#                                         left_down_side - 1),
+#                                 i - right_up_side: i + left_down_side]
+#             v = set(vertical_kernel.flatten())
+#             h = set(horizontal_kernel.flatten())
+#             t = v | h
+#             if len(t) == 1:
+#                 mask_homogeneous[j, i] = 1
+#     return mask_homogeneous
 
 
 def majority_filter(image_to_filter, window_size):
@@ -540,11 +543,11 @@ def get_lagoons_hsheds(hsheds_input):
     return hsheds_mask_lagoons_values
 
 
-def get_delta_time(text, current_time):
-    last_time = current_time
-    current_time = datetime.datetime.now()
-    delta_time = current_time - last_time
-    return text + "\t" + str(delta_time) + "\n", current_time
+# def get_delta_time(text, current_time):
+#     last_time = current_time
+#     current_time = datetime.datetime.now()
+#     delta_time = current_time - last_time
+#     return text + "\t" + str(delta_time) + "\n", current_time
 
 
 def process_rivers(rivers_shape, hsheds_area_interest, hsheds_mask_lagoons):
@@ -570,36 +573,36 @@ def process_rivers(rivers_shape, hsheds_area_interest, hsheds_mask_lagoons):
     return rivers_routed_closing
 
 
-def insert_smaller_image(big_image, small_image):
-    """
-    Inserts an small image within the centre of a big image
-    :param big_image: image where small image will be inserted
-    :param small_image: image to insert
-    :return: big image with the small image inserted
-    """
-    nby, nbx = big_image.shape
-    nsy, nsx = small_image.shape
-    result = big_image
-    image = small_image
-    if nby % 2 != 0:
-        nby -= 1
-        result = big_image[:-1, :]
-    if nbx % 2 != 0:
-        nbx -= 1
-        result = big_image[:, :-1]
-    if nsy % 2 != 0:
-        nsy -= 1
-        image = small_image[:-1, :]
-    if nsx % 2 != 0:
-        nsx -= 1
-        image = small_image[:, :-1]
-    lowery = (nby) // 2 - (nsy // 2)
-    uppery = (nby // 2) + (nsy // 2)
-    lowerx = (nbx) // 2 - (nsx // 2)
-    upperx = (nbx // 2) + (nsx // 2)
-    result[lowery:uppery, lowerx:upperx] = image
-
-    return result
+# def insert_smaller_image(big_image, small_image):
+#     """
+#     Inserts an small image within the centre of a big image
+#     :param big_image: image where small image will be inserted
+#     :param small_image: image to insert
+#     :return: big image with the small image inserted
+#     """
+#     nby, nbx = big_image.shape
+#     nsy, nsx = small_image.shape
+#     result = big_image
+#     image = small_image
+#     if nby % 2 != 0:
+#         nby -= 1
+#         result = big_image[:-1, :]
+#     if nbx % 2 != 0:
+#         nbx -= 1
+#         result = big_image[:, :-1]
+#     if nsy % 2 != 0:
+#         nsy -= 1
+#         image = small_image[:-1, :]
+#     if nsx % 2 != 0:
+#         nsx -= 1
+#         image = small_image[:, :-1]
+#     lowery = (nby) // 2 - (nsy // 2)
+#     uppery = (nby // 2) + (nsy // 2)
+#     lowerx = (nbx) // 2 - (nsx // 2)
+#     upperx = (nbx // 2) + (nsx // 2)
+#     result[lowery:uppery, lowerx:upperx] = image
+#
+#     return result
 
 
 def uncompress_zip_file(zip_file):
