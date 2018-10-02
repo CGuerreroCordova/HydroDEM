@@ -1,5 +1,5 @@
 SyncTeX Version:1
-Input:1:C:\Users\Cristian\Desktop\Tesis\Latex\template_tesis_mearte.tex
+Input:1:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\template_tesis_mearte.tex
 Input:2:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\report.cls
 Input:3:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\size10.clo
 Input:4:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\geometry\geometry.sty
@@ -9,7 +9,7 @@ Input:7:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek
 Input:8:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\generic\ifxetex\ifxetex.sty
 Input:9:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\geometry\geometry.cfg
 Input:10:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\setspace\setspace.sty
-Input:11:C:\Users\Cristian\Desktop\Tesis\Latex\maeartedoc.sty
+Input:11:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\maeartedoc.sty
 Input:12:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics\graphicx.sty
 Input:13:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics\graphics.sty
 Input:14:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\graphics\trig.sty
@@ -118,11 +118,11 @@ Input:116:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\titlesec
 Input:117:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\listings\listings.sty
 Input:118:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\listings\lstmisc.sty
 Input:119:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\listings\listings.cfg
-Input:120:C:\Users\Cristian\Desktop\Tesis\Latex\template_tesis_mearte.aux
-Input:121:C:\Users\Cristian\Desktop\Tesis\Latex\secciones\Abstract.aux
-Input:122:C:\Users\Cristian\Desktop\Tesis\Latex\secciones\Resumen.aux
-Input:123:C:\Users\Cristian\Desktop\Tesis\Latex\secciones\Agradecimientos.aux
-Input:124:C:\Users\Cristian\Desktop\Tesis\Latex\Bibliografia.aux
+Input:120:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\template_tesis_mearte.aux
+Input:121:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\secciones\Abstract.aux
+Input:122:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\secciones\Resumen.aux
+Input:123:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\secciones\Agradecimientos.aux
+Input:124:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\Bibliografia.aux
 Input:125:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\ts1cmr.fd
 Input:126:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\t1ptm.fd
 Input:127:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\context\base\supp-pdf.mkii
@@ -132,8 +132,8 @@ Input:130:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\oberdiek
 Input:131:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\ucs\ucsencs.def
 Input:132:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\hyperref\nameref.sty
 Input:133:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\generic\oberdiek\gettitlestring.sty
-Input:134:C:\Users\Cristian\Desktop\Tesis\Latex\template_tesis_mearte.out
-Input:135:C:\Users\Cristian\Desktop\Tesis\Latex\template_tesis_mearte.out
+Input:134:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\template_tesis_mearte.out
+Input:135:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\template_tesis_mearte.out
 Input:136:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\ucs\uni-0.def
 Input:137:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\ts1ptm.fd
 Output:pdf
@@ -142,7 +142,7 @@ Unit:1
 X Offset:0
 Y Offset:0
 Content:
-!12813
+!13137
 {1
 [1,117:4736286,53617711:29760291,48881425,0
 h1,117:4736286,4736286:0,0,0
@@ -573,9 +573,9 @@ g1,117:29834878,0
 ]
 !10001
 }1
-Input:138:C:\Users\Cristian\Desktop\Tesis\Latex\secciones\Abstract.tex
+Input:138:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\secciones\Abstract.tex
 Input:139:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\ucs\uni-32.def
-!168
+!204
 {2
 [1,117:4736286,53617711:29760291,48881425,235932
 [1,117:4736286,4736286:0,0,0
@@ -1489,8 +1489,8 @@ g1,117:29834878,0
 ]
 !24219
 }2
-Input:140:C:\Users\Cristian\Desktop\Tesis\Latex\secciones\Resumen.tex
-!80
+Input:140:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\secciones\Resumen.tex
+!116
 {3
 [1,118:4736286,53617711:29760291,48881425,235932
 [1,118:4736286,4736286:0,0,0
@@ -2583,10 +2583,10 @@ g1,118:29834878,0
 )
 ]
 ]
-!28816
+!28817
 }3
-Input:141:C:\Users\Cristian\Desktop\Tesis\Latex\secciones\Agradecimientos.tex
-!88
+Input:141:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\secciones\Agradecimientos.tex
+!124
 {4
 [1,119:4736286,53617711:29760291,48881425,235932
 [1,119:4736286,4736286:0,0,0
@@ -3026,16 +3026,16 @@ g1,119:29834878,0
 )
 ]
 ]
-!11028
+!11029
 }4
-Input:142:C:\Users\Cristian\Desktop\Tesis\Latex\template_tesis_mearte.toc
+Input:142:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\template_tesis_mearte.toc
 Input:143:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\ot1ztmcm.fd
 Input:144:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\omlztmcm.fd
 Input:145:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\omsztmcm.fd
 Input:146:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\omxztmcm.fd
 Input:147:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\base\ulasy.fd
 Input:148:C:\Users\Cristian\AppData\Local\Programs\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd
-!623
+!659
 {5
 [142,26:4736286,53617711:29760291,48881425,235932
 [142,26:4736286,4736286:0,0,0
@@ -14190,8 +14190,8 @@ g142,71:14585093,23722116
 x142,71:15240445,23722116
 g142,71:15404285,23722116
 x142,71:15695261,23722116
-x142,71:18432668,23722116
-k142,71:33480767,23722116:15048099
+x142,71:18268828,23722116
+k142,71:33480767,23722116:15211939
 (142,71:33480767,23722116:1015810,451540,7860
 k142,71:33841217,23722116:360450
 x142,71:34496577,23722116
@@ -14433,7 +14433,7 @@ x142,73:16965996,26586155
 g142,73:17129836,26586155
 x142,73:17748492,26586155
 g142,73:17912332,26586155
-x142,73:19313484,26586155
+x142,73:19149644,26586155
 (142,73:19407059,26586155:491512,66188,6548
 $142,73:19407059,26586155
 (142,73:19570895,26586155:163840,66188,6548
@@ -20385,8 +20385,8 @@ g1,122:29834878,0
 ]
 !65845
 }8
-Input:149:C:\Users\Cristian\Desktop\Tesis\Latex\template_tesis_mearte.lof
-!84
+Input:149:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\template_tesis_mearte.lof
+!120
 {9
 [149,23:4736286,53617711:29760291,48881425,235932
 [149,23:4736286,4736286:0,0,0
@@ -23516,7 +23516,7 @@ g149,23:29834878,0
 )
 ]
 ]
-!76487
+!76488
 }9
 !10
 {10
@@ -35515,8 +35515,8 @@ g1,122:29834878,0
 ]
 !78596
 }12
-Input:150:C:\Users\Cristian\Desktop\Tesis\Latex\template_tesis_mearte.lot
-!85
+Input:150:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\template_tesis_mearte.lot
+!121
 {13
 [1,122:4736286,53617711:29760291,48881425,235932
 [1,122:4736286,4736286:0,0,0
@@ -36326,7 +36326,7 @@ g1,122:29834878,0
 )
 ]
 ]
-!19765
+!19766
 }13
 !11
 {14
@@ -114808,8 +114808,8 @@ g1,2191:29834878,0
 ]
 !28633
 }87
-Input:153:C:\Users\Cristian\Desktop\Tesis\Latex\Bibliografia.tex
-!76
+Input:153:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\Bibliografia.tex
+!112
 {88
 [153,37:4736286,53617711:29760291,48881425,235932
 [153,37:4736286,4736286:0,0,0
@@ -116459,7 +116459,7 @@ g153,37:29834878,0
 )
 ]
 ]
-!43368
+!43369
 }88
 !11
 {89
@@ -118638,12 +118638,12 @@ g1,2191:29834878,0
 ]
 !5622
 }90
-Input:154:C:\Users\Cristian\Desktop\Tesis\Latex\template_tesis_mearte.aux
-Input:155:C:\Users\Cristian\Desktop\Tesis\Latex\secciones\Abstract.aux
-Input:156:C:\Users\Cristian\Desktop\Tesis\Latex\secciones\Resumen.aux
-Input:157:C:\Users\Cristian\Desktop\Tesis\Latex\secciones\Agradecimientos.aux
-Input:158:C:\Users\Cristian\Desktop\Tesis\Latex\Bibliografia.aux
-!368
+Input:154:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\template_tesis_mearte.aux
+Input:155:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\secciones\Abstract.aux
+Input:156:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\secciones\Resumen.aux
+Input:157:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\secciones\Agradecimientos.aux
+Input:158:C:\Users\Cristian\Desktop\Tesis\SourceCode\VirtualEnv\DEMProcPy\doc\Latex\Bibliografia.aux
+!548
 Postamble:
 Count:74901
 !28
