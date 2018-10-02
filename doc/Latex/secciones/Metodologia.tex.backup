@@ -1,0 +1,21 @@
+\chapter{Metodología}
+\label{chap:metodologia}
+
+ De acuerdo a \cite{Barrett2009}, el modelo WCM...\\
+ 
+ Como dice el capítulo \ref{chap:introduccion}...
+
+% 
+% Posteriormente se aplicaron las fórmulas \ref{Eq:calibración} y sus respectivas constantes para realizar lo que se conoce como calibración relativa, para cada tipo de polarización. 
+% 
+% \begin{center}
+% \begin{equation}
+% \begin{split}
+% Cal_{HH}=&SARAT_{HH}/((Kvv(k^4)(alfa^2)))\\
+% Cal_{VV}=&SARAT_{VV}/Kvv\\
+% Cal_{HV}=&SARAT_{HV}/(Kvv(k^2))\\
+% Cal_{VH}=&SARAT_{HV}/(Kvv(k^2)(alfa^2))
+% \label{Eq:calibración}
+% \end{split}
+% \end{equation}
+% \end{center

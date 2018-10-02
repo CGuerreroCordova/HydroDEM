@@ -1,0 +1,105 @@
+\babel@toc {spanish}{}
+\contentsline {chapter}{\numberline {1}Introducci\IeC {\'o}n}{2}{chapter.1}
+\contentsline {section}{\numberline {1.1}Motivaci\IeC {\'o}n}{2}{section.1.1}
+\contentsline {section}{\numberline {1.2}Objetivos}{3}{section.1.2}
+\contentsline {chapter}{\numberline {2}Antecedentes y Marco Te\IeC {\'o}rico}{4}{chapter.2}
+\contentsline {section}{\numberline {2.1}Procesos hidrol\IeC {\'o}gicos}{4}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1}Escurrimiento}{4}{subsection.2.1.1}
+\contentsline {subsubsection}{\numberline {2.1.1.1}Fuentes del Escurrimiento}{4}{subsubsection.2.1.1.1}
+\contentsline {subsubsection}{\numberline {2.1.1.2}Procesos del escurrimiento}{5}{subsubsection.2.1.1.2}
+\contentsline {subsection}{\numberline {2.1.2}Infiltraci\IeC {\'o}n}{5}{subsection.2.1.2}
+\contentsline {subsection}{\numberline {2.1.3}Evaporaci\IeC {\'o}n y Evapotranspiraci\IeC {\'o}n}{6}{subsection.2.1.3}
+\contentsline {subsection}{\numberline {2.1.4}Descripci\IeC {\'o}n del \IeC {\'a}rea de estudio en funci\IeC {\'o}n de los procesos hidrol\IeC {\'o}gicos}{6}{subsection.2.1.4}
+\contentsline {section}{\numberline {2.2}Relevamiento de DEMs para usos hidrol\IeC {\'o}gicos}{7}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Misi\IeC {\'o}n SRTM}{8}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}ASTER GDEM}{8}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}Comparaci\IeC {\'o}n con SRTM}{8}{subsection.2.2.3}
+\contentsline {section}{\numberline {2.3}SRTM e HydroSHEDS}{9}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Formato y Disponibilidad}{9}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Evoluci\IeC {\'o}n y versiones de SRTM}{9}{subsection.2.3.2}
+\contentsline {subsubsection}{\numberline {2.3.2.1}Datos de elevaci\IeC {\'o}n SRTM - Versi\IeC {\'o}n 1 (Datos sin terminar SRTM-1 y SRTM-3)}{10}{subsubsection.2.3.2.1}
+\contentsline {subsubsection}{\numberline {2.3.2.2}Datos de elevaci\IeC {\'o}n SRTM - Versi\IeC {\'o}n 2 (Datos terminados DTED-1 y DTED-3)}{10}{subsubsection.2.3.2.2}
+\contentsline {subsubsection}{\numberline {2.3.2.3}Red fluvial vectorizado mundial ArcWorld}{10}{subsubsection.2.3.2.3}
+\contentsline {subsubsection}{\numberline {2.3.2.4}Base de datos global de humedales y lagos (Global Lakes and Wetlands Database - GLWD)}{10}{subsubsection.2.3.2.4}
+\contentsline {subsubsection}{\numberline {2.3.2.5}Mapa Digital del Mundo (DCW) red global vectorizada de r\IeC {\'\i }os.}{10}{subsubsection.2.3.2.5}
+\contentsline {section}{\numberline {2.4}Adecuaci\IeC {\'o}n Hidrol\IeC {\'o}gica}{10}{section.2.4}
+\contentsline {subsection}{\numberline {2.4.1}HydroSHEDS}{10}{subsection.2.4.1}
+\contentsline {subsubsection}{\numberline {2.4.1.1}Correcciones}{11}{subsubsection.2.4.1.1}
+\contentsline {subsubsection}{\numberline {2.4.1.2}Procesos de adecuaci\IeC {\'o}n hidrol\IeC {\'o}gica aplicados a HydroSHEDS}{12}{subsubsection.2.4.1.2}
+\contentsline {subsection}{\numberline {2.4.2}Una aplicaci\IeC {\'o}n a la llanura Bonaerense}{14}{subsection.2.4.2}
+\contentsline {subsubsection}{\numberline {2.4.2.1}Correcci\IeC {\'o}n de p\IeC {\'\i }xeles faltantes}{14}{subsubsection.2.4.2.1}
+\contentsline {subsubsection}{\numberline {2.4.2.2}Filtrado de ruido de frecuencia media y baja amplitud}{14}{subsubsection.2.4.2.2}
+\contentsline {subsubsection}{\numberline {2.4.2.3}Filtrado de la arboleda}{14}{subsubsection.2.4.2.3}
+\contentsline {subsubsection}{\numberline {2.4.2.4}Correcci\IeC {\'o}n para zonas bajas}{15}{subsubsection.2.4.2.4}
+\contentsline {subsubsection}{\numberline {2.4.2.5}Filtrado de alta frecuencia}{15}{subsubsection.2.4.2.5}
+\contentsline {chapter}{\numberline {3}Procesamiento del DEM}{17}{chapter.3}
+\contentsline {section}{\numberline {3.1}Primeras Pruebas}{18}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}Aplicaci\IeC {\'o}n de correcci\IeC {\'o}n de bandeado a HydroSHEDS}{18}{subsection.3.1.1}
+\contentsline {subsection}{\numberline {3.1.2}Aplicaci\IeC {\'o}n de correcci\IeC {\'o}n de cortinas de \IeC {\'a}rboles a HydroSHEDS}{18}{subsection.3.1.2}
+\contentsline {section}{\numberline {3.2}Propuesta a implementar}{19}{section.3.2}
+\contentsline {section}{\numberline {3.3}Desarrollo}{20}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Automatizaci\IeC {\'o}n del procesamiento:}{20}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Clasificaci\IeC {\'o}n de Arboledas}{21}{subsection.3.3.2}
+\contentsline {subsubsection}{\numberline {3.3.2.1}Datos de Entrada necesarios para la clasificaci\IeC {\'o}n de arboledas}{21}{subsubsection.3.3.2.1}
+\contentsline {subsubsection}{\numberline {3.3.2.2}Creaci\IeC {\'o}n del stack de im\IeC {\'a}genes}{23}{subsubsection.3.3.2.2}
+\contentsline {subsubsection}{\numberline {3.3.2.3}Clasificaci\IeC {\'o}n}{23}{subsubsection.3.3.2.3}
+\contentsline {subsection}{\numberline {3.3.3}Datos de Entrada}{23}{subsection.3.3.3}
+\contentsline {subsubsection}{\numberline {3.3.3.1}DEM SRTM en formato TIF}{24}{subsubsection.3.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.3.2}DEM HydroSHEDS Conditioned en formato ADF}{24}{subsubsection.3.3.3.2}
+\contentsline {subsubsection}{\numberline {3.3.3.3}Archivo en formato Shape de \IeC {\'A}rea de Estudio}{24}{subsubsection.3.3.3.3}
+\contentsline {subsubsection}{\numberline {3.3.3.4}Clasificaci\IeC {\'o}n de Arboledas}{25}{subsubsection.3.3.3.4}
+\contentsline {subsubsection}{\numberline {3.3.3.5}R\IeC {\'\i }os y Ca\IeC {\~n}adas}{25}{subsubsection.3.3.3.5}
+\contentsline {subsection}{\numberline {3.3.4}Procesamiento y operaciones a SRTM y HydroSHEDS}{25}{subsection.3.3.4}
+\contentsline {subsubsection}{\numberline {3.3.4.1}Reproyecci\IeC {\'o}n}{25}{subsubsection.3.3.4.1}
+\contentsline {subsubsection}{\numberline {3.3.4.2}Recorte y Remuestreo}{25}{subsubsection.3.3.4.2}
+\contentsline {subsubsection}{\numberline {3.3.4.3}Correcci\IeC {\'o}n de p\IeC {\'\i }xeles sin datos. (valores NaN)}{26}{subsubsection.3.3.4.3}
+\contentsline {subsection}{\numberline {3.3.5}Procesamiento a SRTM}{26}{subsection.3.3.5}
+\contentsline {subsubsection}{\numberline {3.3.5.1}Correcci\IeC {\'o}n de ruido de baja amplitud y alta frecuencia. (Fourier)}{26}{subsubsection.3.3.5.1}
+\contentsline {subsubsubsection}{\numberline {3.3.5.1.1}Condici\IeC {\'o}n de pertenencia a la m\IeC {\'a}scara - Filtro: }{29}{subsubsubsection.3.3.5.1}
+\contentsline {subsubsubsection}{\numberline {3.3.5.1.2}Obtenci\IeC {\'o}n de los cuadrantes 3 y 4, y armado de la imagen completa}{32}{subsubsubsection.3.3.5.2}
+\contentsline {subsubsubsection}{\numberline {3.3.5.1.3}Asignar ceros a transformada de Fourier en los p\IeC {\'\i }xeles de blancos detectados.}{32}{subsubsubsection.3.3.5.3}
+\contentsline {subsubsubsection}{\numberline {3.3.5.1.4}Retornar las frecuencias cero a su posici\IeC {\'o}n original}{34}{subsubsubsection.3.3.5.4}
+\contentsline {subsubsubsection}{\numberline {3.3.5.1.5}Aplicaci\IeC {\'o}n de la Antitransformada}{34}{subsubsubsection.3.3.5.5}
+\contentsline {subsubsection}{\numberline {3.3.5.2}Correcci\IeC {\'o}n de Cortinas de \IeC {\'A}rboles}{35}{subsubsection.3.3.5.2}
+\contentsline {subsection}{\numberline {3.3.6}Procesamiento a HydroSHEDS para extracci\IeC {\'o}n de lagunas, r\IeC {\'\i }os y ca\IeC {\~n}adas}{39}{subsection.3.3.6}
+\contentsline {subsubsection}{\numberline {3.3.6.1}Conversi\IeC {\'o}n de formato adf a tif (HydroSHEDS)}{40}{subsubsection.3.3.6.1}
+\contentsline {subsubsection}{\numberline {3.3.6.2}Detecci\IeC {\'o}n de Lagunas}{40}{subsubsection.3.3.6.2}
+\contentsline {subsubsection}{\numberline {3.3.6.3}Procesamiento de R\IeC {\'\i }os y Ca\IeC {\~n}adas.}{43}{subsubsection.3.3.6.3}
+\contentsline {subsection}{\numberline {3.3.7}Rotaci\IeC {\'o}n de la imagen}{49}{subsection.3.3.7}
+\contentsline {subsubsection}{\numberline {3.3.7.1}Recorte de m\IeC {\'a}rgenes}{49}{subsubsection.3.3.7.1}
+\contentsline {subsection}{\numberline {3.3.8}Combinaci\IeC {\'o}n de los elementos del DEM SRTM y del DEM HydroSHEDS.}{49}{subsection.3.3.8}
+\contentsline {chapter}{\numberline {4}Metodolog\IeC {\'\i }a para la evaluaci\IeC {\'o}n de resultados}{51}{chapter.4}
+\contentsline {section}{\numberline {4.1}Condiciones de simulaci\IeC {\'o}n.}{51}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Elecci\IeC {\'o}n del umbral de altura de agua}{52}{subsection.4.1.1}
+\contentsline {section}{\numberline {4.2}\IeC {\'I}ndice de Agua NDWI}{52}{section.4.2}
+\contentsline {section}{\numberline {4.3}Obtenci\IeC {\'o}n de las m\IeC {\'e}tricas}{52}{section.4.3}
+\contentsline {section}{\numberline {4.4}Estad\IeC {\'\i }sticos de Inter\IeC {\'e}s}{53}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}Sensibilidad o Raz\IeC {\'o}n de Verdaderos Positivos}{53}{subsection.4.4.1}
+\contentsline {subsection}{\numberline {4.4.2}Especificidad o Raz\IeC {\'o}n de Verdaderos Negativos}{53}{subsection.4.4.2}
+\contentsline {subsection}{\numberline {4.4.3}Fall-out o Raz\IeC {\'o}n de Falsos Positivos o de Falsas Alarmas}{54}{subsection.4.4.3}
+\contentsline {subsection}{\numberline {4.4.4}Precisi\IeC {\'o}n o Valor Predictivo Positivo}{54}{subsection.4.4.4}
+\contentsline {subsection}{\numberline {4.4.5}Exactitud}{54}{subsection.4.4.5}
+\contentsline {subsection}{\numberline {4.4.6}Valor-F}{54}{subsection.4.4.6}
+\contentsline {subsection}{\numberline {4.4.7}Exactitud Balanceada}{54}{subsection.4.4.7}
+\contentsline {subsection}{\numberline {4.4.8}Coeficiente de Correlaci\IeC {\'o}n de Matthews}{55}{subsection.4.4.8}
+\contentsline {subsection}{\numberline {4.4.9}Rotaci\IeC {\'o}n de la imagen NDWI}{55}{subsection.4.4.9}
+\contentsline {chapter}{\numberline {5}Resultados}{56}{chapter.5}
+\contentsline {section}{\numberline {5.1}An\IeC {\'a}lisis visual comparativo de los Resultados}{56}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Imagen Global}{56}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}An\IeC {\'a}lisis Visual del algoritmo de detecci\IeC {\'o}n de lagunas}{59}{subsection.5.1.2}
+\contentsline {subsection}{\numberline {5.1.3}An\IeC {\'a}lisis Visual de lagunas no predichas correctamente}{60}{subsection.5.1.3}
+\contentsline {subsection}{\numberline {5.1.4}An\IeC {\'a}lisis Visual de la correcci\IeC {\'o}n Bandeado}{61}{subsection.5.1.4}
+\contentsline {subsection}{\numberline {5.1.5}An\IeC {\'a}lisis Visual de la correcci\IeC {\'o}n de las cortinas de \IeC {\'a}rboles}{62}{subsection.5.1.5}
+\contentsline {section}{\numberline {5.2}Procesamiento estad\IeC {\'\i }stico de los resultados para la obtenci\IeC {\'o}n de m\IeC {\'e}tricas}{64}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Estad\IeC {\'\i }sticos de inter\IeC {\'e}s obtenidos como resultado de la simulaci\IeC {\'o}n}{64}{subsection.5.2.1}
+\contentsline {section}{\numberline {5.3}An\IeC {\'a}lisis comparativo de los Estad\IeC {\'\i }sticos de los Resultados}{67}{section.5.3}
+\contentsline {subsection}{\numberline {5.3.1}Sensibilidad}{67}{subsection.5.3.1}
+\contentsline {subsection}{\numberline {5.3.2}Especificidad}{67}{subsection.5.3.2}
+\contentsline {subsection}{\numberline {5.3.3}Fall-Out o Falsas Alarmas}{68}{subsection.5.3.3}
+\contentsline {subsection}{\numberline {5.3.4}Precisi\IeC {\'o}n}{68}{subsection.5.3.4}
+\contentsline {subsection}{\numberline {5.3.5}Exactitud}{69}{subsection.5.3.5}
+\contentsline {subsection}{\numberline {5.3.6}Exactitud Balanceada (BACC)}{70}{subsection.5.3.6}
+\contentsline {subsection}{\numberline {5.3.7}Valor F1}{70}{subsection.5.3.7}
+\contentsline {subsection}{\numberline {5.3.8}Coeficiente de Correlaci\IeC {\'o}n de Matthews}{70}{subsection.5.3.8}
+\contentsline {chapter}{\numberline {6}Conclusiones}{73}{chapter.6}
+\contentsline {section}{\numberline {6.1}Trabajos a Futuro}{74}{section.6.1}

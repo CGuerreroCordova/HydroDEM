@@ -1,0 +1,303 @@
+% espacio entre párrafos
+\parskip 7.2pt
+%configuración de los márgenes
+\geometry{top=2cm, bottom=2cm, left=2.5cm, right=2.5cm}
+
+\usepackage{setspace}
+
+%Paquete para el maenjo de gráficos (permite insertar jpg, png, pdf y tif)
+\usepackage{graphicx}
+%Paquete para poder poner subfiguras en una figura (poner dos o mas figuras dentro de una)
+\usepackage{subfigure} 
+
+\usepackage{rotating}
+\usepackage{latexsym}
+\usepackage{t1enc}
+\usepackage{times}
+\usepackage{mathptmx}
+\usepackage{multirow}
+\usepackage{lscape}
+\ExecuteOptions{dvips}
+\usepackage{pstricks}
+\usepackage{textcomp}
+
+%para pegar figuras y tablas en lugares fijo con el comando [H]
+\usepackage{float}
+
+% para modificar el caption de las figuras (letra mas chica y en negrita)
+\usepackage[footnotesize,bf,justification=centering]{caption}
+
+\usepackage{amsmath}
+\usepackage{upgreek}
+
+% para agregar footnotes a las tablas
+\usepackage{threeparttable}
+
+
+
+%para agregar símobolos no estándares para latex
+\usepackage{gensymb}
+
+
+%----------------------------------------------------------------------------------------------------------------------------------------------------
+%paquete para el manejo de acrónimos
+%\usepackage{acronym}
+% Generación de acrónimos:   \acro{label}[acronym]{written out form}  o \acro{label}{written out form} si el acrónimo es igual al label usado
+% Uso de los acrónimos:      \ac{label}
+% Otro usos del paquete:
+\usepackage[printonlyused]{acronym}   %hace que en la lista de acrónimos se muestren solo los utilizados
+%\usepackage[printonlyused,withpage]{acronym}  %igual que el anterior pero además muestra la página en la que aparece por primera vez
+%----------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+%\usepackage{latexsym}
+
+% Pseudocodigo
+%\usepackage{clrscode} 
+
+% Paquete para una mejora visual de los capítulos (títulos)
+\usepackage[Lenny]{fncychap}  % Encabezados de capitulos. %Sonny  %Lenny %Bjarne % Glenn %Conny %Rejne %Bjornstrup
+% paquete fancyhdr para los encabezados y pie de página
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+%\usepackage{titling} % Manejo del titulo.
+
+%\DeclareGraphicsExtensions{.png,.jpg,.pdf}
+
+
+\usepackage[final]{pdfpages} %agregar pdf's al documento
+
+
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter \: \textsc{#1}}{}}
+\renewcommand{\sectionmark}[1]{\markboth{\thesection \: \textsc{#1}}{}}
+%\renewcommand{\subsectionmark}[1]{\markright{\textit{#1}}}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+%comentar la siguiente linea para eliminar el nombre de la subseccion activa en el encabezado de pagina
+%\fancyhead[R]{\rightmark}
+\fancyfoot[C]{\thepage}
+\fancypagestyle{plain}{%
+   \fancyhead{} % get rid of headers
+   \renewcommand{\headrulewidth}{0pt} % and the line
+}
+
+
+%\usepackage{graphics}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{ucs}
+%\usepackage[spanish,mexico]{babel}
+\usepackage[spanish]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+%\usepackage[amsmath,thmmarks]{ntheorem}
+%\usepackage{proof}
+
+% paquete para incluir imÃ¡genes altas y poder tener texto al lado...
+\usepackage{wrapfig}
+
+% paquete para colorear tablas
+\usepackage{tabularx,colortbl}
+\usepackage{xcolor}
+
+% %   Renombra algunos elementos
+\renewcommand{\spanishcontentsname}{Tabla de Contenidos}
+\renewcommand{\spanishpartname}{Parte}
+\renewcommand{\spanishchaptername}{Capítulo}
+\renewcommand{\spanishappendixname}{Apéndice}
+\renewcommand{\bibname}{Bibliografía}
+\renewcommand{\spanishfigurename}{Figura}
+\renewcommand{\spanishlistfigurename}{Índice de figuras}
+\renewcommand{\spanishtablename}{Tabla}
+\renewcommand{\spanishlisttablename}{Índice de tablas}
+
+
+%para enumerar las subsubsecciones
+\setcounter{secnumdepth}{3}
+%para agregarlas a la tabla de contenidos
+%\setcounter{tocdepth}{3}
+
+
+% Eliminar la linea encima de los footnotes
+%\renewcommand\footnoterule{\rule{\linewidth}{0pt}}
+
+% Secuencia de 9 símbolos para footnotes (usa asteriscos y otros símbolos en lugar de números)
+%\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+% paquete footmisc para tunear los footnotes. [bottom] los envia bien abajo en la pagina
+\usepackage[bottom]{footmisc}
+
+%definicion de colores personalizados
+\definecolor{celeste}{RGB}{108,166,205}
+
+
+
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    filecolor=magenta,      
+    urlcolor=black,
+    bookmarks=true,
+}
+
+%%%%%%%%%% PORTADA %%%%%%%%%%%%%%
+
+\newcommand{\portadatesis}[9]{
+ \thispagestyle{empty}
+% \begin{figure}[h]
+%  \centering
+% \hspace{1cm}
+% \subfigure{
+%  \includegraphics[height=1.6cm,keepaspectratio=true,clip=true]
+%  {imagenes/Logos/logo-unc.png}}
+%  \hspace{2.5cm} 
+% \subfigure{
+%  \includegraphics[height=1.8cm,keepaspectratio=true,clip=true]
+%  {imagenes/Logos/logo-conae.png}}
+% \hspace{2.5cm}
+%  \subfigure{
+%  \includegraphics[height=1.6cm,keepaspectratio=true,clip=true]
+%  {imagenes/Logos/logo-asi.png}}
+%  \end{figure}
+
+
+ %%Definición del parámetro #1: Título de la tesis %%%%%%%%%%%%
+\vspace*{0.3cm}
+\begin{center}
+\bigskip
+\LARGE
+\textsc{\textsl{\textbf{#1}}}\\
+\vspace*{1cm}
+\end{center}
+
+
+%%   Definición del parámetro #2: Autor  %%%%%%%%%%%%
+\begin{center}
+% \vspace*{0.3cm}
+\bigskip
+\large
+Por
+\textsc{\textsl{\textbf{#2}}}\\
+\end{center}
+
+
+%%% Presentado ante... %%%%%
+\begin{center}
+\begin{normalsize}Presentado ante la Facultad de Matemática, Astronomía y Física y el Instituto de Altos Estudios Espaciales Mario Gulich como parte de los requerimientos para la obtención del grado de\end{normalsize}\\
+\vspace*{1cm}
+\textbf{MAGISTER EN APLICACIONES ESPACIALES DE ALERTA Y RESPUESTA TEMPRANA A EMERGENCIAS}\\
+% \vspace*{3.5cm}
+\end{center}
+
+
+
+%%  Definición del parámetro #3: UNIVERSIDAD %%%%%%%%%%%%
+\begin{center}
+ \vspace*{0.5cm}
+\normalsize #3\\
+% \vspace*{3cm}
+\end{center}
+
+
+
+%%  Definición del parámetro #4: Mes, Año %%%%%%%%%%%%
+\begin{center}
+ \vspace*{0.5cm}
+\normalsize \textit{\textbf{#4}}\\
+% \vspace*{3cm}
+\end{center}
+
+
+
+%%% Definición del parámetro 5: Copyright %%%%%
+
+\begin{center}
+\vspace*{0.5cm}
+\textcopyright IG-CONAE {#5}\\
+\textcopyright FaMAF-UNC {#5}\\
+\end{center}
+
+
+
+%%Definición del parámetro #6: Director %%%%%%%%%%%%
+
+\begin{center}
+\vspace*{0.5cm}
+\normalsize DIRECTOR\\
+\normalsize\textit{\textbf{#6}}\\
+\end{center}
+
+%%Definición del parámetro #7: Pertenencia Director %%%%%%%%%%%%
+\begin{center}
+\vspace*{-0.5cm}
+\small #7
+% \vspace*{3cm}
+\end{center}
+
+%%Definición del parámetro #8: Co-Director %%%%%%%%%%%%
+
+%\begin{center}
+%\normalsize CO-DIRECTOR\\
+%\normalsize \textit{\textbf{#8}}\\
+%\end{center}
+
+%%Definición del parámetro #9: Pertenencia Co-Director %%%%%%%%%%%%
+\begin{center}
+\vspace*{-0.5cm}
+\small #9
+\end{center}
+
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Tabla de Contenidos
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\tabladecontenidos}[1]{
+\newpage
+\begin{spacing}{1.2}
+\tableofcontents
+\listoffigures
+\listoftables
+\clearpage
+\end{spacing}
+}
+
+
+%%%%%%% Bibliografía 
+%Paquete para un mejor manejo de las citas de bibliografia (tiene algunos problemas utilizando \bibliographystyle{natbib})
+%\usepackage[sort,authoryear]{natbib}
+% \usepackage{multibib}
+\usepackage{natbib}
+
+\newcommand{\bibliografia}[1]{
+\clearpage
+\addcontentsline{toc}{chapter}{\bibname}
+\bibliography{#1}
+\bibliographystyle{plainnatesp.bst}
+% \bibliographystyle{ieeetr} % bibliografia al estilo publicaciones de IEEE. Para usar, comentar la linea \usepackage{natbib} y todas las citas se debern realizar con \cite en lugar de \citep
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+%%	FUNCIÓN PARA AGREGAR IMÁGENES  
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% \imagen{escala}{path imagen}{caption}{referencia (fig:"algo") }                     %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\imagen}[4]{
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=#1]{#2}
+		\caption{#3}
+		\label{#4}
+	\end{figure}
+}

@@ -1,0 +1,155 @@
+% Configuración de la página: márgenes
+%\textwidth 6in
+%\textwidth 17cm
+%\topmargin -1.5cm
+%\textheight = 9in
+%\textheight = 25.7cm
+%\oddsidemargin 0cm
+%\evensidemargin 0cm
+% espacio entre párrafos
+\parskip 7.2pt
+% Paquetes
+%configuración de los márgenes
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=1.5cm]{geometry}
+\usepackage{setspace}
+
+
+
+
+% \textwidth 6in
+% \topmargin -1.0cm
+% \textheight = 9in
+% \oddsidemargin 1cm
+% \evensidemargin 0cm
+% \parskip 7.2pt
+
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{latexsym}
+\usepackage{t1enc}
+\usepackage{times}
+\usepackage{mathptmx}
+\usepackage{multirow}
+\usepackage{lscape}
+\ExecuteOptions{dvips}
+%\usepackage{pstricks}
+\usepackage{textcomp}
+
+%Para editar y mandar al pie (con el "bottom") las footnotes
+\usepackage[bottom]{footmisc}
+
+% para modificar el caption de las figuras (letra mas chica y en negrita)
+\usepackage[footnotesize,bf,center]{caption}
+
+% Eliminar la linea encima de los footnotes
+%\renewcommand\footnoterule{\rule{\linewidth}{0pt}}
+
+% Secuencia de 9 símbolos para footnotes (usa asteriscos y otros símbolos en lugar de números)
+%\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+%para pegar figuras y tablas en lugares fijo con el comando [H]
+\usepackage{float}
+
+\usepackage{amsmath}
+%\usepackage[pdftex, colorlinks=true]{hyperref}\mu
+\usepackage{upgreek}
+
+%Usar el paquete Natbib para un mejor manejo de las citas de bibliografia
+\usepackage{natbib}
+
+%\usepackage{plainnat}
+
+%solo para agregar el simbolito de grados: Â°
+\usepackage{gensymb}
+
+%para enumerar las subsubsecciones
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+
+
+%\usepackage{latexsym}
+%\usepackage{clrscode} % Pseudocodigo
+\usepackage[Sonny]{fncychap} % Encabezados de capitulos. %Sonny  %Lenny %Bjarne % Glenn
+\usepackage{titling} % Manejo del titulo.
+\usepackage{fancyhdr}
+%\DeclareGraphicsExtensions{.png,.jpg,.pdf}
+\usepackage[]{subfigure} %poner dos figuras en al lado
+\usepackage[final]{pdfpages} %agregar pdf's al documento
+\pagestyle{fancy}
+\usepackage{enumerate}
+
+%\usepackage{calc}
+%\fancyheadoffset[R]{\marginparsep+\marginparwidth}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter \: \textsc{#1}}{}}
+\renewcommand{\sectionmark}[1]{\markboth{\thesection \: \textsc{#1}}{}}
+\renewcommand{\subsectionmark}[1]{\markright{\textit{#1}}}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+%\fancyhead[R]{\rightmark}
+\fancyfoot[R]{\thepage}
+\fancypagestyle{plain}{%
+   \fancyhead{} % get rid of headers
+   \renewcommand{\headrulewidth}{0pt} % and the line
+}
+
+
+%\usepackage{graphics}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+%\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+%\usepackage[ansinew]{inputenc} % Caracteres con acentos.
+%\usepackage[amsmath,thmmarks]{ntheorem}
+%\usepackage{proof}
+
+% paquete para incluir imÃ¡genes altas y poder tener texto al lado...
+\usepackage{wrapfig}
+
+% paquete para colorear tablas
+\usepackage{tabularx,colortbl}
+\usepackage{xcolor}
+% %   Renombra algunos elementos
+\renewcommand{\contentsname}{Indice}
+%\addto\captionsspanish{\renewcommand\contentsname{Indice}}
+\renewcommand{\partname}{Parte}
+%\addto\captionsspanish{\renewcommand\partname{Parte}}
+\renewcommand{\chaptername}{Cap\'itulo}
+%\addto\captionsspanish{\renewcommand\chaptername{Capitulo}}
+\renewcommand{\appendixname}{Ap\'endice}
+%\addto\captionsspanish{\renewcommand\appendixname{Ap\'ndice}}
+\renewcommand{\bibname}{Referencias}
+%\addto\captionsspanish{\renewcommand\bibname{Referencias}}
+\renewcommand{\figurename}{Figura}
+%\addto\captionsspanish{\renewcommand\figurename{Figura}}
+\renewcommand{\listfigurename}{Indice de figuras}
+%\addto\captionsspanish{\renewcommand\listfigurename{\'Indice de figuras}}
+\renewcommand{\spanishtablename}{Tabla}
+%\addto\captionsspanish{\renewcommand\tablename{Tabla}}
+\renewcommand{\spanishlisttablename}{Indice de tablas}
+%\addto\captionsspanish{\renewcommand\listtablename{\'Indice de Tablas}}
+\renewcommand{\contentsname}{Tabla de Contenidos}
+%\addto\captionsspanish{\renewcommand\contentsname{Tabla de Contenidos}}
+{\renewcommand\contentsname{Table of Contents}}
+
+
+%paquete para el manejo de acrónimos
+
+%\usepackage{acronym}
+% Generación de acrónimos:   \acrodef{label}[acronym]{written out form}  o \acrodef{label}{written out form} si el acrónimo es igual al label usado
+% Uso de los acrónimos:      \ac{label}
+% Otro usos del paquete:
+\usepackage[printonlyused]{acronym}   %hace que en la lista de acrónimos se muestren solo los utilizados
+%\usepackage[printonlyused,withpage]{acronym}  %igual que el anterior pero además muestra la página en la que aparece por primera vez
+
+% definición de colores personalizados para utilización en tablas
+\definecolor{celeste}{RGB}{185,211,238}
+\definecolor{celeste2}{RGB}{154,192,205}
+\definecolor{gris1}{RGB}{224,238,224}
+\definecolor{gris2}{RGB}{253,245,230}
+\definecolor{gris3}{RGB}{211,211,211}

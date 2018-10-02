@@ -1,0 +1,179 @@
+%
+% Autor: Romina Solorza
+% Fecha: 20/05/2016
+%
+% Descripción: Template para la generación de la tesis de la MAIE
+% Fuente 11pt y hoja A4 son asumidos por tesisdoc.tex
+% Contiene ejemplos de uso de tablas y figuras
+
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[es]{mio}
+\usepackage{natbib}
+
+%Otros paquetes útiles para acentos
+%\usepackage[spanish]{babel} 
+%\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc} 
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{color}
+
+\usepackage{amsmath} 
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+%paquetes Tesis Romina 
+%%%%%%%%%%%%%%%%%%%%%%
+% \usepackage[top=3cm, bottom=3cm, left=2.5cm, right=1.5cm]{geometry}
+% \usepackage{setspace}
+% \usepackage{setspace}
+% \usepackage{graphicx}
+% \usepackage{rotating}
+% \usepackage{latexsym}
+% \usepackage{t1enc}
+% \usepackage{times} 
+% \usepackage{mathptmx}
+% \usepackage{multirow}
+% \usepackage{lscape}
+% \ExecuteOptions{dvips}
+ \usepackage{textcomp}
+% %Para editar y mandar al pie (con el "bottom") las footnotes
+% \usepackage[bottom]{footmisc}
+% % para modificar el caption de las figuras (letra mas chica y en negrita)
+% \usepackage[footnotesize,bf,center]{caption}
+% % Eliminar la linea encima de los footnotes
+% %\renewcommand\footnoterule{\rule{\linewidth}{0pt}}
+% % Secuencia de 9 símbolos para footnotes (usa asteriscos y otros símbolos en lugar de números)
+% %\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+% %para pegar figuras y tablas en lugares fijo con el comando [H]
+% \usepackage{float}
+% \usepackage{amsmath}
+% %\usepackage[pdftex, colorlinks=true]{hyperref}\mu
+% \usepackage{upgreek}
+% %Usar el paquete Natbib para un mejor manejo de las citas de bibliografia
+% \usepackage{natbib}
+% %\usepackage{plainnat}
+% %solo para agregar el simbolito de grados: Â°
+% \usepackage{gensymb}
+% %para enumerar las subsubsecciones
+% \setcounter{secnumdepth}{3}
+% \setcounter{tocdepth}{3}
+% %\usepackage{latexsym}
+% %\usepackage{clrscode} % Pseudocodigo
+% \usepackage[Sonny]{fncychap} % Encabezados de capitulos. %Sonny  %Lenny %Bjarne % Glenn
+% \usepackage{titling} % Manejo del titulo.
+% \usepackage{fancyhdr}
+% %\DeclareGraphicsExtensions{.png,.jpg,.pdf}
+% \usepackage[]{subfigure} %poner dos figuras en al lado
+% \usepackage[final]{pdfpages} %agregar pdf's al documento
+% \pagestyle{fancy}
+% \usepackage{enumerate}
+% \usepackage{graphicx}
+% %\usepackage[pdftex, colorlinks=true]{hyperref}\mu
+
+
+%%%%%%%%%%%%%%%%
+% inicializacion
+%%%%%%%%%%%%%%%%
+
+\tesisinit{CAEARTE002/2014}{Estimación de HS y rugosidad con CSK }{Septiembre}{15}{2014}
+
+\begin{document}
+
+%%%%%%%%%%
+% caratula
+%%%%%%%%%%
+
+\tesistitle{CAEARTE002}{2014}{Estimación de humedad del suelo y rugosidad superficial con imágenes Cosmo SkyMed}{Versión en Español}{Romina Solorza}{CAEARTE002/2014}{Agosto}{26}{2014}
+
+%%%%%%%%%%%%%%%%%%%
+% seccion de firmas
+%%%%%%%%%%%%%%%%%%%
+
+\preparedbysignatures
+
+\conaesignature{Romina Solorza}{Scientist/Developer}{CAEARTE/CONAE}
+
+%\conaesignature{}{}{}
+
+
+\checkedbysignatures
+
+\conaesignature{Mario A. Lanfri}{}{CAEARTE/CONAE}
+
+\conaesignature{Marcelo Scavuzzo}{}{CAEARTE/CONAE}
+
+\approvedbysignatures
+
+\conaesignature{Sandra Torrusio}{PI}{CONAE}
+
+\conaesignature{M\'{o}nica Rabolli}{PI}{CONAE}
+
+
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% lista de distribucion
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{distributionlist}
+
+\adddistributionlistmember{CONAE}{Conrado Varotto}{Director Ejecutivo y Técnico}
+% \adddistributionlistmember{CONAE}{Fernando Hisas}{Head of Projects Departement}
+\adddistributionlistmember{CONAE}{Sandra Torrusio}{PI CONAE}
+\adddistributionlistmember{CONAE}{M\'onica Rabolli}{PI CONAE}
+\adddistributionlistmember{CONAE}{Mario Lanfri}{CAEARTE}
+\adddistributionlistmember{CONAE}{Marcelo Scavuzzo}{CAEARTE}
+% \adddistributionlistmember{CONAE}{H\'ector Raimondo}{System Engineer ISTA Unit}
+% \adddistributionlistmember{CONAE}{Sergio Masuelli}{System Engineer SOA-CAEARTE}
+% \adddistributionlistmember{STI}{Carolina Tauro}{Scientist/Developer CAEARTE Unit (STI)}
+%\adddistributionlistmember{}{}{}
+%\adddistributionlistmember{}{}{}
+%\adddistributionlistmember{}{}{}
+%\adddistributionlistmember{}{}{}
+ 
+\end{distributionlist}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% versiones del documento
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{documentchangesrecord}  
+\adddocumentchangesrecordmember{A}{15/9/2014}{Todas}{Primera Versión}
+%\adddocumentchangesrecordmember{B}{}{}{}
+\end{documentchangesrecord}
+
+%%%%%%%%%%%%%%%%%%%%%
+% tabla de contenidos
+%%%%%%%%%%%%%%%%%%%%%
+
+\tableofcontents
+\newpage
+
+% \include{introduction}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%
+% Resto del documento
+%%%%%%%%%%%%%%%%%%%%%
+
+% \include{document_body}
+
+%\appendix \include{appendix}
+
+%\include{referencias}
+% \renewcommand{\bibname}{Referencias}
+\renewcommand{\refname}{Referencias}
+\clearpage
+% \addcontentsline{toc}{chapter}{\bibname}
+\bibliography{tesis.bib}
+\bibliographystyle{plainnatesp.bst}
+
+\end{document}
