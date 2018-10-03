@@ -669,9 +669,7 @@ Como vimos en la figura \ref{HSHEDSPaleta} HydroSHEDS presenta el problema de ba
    \end{minipage}
 \end{figure}
 
-Podemos observar en la figura \ref{HydroSHEDSBandeadoZoom}, un zoom de la figura \ref{HSHEDSPaleta} para distinguir más de cerca el bandeado. A la derecha (figura \ref{HydroSHEDSBandeadoZoomFourier}) observamos la aplicación de la corrección de Fourier en la misma zona que aparece en la figura de la izquierda. Se distingue claramente que el bandeado se trasladó de las áreas sin lagunas a las lagunas. Esto es un efecto no deseado en el uso del DEM de manera hidrológica.
-
-
+En la figura \ref{HydroSHEDSBandeadoZoom}, un zoom de la \ref{HSHEDSPaleta}, puede observarse que el bandeado se presenta sobre el suelo pero no sobre las lagunas. Sin embargo, cuando se aplica la corrección de Fourier propuesta en \ref{correccionfourier} \ref{HydroSHEDSBandeadoZoomFourier}, se observa que el bandeado se trasladó de las áreas sin lagunas a las lagunas. Esto es un efecto no deseado para el uso del DEM para hidrológía.
 
 \subsection{Aplicación de corrección de cortinas de árboles a HydroSHEDS}
 
@@ -693,9 +691,7 @@ De igual manera se aplicó la corrección de cortinas de árboles al DEM HydroSH
    \end{minipage}
 \end{figure}
 
-En este caso, observamos que la aplicación de la corrección a cortinas de árboles resuelve el problema de las cortinas de árboles, pero provee resultados no deseados en lo que respecta a los bordes de cañadas como podemos observar en las zonas destacas en la figura \ref{HydroSHEDSTreesZoomCorrected} en comparación con la figura \ref{HydroSHEDSTreesZoom}. Se puede observar que se generan alturas en los bordes de las cañadas, y esto podría implicar que al momento de usarlo con fines hidrológicos, el agua fuera de la cañada no desemboque en la misma. 
-
-
+En este caso, observamos que la aplicación de la corrección a cortinas de árboles resuelve ese problema pero produce resultados no deseados en los bordes de cañadas, como podemos observar en las zonas destacas en la figura \ref{HydroSHEDSTreesZoomCorrected} en comparación con la figura \ref{HydroSHEDSTreesZoom} (antes de la corrección). El aumento espurio en las alturas en los bordes de las cañadas implicaría que el agua fuera de las cañadas no podría desembocar en las mismas.
 
 \section{Propuesta a implementar}
 
@@ -711,7 +707,7 @@ En resumen se detallan ventajas y desventajas de cada DEM:
 	\item \textbf{HydroSHEDS:} Se supuso que aplicar la corrección del bandeado por el método de Fourier, haría factible el uso de este DEM, pero esta corrección introduce errores en zonas de lagunas o cañadas en donde se aplicaron otros metodos de mejoras. De manera similar, en el proceso de detección de árboles, al aplicar el filtro cuadrático se observaron valores muy altos en zonas de bordes de cañadas. Por otra parte, se considera que HydroSHEDS provee un socavado de cañadas y lagunas muy bien logrado.	
 \end{itemize}
 
-Como resultado del análisis de ambos DEM se determinó que proveían diferentes ventajas y una combinación entre ellos proporcionaría mejores resultados. (Tabla: \ref{tablaCombinacion}).
+Analizando las ventajas y desventajas que aparecieron al usar uno u otro DEM de entrada se concluyó que una combinación de ellos prorporcionarían mejores resultados. En la Tabla \ref{tablaCombinacion} se muestran los principales problemas para los cuales se ha usado uno u otro DEM. 
 
 \begin{table}[H]
    \centering      
@@ -750,7 +746,7 @@ A continuación se describen brevemente los procesamientos realizados siguiendo 
 
 \begin{enumerate}
 	\item El DEM HydroSHEDS viene en formato adf (Application Definition File). Se convierte a formato tiff como primer paso de su procesamiento.
-	\item A partir del shape del área de estudio que se asume es rectangular, se determina el área de estudio con la cual se trabajará casi en la totalidad del trabajo, esto es un área que sea paralela con respecto al ecuador y que contenga todo el área de estudio de entrada. Esto se realiza para no realizar una rotación con interpolaciones de valores de píxeles antes de cualquier procesamiento.
+	\item A partir del shape del área de estudio se determina el área sobre la cual se trabajará en casi la totalidad del trabajo. Para evitar tener que hacer interpolaciones el área de trabajo enmarca al área de estudio mediante un rectángulo con lados paralelos al ecuador.	
 	\item El DEM HydroSHEDS ya en formato tiff, el DEM SRTM, y la clasificación de arboledas son reproyectadas, recortadas y remuestradas utilizando el archivo shape del área de interés procesado previamente. Esto se hace para tener una correspondencia entre los píxeles a procesar.
 	\item Se corrigen los valores sin valor (NaN) de estos elementos.
 	\item El DEM SRTM es procesado por separado del DEM HydroSHEDS.
