@@ -44,10 +44,10 @@
 \contentsline {subsubsection}{\numberline {3.3.2.2}Creaci\IeC {\'o}n del stack de im\IeC {\'a}genes}{23}{subsubsection.3.3.2.2}
 \contentsline {subsubsection}{\numberline {3.3.2.3}Clasificaci\IeC {\'o}n}{23}{subsubsection.3.3.2.3}
 \contentsline {subsection}{\numberline {3.3.3}Datos de Entrada}{23}{subsection.3.3.3}
-\contentsline {subsubsection}{\numberline {3.3.3.1}DEM SRTM en formato TIF}{24}{subsubsection.3.3.3.1}
+\contentsline {subsubsection}{\numberline {3.3.3.1}DEM SRTM en formato TIF}{23}{subsubsection.3.3.3.1}
 \contentsline {subsubsection}{\numberline {3.3.3.2}DEM HydroSHEDS Conditioned en formato ADF}{24}{subsubsection.3.3.3.2}
 \contentsline {subsubsection}{\numberline {3.3.3.3}Archivo en formato Shape de \IeC {\'A}rea de Estudio}{24}{subsubsection.3.3.3.3}
-\contentsline {subsubsection}{\numberline {3.3.3.4}Clasificaci\IeC {\'o}n de Arboledas}{25}{subsubsection.3.3.3.4}
+\contentsline {subsubsection}{\numberline {3.3.3.4}Clasificaci\IeC {\'o}n de Arboledas}{24}{subsubsection.3.3.3.4}
 \contentsline {subsubsection}{\numberline {3.3.3.5}R\IeC {\'\i }os y Ca\IeC {\~n}adas}{25}{subsubsection.3.3.3.5}
 \contentsline {subsection}{\numberline {3.3.4}Procesamiento y operaciones a SRTM y HydroSHEDS}{25}{subsection.3.3.4}
 \contentsline {subsubsection}{\numberline {3.3.4.1}Reproyecci\IeC {\'o}n}{25}{subsubsection.3.3.4.1}
@@ -55,9 +55,9 @@
 \contentsline {subsubsection}{\numberline {3.3.4.3}Correcci\IeC {\'o}n de p\IeC {\'\i }xeles sin datos. (valores NaN)}{26}{subsubsection.3.3.4.3}
 \contentsline {subsection}{\numberline {3.3.5}Procesamiento a SRTM}{26}{subsection.3.3.5}
 \contentsline {subsubsection}{\numberline {3.3.5.1}Correcci\IeC {\'o}n de ruido de baja amplitud y alta frecuencia. (Fourier)}{26}{subsubsection.3.3.5.1}
-\contentsline {subsubsubsection}{\numberline {3.3.5.1.1}Condici\IeC {\'o}n de pertenencia a la m\IeC {\'a}scara - Filtro: }{29}{subsubsubsection.3.3.5.1}
-\contentsline {subsubsubsection}{\numberline {3.3.5.1.2}Obtenci\IeC {\'o}n de los cuadrantes 3 y 4, y armado de la imagen completa}{32}{subsubsubsection.3.3.5.2}
-\contentsline {subsubsubsection}{\numberline {3.3.5.1.3}Asignar ceros a transformada de Fourier en los p\IeC {\'\i }xeles de blancos detectados.}{32}{subsubsubsection.3.3.5.3}
+\contentsline {subsubsubsection}{\numberline {3.3.5.1.1}Condici\IeC {\'o}n de pertenencia a la m\IeC {\'a}scara - Filtro: }{31}{subsubsubsection.3.3.5.1}
+\contentsline {subsubsubsection}{\numberline {3.3.5.1.2}Obtenci\IeC {\'o}n de los cuadrantes 3 y 4, y armado de la imagen completa}{31}{subsubsubsection.3.3.5.2}
+\contentsline {subsubsubsection}{\numberline {3.3.5.1.3}Asignar ceros a transformada de Fourier en los p\IeC {\'\i }xeles de blancos detectados.}{33}{subsubsubsection.3.3.5.3}
 \contentsline {subsubsubsection}{\numberline {3.3.5.1.4}Retornar las frecuencias cero a su posici\IeC {\'o}n original}{34}{subsubsubsection.3.3.5.4}
 \contentsline {subsubsubsection}{\numberline {3.3.5.1.5}Aplicaci\IeC {\'o}n de la Antitransformada}{34}{subsubsubsection.3.3.5.5}
 \contentsline {subsubsection}{\numberline {3.3.5.2}Correcci\IeC {\'o}n de Cortinas de \IeC {\'A}rboles}{35}{subsubsection.3.3.5.2}

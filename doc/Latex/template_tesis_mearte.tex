@@ -136,38 +136,34 @@ $\ $
 
 Un modelo digital de elevación (DEM \textit{Digital Model Elevation}) es un modelo cuantitativo de una parte de la superficie de la tierra en formato digital. Un DEM consiste de un arreglo bidimensional  de números que representa la distribución espacial de elevaciones en una grilla regular (Forkuor \textit{et al.} 2012).
 
-Siguiendo a Forkuor \textit{et al.} (2012) los DEMs pueden ser generados usando diferentes métodos. Tradicionalmente se han generado de contornos que son extraídos con técnicas fotogramétricas a partir de fotografías estéreo utilizando el desplazamiento de paralaje en las imágenes superpuestas junto con los parámetros de vuelo, para obtener información de elevación (Petrie \textit{et al.} 1990). El uso de imágenes satelitales para la generación de DEMs tiene grandes ventajas sobre los métodos tradicionales pues permiten ser fácilmente producidos para áreas grandes e inaccesibles, en corto tiempo y a un costo considerablemente más económico. La interferometría de radar o de Radar de Apertura Sintética (InSAR) recientemente ha llegado a ser popular extrayendo datos de elevación. Esta técnica usa dos o más radares de apertura sintética para generar DEMs, utilizando las diferencias de fase de las ondas retornadas al satélite o a la plataforma aerotransportada.
+Siguiendo a Forkuor \textit{et al.} (2012) los DEMs pueden ser generados usando diferentes métodos. Tradicionalmente se han generado de contornos que son extraídos con técnicas fotogramétricas a partir de fotografías estéreo utilizando el desplazamiento de paralaje en las imágenes superpuestas junto con los parámetros de vuelo, para obtener información de elevación (Petrie \textit{et al.} 1990). El uso de imágenes satelitales para la generación de DEMs tiene grandes ventajas sobre los métodos tradicionales pues permiten ser fácilmente producidos para áreas grandes e inaccesibles, en corto tiempo y a un costo considerablemente más económico. La interferometría de radar o de Radar de Apertura Sintética (InSAR) recientemente ha llegado a ser popular para la extracción de datos de elevación. Esta técnica usa dos o más radares de apertura sintética para generar DEMs, utilizando las diferencias de fase de las ondas retornadas al satélite o a la plataforma aerotransportada.
 
 En particular, el DEM Shuttle Radar Topography Mission (SRTM) cubre casi la totalidad del globo terráqueo (entre los 56ºS y los 60ºN de latitud), de modo que genera una completa base de mapas topográficos digitales de alta resolución de la Tierra. Esta base cartográfica ha sido ampliamente utilizada en diferentes campos del conocimiento relacionados con la geomática al poderse descargar gratuitamente a través de Internet. El SRTM consiste en un sistema de radar especialmente modificado que voló a bordo del transbordador espacial Endeavour durante los 11 días de la misión STS-99 de febrero de 2000.
 
-Los DEMs son útiles para muchos propósitos y son una importante precondición para muchas aplicaciones. Han sido encontrados útiles en muchos campos de estudio como geomorfometría ya que está principalmente relacionados a los procesos de la superficie como deslizamientos los cuales pueden ser directamente representados por un DEM, arqueología como cambios sutiles debidos a actividades humanas previas en el subsuelo pueden ser inferidas en DEM detallados; silvicultura, las alturas de los árboles y la relación al tamaño del tronco del árbol; hidrología, para obtener redes de drenaje y las áreas de flujo terrestre que contribuyen a cargas de sedimentos; y análisis de movimientos de glaciares usando DEMs multitemporales. Por lo tanto, para una amplio rango de estudios, generalmente temas de interés geomorfólogico, los DEMs que proporcionan una buena representación del terreno, son de suma importancia como punto de partida para un análisis posterior (Forkuor \textit{et al.} 2012).
+Los DEMs son útiles para muchos propósitos y son un importante dato de entrada para muchas aplicaciones. Han sido encontrados útiles en muchos campos de estudio tales como geomorfometría, ya que están principalmente relacionados a procesos de la superficie como deslizamientos los cuales pueden ser directamente representados por un DEM; arqueología, por cambios sutiles debidos a actividades humanas previas en el subsuelo pueden ser inferidas en DEM detallados; silvicultura, las alturas de los árboles y la relación al tamaño del tronco del árbol; hidrología, para obtener redes de drenaje y las áreas de flujo terrestre que contribuyen a cargas de sedimentos; y análisis de movimientos de glaciares usando DEMs multitemporales. Por lo tanto, para una amplio rango de estudios, generalmente temas de interés geomorfólogico, los DEMs que proporcionan una buena representación del terreno, son de suma importancia como punto de partida para un análisis posterior (Forkuor \textit{et al.} 2012).
 
 
 
 \section{Motivación}
 
-Como trabajo de Tesis de Licenciatura en Ciencias de la Computación desarrollé un Simulador Hidrológico para llanuras (Guerrero Cordova 2013) basado en Vazquez \textit{et al.} (2007).
+Como trabajo de Tesis de Licenciatura en Ciencias de la Computación desarrollé un Simulador Hidrológico para llanuras (Guerrero Cordova 2013) basado en uno propuesto por Vazquez \textit{et al.} (2007).
 
-Un dato importante de entrada en forma de grilla digitalizada es el DEM. Para uso hidrológico el DEM debe ser acondicionado apropiadamente como se hizo en Masuelli \textit{et al.} (2009). En dicho trabajo se realizaron distintos procesos en forma manual aplicados a la zona de llanura de la Provincia de Buenos Aires. Para poder realizar simulaciones hidrológicas en distintas áreas, es importante tener a disposición una herramienta que realice el preprocesamiento del DEM para que sea apto para uso hidrológico es por eso que se consideró importante  desarrollar una herramienta que realice estos preprocesamiento de manera automatizada. De esta manera el uso del Simulador Hidrológico puede hacerse extensivo a diferentes áreas de interés.
+Un dato importante de entrada en forma de grilla digitalizada es el DEM. Para uso hidrológico el DEM debe ser acondicionado apropiadamente para representar el flujo del agua, como se detalla en Masuelli \textit{et al.} (2009). En dicho trabajo se realizaron distintos procesos (transformada de Fourier, aplicación de filtros, etc.) en forma manual aplicados a la zona de llanura de la Provincia de Buenos Aires. Para poder realizar simulaciones hidrológicas en distintas áreas, es importante tener a disposición una herramienta que realice el preprocesamiento del DEM para que sea apto para su posterior uso hidrológico, es por eso que se consideró importante desarrollar una herramienta que realice estos preprocesamiento de manera automatizada. De esta manera el uso del Simulador Hidrológico puede hacerse extensivo a diferentes áreas de interés.
 
 \section{Objetivos}
 
 
 \begin{itemize}
-	\item Desarrollar una herramienta automatizada que implemente la cadena de procesamiento necesaria para obtener como resultado un DEM que esté adecuado para usos hidrológicos. De esta manera adecuar al DEM global de SRTM para usos hidrológicos sobre cualquier llanura.
+	\item Desarrollar una herramienta automatizada que implemente la cadena de procesamientos necesaria para obtener como resultado un DEM que esté adecuado para usos hidrológicos. De esta manera se podrá adecuar al DEM global de SRTM para usos hidrológicos sobre cualquier llanura.
 	\item Relevar acerca de los modelos de elevación globales, existentes de manera gratuita y libres, para así determinar el más adecuado para tomar como base del procesamiento. Para el trabajo de base se utilizó el DEM de la misión SRTM.
 	\item Estudiar los procesamientos que se realizan a los DEMs en forma manual con el fin de automatizarlos.
 	\item Aplicar lo desarrollado a la región Sur-Oriental de Córdoba por su importancia socio-económica y por presentar una llanura similar a la del trabajo antecedente y de esta manera verificar la generalidad de las hipótesis de trabajo o identificar nuevos problemas.
-	\item Generar métricas estadísticas para evaluar las salidas de píxeles anegados contra lo obtenido con imágenes ópticas.
+	\item Generar métricas estadísticas para comparar las salidas de píxeles anegados con lo obtenido con imágenes ópticas.
 	\item Realizar ejecuciones del simulador para el área de estudio utilizando tanto el DEM procesado por la herramienta obtenida como resultado de este trabajo como para el DEM de base.	
 \end{itemize}
 
-
-
-
 \chapter{Antecedentes y Marco Teórico}
 \label{chap:datosMarcoTeorico}
-
 
 Los DEM son representaciones digitales de la topografía de la superficie del suelo o terreno que proporcionan datos de elevación cuantitativos para muchas aplicaciones en estudios topográficos y de la cubierta vegetal, geomorfología, etc (Miliaresis, G. \textit{et al.} 2009).
 
@@ -181,177 +177,64 @@ La descripción de los procesos hidrológicos fue obtenida del libro \textit{Pri
 \subsection{Escurrimiento}
 \label{subsec:escurr}
 
-De acuerdo con el ciclo hidrológico, el escurrimiento se puede definir como la 
-porción de la precipitación pluvial que ocurre en una zona o cuenca 
-hidrológica y que circula sobre o debajo de la superficie terrestre y que llega 
-a una corriente para ser drenada hasta la salida de una cuenca o bien 
-alimentar un lago, si se trata de cuencas abiertas o cerradas, 
-respectivamente. 
-Ahora bien, el escurrimiento que se presenta en un cauce es alimentado por 
-cuatro fuentes diferentes y cada uno de ellos tiene características muy 
-peculiares, tal como se menciona a continuación.
+De acuerdo con el ciclo hidrológico, el escurrimiento se puede definir como la porción de la precipitación pluvial que ocurre en una zona o cuenca hidrológica y que circula sobre o debajo de la superficie terrestre y que llega a una corriente para ser drenada hasta la salida de una cuenca o bien alimentar un lago, si se trata de cuencas abiertas o cerradas, respectivamente. 
+Ahora bien, el escurrimiento que se presenta en un cauce es alimentado por cuatro fuentes diferentes y cada uno de ellos tiene características muy peculiares, tal como se menciona a continuación.
 
 \subsubsection{Fuentes del Escurrimiento}
 \label{subsec:fuentesEscurr}
 
-El escurrimiento se inicia sobre el terreno una vez que en la superficie se 
-alcanza un valor de contenido de humedad cercano a la condición de 
-saturación. Posteriormente se iniciará un flujo tanto sobre las laderas, como 
-a través de la matriz de los suelos, de las fracturas de las rocas o por las 
-fronteras entre materiales de distintas características, esto es, un flujo 
-subsuperficial. 
+El escurrimiento se inicia sobre el terreno una vez que en la superficie se alcanza un valor de contenido de humedad cercano a la condición de saturación. Posteriormente se iniciará un flujo tanto sobre las laderas, como a través de la matriz de los suelos, de las fracturas de las rocas o por las fronteras entre materiales de distintas características, esto es, un flujo subsuperficial. 
 
-En el primer caso, el flujo se incorporará a algún tributario del sistema de 
-drenaje de la cuenca. En el segundo caso, parte del agua subsuperficial 
-podrá percolar a sistemas más profundos, otra parte permanecerá como un 
-almacenamiento temporal, y otra regresará a la superficie, donde 
-eventualmente formará parte de los volúmenes que conducirán los diferentes 
-cauces a zonas de menor altitud. 
+En el primer caso, el flujo se incorporará a algún tributario del sistema de drenaje de la cuenca. En el segundo caso, parte del agua subsuperficial podrá percolar a sistemas más profundos, otra parte permanecerá como un almacenamiento temporal, y otra regresará a la superficie, donde eventualmente formará parte de los volúmenes que conducirán los diferentes cauces a zonas de menor altitud. 
 
-Las fuentes principales del escurrimiento en cauces se pueden clasificar en 
-cuatro tipos: precipitación directa sobre el cauce; flujo subsuperficial; flujo 
-base; y escurrimiento directo.
+Las fuentes principales del escurrimiento en cauces se pueden clasificar en cuatro tipos: precipitación directa sobre el cauce; flujo subsuperficial; flujo base; y escurrimiento directo.
 
-\textbf{Precipitación directa sobre el cauce.}  Es un aporte modesto comparado 
-con los volúmenes asociados a las otras fuentes; esto se debe principalmente 
-a la pequeña superficie que generalmente abarcan los ríos y corrientes.
+\textbf{Precipitación directa sobre el cauce.}  Es un aporte modesto comparado con los volúmenes asociados a las otras fuentes; esto se debe principalmente a la pequeña superficie que generalmente abarcan los ríos y corrientes.
 
-\textbf{Flujo subsuperficial.} Los volúmenes asociados a este escurrimiento varían 
-en el tiempo y en el espacio. En la época de estiaje podrán descargar a un 
-ritmo casi constante, formando corrientes perennes. En otros casos sólo 
-aportarán cantidades suficientes para mantener por algunas semanas más, 
-después de las últimas lluvias, el gasto en un cauce, formando así las 
-corrientes intermitentes. 
-Cuando el aporte es tan reducido que sólo se mantiene un contenido de 
-humedad elevado en el cauce y en sus zonas adyacentes, el flujo superficial 
-es prácticamente nulo; sin embargo, si se presenta algún evento tal como 
-lluvia, deshielo, etc., el posible escurrimiento superficial será del tipo 
-efímero. 
-Si un tramo del cauce presenta condiciones de contenido de humedad 
-relativamente bajas, o si el material es fracturado o muestra canalizaciones 
-por disolución o génesis, el escurrimiento se verá afectado, ya que una parte 
-será aportada a las riberas y/o a través de la planicie. 
+\textbf{Flujo subsuperficial.} Los volúmenes asociados a este escurrimiento varían en el tiempo y en el espacio. En la época de estiaje podrán descargar a un ritmo casi constante, formando corrientes perennes. En otros casos sólo aportarán cantidades suficientes para mantener por algunas semanas más, después de las últimas lluvias, el gasto en un cauce, formando así las corrientes intermitentes. Cuando el aporte es tan reducido que sólo se mantiene un contenido de humedad elevado en el cauce y en sus zonas adyacentes, el flujo superficial es prácticamente nulo; sin embargo, si se presenta algún evento tal como lluvia, deshielo, etc., el posible escurrimiento superficial será del tipo efímero. 
+Si un tramo del cauce presenta condiciones de contenido de humedad relativamente bajas, o si el material es fracturado o muestra canalizaciones por disolución o génesis, el escurrimiento se verá afectado, ya que una parte será aportada a las riberas y/o a través de la planicie. 
 
-\textbf{Flujo base.} Es el aporte de un sistema acuífero somero a un cauce 
-determinado. En el caso en que una parte de la cuenca se encuentre 
-perturbada por alguna obra hidráulica tal como una presa, un sistema de 
-riego, etc., entonces el gasto base corresponderá a los volúmenes asociados 
-con la operación de dichas obras. 
+\textbf{Flujo base.} Es el aporte de un sistema acuífero somero a un cauce determinado. En el caso en que una parte de la cuenca se encuentre perturbada por alguna obra hidráulica tal como una presa, un sistema de 
+riego, etc., entonces el gasto base corresponderá a los volúmenes asociados con la operación de dichas obras. 
 
 
-\textbf{Escurrimiento directo.} Es aquel volumen asociado a la precipitación, es 
-decir, el flujo remanente una vez que quedan definidas las primeras tres 
-fuentes.
+\textbf{Escurrimiento directo.} Es aquel volumen asociado a la precipitación, es decir, el flujo remanente una vez que quedan definidas las primeras tres fuentes.
 
 \subsubsection{Procesos del escurrimiento}
 \label{subsec:procEscurr}
 
-Para el análisis básico del escurrimiento, se deben de considerar las variables 
-siguientes: la intensidad de la precipitación; la capacidad de infiltración de 
-una superficie particular; la condición hidráulica a la que se encuentra el 
-suelo o la roca; y la característica hidráulica del suelo o roca. 
-La comparación entre estas variables permite obtener información sobre los 
-procesos que se pueden presentar bajo diferentes situaciones. A 
-continuación se comentan cuatro condiciones que se pueden presentar, con 
-sus respectivas consecuencias. 
+Para el análisis básico del escurrimiento, se deben de considerar las variables siguientes: la intensidad de la precipitación; la capacidad de infiltración de una superficie particular; la condición hidráulica a la que se encuentra el suelo o la roca; y la característica hidráulica del suelo o roca. La comparación entre estas variables permite obtener información sobre los procesos que se pueden presentar bajo diferentes situaciones. A 
+continuación se comentan cuatro condiciones que se pueden presentar, con sus respectivas consecuencias. 
 
 \begin{itemize}
-\item Cuando la intensidad de precipitación es menor que la capacidad de 
-infiltración y el contenido de humedad del suelo o roca es menor a su 
-capacidad de campo. En este caso, el escurrimiento sobre la superficie del 
-terreno será reducido, ya que el suelo o roca será capaz de captar la 
-mayor parte del volumen de agua que entra como precipitación. El flujo 
-subsuperficial será muy reducido, ya que el agua captada se utilizará para 
+\item Cuando la intensidad de precipitación es menor que la capacidad de infiltración y el contenido de humedad del suelo o roca es menor a su capacidad de campo. En este caso, el escurrimiento sobre la superficie del 
+terreno será reducido, ya que el suelo o roca será capaz de captar la mayor parte del volumen de agua que entra como precipitación. El flujo subsuperficial será muy reducido, ya que el agua captada se utilizará para 
 aumentar el contenido de humedad inicial. 
-\item Cuando la intensidad de precipitación es menor que la capacidad de 
-infiltración y el contenido de humedad del suelo o roca es mayor o igual a 
-su capacidad de campo. Como el suelo o roca se encuentra en una 
-condición cercana a la capacidad de campo, parte de la precipitación se 
-convertirá eventualmente en escurrimiento sobre el terreno; sin embargo, 
-los volúmenes seguirán siendo de poca cuantía. El flujo subsuperficial será 
+\item Cuando la intensidad de precipitación es menor que la capacidad de infiltración y el contenido de humedad del suelo o roca es mayor o igual a su capacidad de campo. Como el suelo o roca se encuentra en una 
+condición cercana a la capacidad de campo, parte de la precipitación se convertirá eventualmente en escurrimiento sobre el terreno; sin embargo, los volúmenes seguirán siendo de poca cuantía. El flujo subsuperficial será 
 importante. 
-\item Cuando la intensidad de precipitación es mayor que la capacidad de 
-infiltración y el contenido de humedad del suelo o roca es menor a su 
-capacidad de campo. El suelo o roca presenta una deficiencia de humedad 
-importante, de modo que el agua  que precipite, a pesar de que la 
-capacidad de infiltración es reducida, se utilizará en abastecer de humedad al 
-suelo, escurriendo sólo una porción relativamente pequeña. 
-\item Cuando la intensidad de precipitación es mayor que la capacidad de 
-infiltración y el contenido de humedad del suelo o roca es mayor o igual a 
-su capacidad de campo. En este caso, al encontrarse el suelo o roca en 
-una condición cercana a la saturación, no permitirá una infiltración 
-importante, de modo que la mayor parte se convertirá en escurrimiento 
-sobre el terreno. El flujo subsuperficial también será importante. Cuando 
-la parte somera de un suelo no permite una infiltración importante, se 
-forma el denominado flujo Hortoniano, es decir, la saturación en un suelo 
-o roca tendrá lugar sólo en una porción cercana a la superficie, siendo 
-incapaz el frente de humedad  de avanzar a mayor profundidad, 
-favoreciendo de esta manera al escurrimiento sobre el terreno.
+\item Cuando la intensidad de precipitación es mayor que la capacidad de infiltración y el contenido de humedad del suelo o roca es menor a su capacidad de campo. El suelo o roca presenta una deficiencia de humedad 
+importante, de modo que el agua  que precipite, a pesar de que la capacidad de infiltración es reducida, se utilizará en abastecer de humedad al suelo, escurriendo sólo una porción relativamente pequeña. 
+\item Cuando la intensidad de precipitación es mayor que la capacidad de infiltración y el contenido de humedad del suelo o roca es mayor o igual a su capacidad de campo. En este caso, al encontrarse el suelo o roca en 
+una condición cercana a la saturación, no permitirá una infiltración importante, de modo que la mayor parte se convertirá en escurrimiento sobre el terreno. El flujo subsuperficial también será importante. Cuando 
+la parte somera de un suelo no permite una infiltración importante, se forma el denominado flujo Hortoniano, es decir, la saturación en un suelo o roca tendrá lugar sólo en una porción cercana a la superficie, siendo 
+incapaz el frente de humedad  de avanzar a mayor profundidad, favoreciendo de esta manera al escurrimiento sobre el terreno.
 \end{itemize}
-
-%Principios y Fundamentos
 
 \subsection{Infiltración}
 \label{subsec:infiltracion}
 
-La cantidad de agua que atraviesa la superficie del terreno por unidad de 
-tiempo y se desplaza al subsuelo recibe el nombre de ritmo o tasa de 
-infiltración. Si el agua que se introduce al terreno por la superficie se 
-desplaza a mayor profundidad, entonces se dice que ocurre la percolación. 
-Un porcentaje del agua infiltrada podrá desplazarse en forma lateral a través 
-del material dispuesto abajo de la superficie del terreno, a lo que se 
-denomina interflujo o flujo subsuperficial. 
+La cantidad de agua que atraviesa la superficie del terreno por unidad de tiempo y se desplaza al subsuelo recibe el nombre de ritmo o tasa de infiltración. Si el agua que se introduce al terreno por la superficie se 
+desplaza a mayor profundidad, entonces se dice que ocurre la percolación. Un porcentaje del agua infiltrada podrá desplazarse en forma lateral a través del material dispuesto abajo de la superficie del terreno, a lo que se denomina interflujo o flujo subsuperficial. 
 
-\textbf{Medio Poroso.} Es aquel medio formado por partículas sólidas de diferentes tamaños y 
-composiciones químicas, donde ocurren interacciones con el aire y el agua. 
-Dependiendo de la relación entre aire y agua se clasificará al medio: como no 
-saturado y saturado. En el primer caso, los espacios entre partículas sólidas 
-están llenos de aire, excepto por una película de agua que se forma 
-alrededor de la superficie de éstas y que es muy difícil de eliminar o extraer. 
-En el segundo caso (medio poroso saturado), en la condición de saturación, 
-el aire es expulsado de los espacios entre partículas casi en su totalidad, 
-debido a la presencia del agua. 
-Si el medio poroso tiene contacto con la atmósfera a través de la superficie 
-del terreno, entonces la posible infiltración dependerá de la condición 
-hidráulica y de las características físicas del medio: si la condición es de 
-saturación, la infiltración será despreciable; si el medio es no saturado, pero 
-sus características físicas dificultan el paso de agua, entonces la infiltración 
-será baja; si el medio es no saturado pero con características físicas que 
-permiten que el agua se desplace fácilmente, entonces la infiltración será 
-importante. 
+\textbf{Medio Poroso.} Es aquel medio formado por partículas sólidas de diferentes tamaños y composiciones químicas, donde ocurren interacciones con el aire y el agua. Dependiendo de la relación entre aire y agua se clasificará al medio: como no saturado y saturado. En el primer caso, los espacios entre partículas sólidas están llenos de aire, excepto por una película de agua que se forma alrededor de la superficie de éstas y que es muy difícil de eliminar o extraer. En el segundo caso (medio poroso saturado), en la condición de saturación, el aire es expulsado de los espacios entre partículas casi en su totalidad, debido a la presencia del agua. 
+Si el medio poroso tiene contacto con la atmósfera a través de la superficie del terreno, entonces la posible infiltración dependerá de la condición hidráulica y de las características físicas del medio: si la condición es de saturación, la infiltración será despreciable; si el medio es no saturado, pero sus características físicas dificultan el paso de agua, entonces la infiltración será baja; si el medio es no saturado pero con características físicas que permiten que el agua se desplace fácilmente, entonces la infiltración será importante. 
 
-%Principios y Fundamentos
- 
+
 \subsection{Evaporación y Evapotranspiración}
 \label{subsec:evapYevapotrans}
 
-Se define como evaporación al proceso físico
-por el cual el agua pasa del estado líquido al
-gaseoso y representa la tasa neta de transporte
-de vapor hacia la atmósfera.
-El cambio de estado de líquido a vapor se debe
-a la radiación solar que brinda la energía necesaria
-para que las moléculas del agua cambien
-de estado. Además de la radiación solar, las
-variables meteorológicas que intervienen en la
-evaporación, particularmente de las superficies
-libre de agua, son la temperatura del aire, velocidad
-de viento, tensión de vapor o humedad
-relativa del ambiente, determinando el poder
-evaporante de la atmósfera, que es la capacidad
-del aire que rodea a la superficie evaporante
-para admitir vapor de agua.
-La evaporación total es la suma de la evaporación
-de agua libre y la evapotranspiración.
-La evaporación puede ser de distintas procedencias:
-evaporación de superficie de agua libre,
-como ser lagos, tanques, cursos de agua, etc.;
-evaporación del agua del suelo y transpiración
-de plantas, que también toman agua del suelo
-por medio de sus raíces. Estas dos últimas son
-muy difíciles de cuantificar o estimar en forma
-separada, por lo tanto se engloban en una sola
-variable denominada evapotranspiración.
+Se define como evaporación al proceso físico por el cual el agua pasa del estado líquido al gaseoso y representa la tasa neta de transporte de vapor hacia la atmósfera. El cambio de estado de líquido a vapor se debe a la radiación solar que brinda la energía necesaria para que las moléculas del agua cambien de estado. Además de la radiación solar, las variables meteorológicas que intervienen en la evaporación, particularmente de las superficies libre de agua, son la temperatura del aire, velocidad de viento, tensión de vapor o humedad relativa del ambiente, determinando el poder evaporante de la atmósfera, que es la capacidad del aire que rodea a la superficie evaporante para admitir vapor de agua. La evaporación total es la suma de la evaporación de agua libre y la evapotranspiración. La evaporación puede ser de distintas procedencias: evaporación de superficie de agua libre, como ser lagos, tanques, cursos de agua, etc.; evaporación del agua del suelo y transpiración de plantas, que también toman agua del suelo por medio de sus raíces. Estas dos últimas son muy difíciles de cuantificar o estimar en forma separada, por lo tanto se engloban en una sola variable denominada evapotranspiración.
 
 \subsection{Descripción del área de estudio en función de los procesos hidrológicos}
 \label{subsec:introModelo}
@@ -1063,9 +946,9 @@ Como salida luego de las iteraciones definidas se obtiene una imagen con ceros d
 
 % Esquema con el filtro que se usa.
 
-\textbf{Expandir Blancos Detectados:} Una vez obtenida la máscara, se aplica un filtro de dilatación de 13x13 sobre los píxeles detectados ((González \textit{et al.} 1993)), para así garantizar la cobertura del conjunto de vecinos que determinan un blanco en la imagen de la transformada de Fourier. Con este filtro se logra expandir al área de las áreas de la imagen con valor 1.
+\textbf{Expandir Blancos Detectados:} Una vez obtenida la máscara, se aplica un filtro de dilatación de 13x13 sobre los píxeles detectados (González \textit{et al.} 1993). Este filtro asigna valor 1 a todos los vecinos de un píxel que en la imagen original tenga valor 1 expandiendo así las áreas de la imagen con valor 1. Garantiza de este modo la cobertura del conjunto de vecinos que determinan un blanco en la imagen de la transformada de Fourier. 
 
-Luego de la detección de blancos, eliminación de puntos aislados y el filtro de dilatación se obtiene una máscara de blancos para los cuartos aplicada como se puede observar en las figuras \ref{firstQuarterMask} y \ref{firstQuarterMask}
+Luego de la detección de blancos y eliminación de puntos aislados se obtiene una máscara de blancos para los cuartos aplicada como se puede observar en las figuras \ref{firstQuarterMask} y \ref{sndQuarterMask}.
 
 
 \begin{figure}[!htb]
@@ -1079,7 +962,7 @@ Luego de la detección de blancos, eliminación de puntos aislados y el filtro d
 			\centering
 			\includegraphics[width=1.0\linewidth]{imagenes/sndQuarterFourierMask.jpg}
 			\caption{Blancos detectados en primer cuarto con eliminación de puntos aislados y filtro de dilatación de 13x13.}
-			\label{firstQuarterMask}
+			\label{sndQuarterMask}
    \end{minipage}
 \end{figure}
 
@@ -1176,7 +1059,7 @@ Comparando esta imagen con la original sin corregir (ver Figura \ref{SinFourier}
 \subsubsection{Corrección de Cortinas de Árboles}
 \label{correccionACortinasDeArboles}
 
-El DEM SRTM presenta la particularidad que en lugares donde existen árboles, registra los valores de altura de estos árboles como si fuera la superficie. Este es un efecto no deseado, dado que para el uso hidrológico que se le pretende dar esto presentaría comportamientos no deseados, ya que el agua debe fluir entre los árboles y no debe representar una barrera como ocurriría en zonas donde no es corregido. Podemos observar como el DEM SRTM original muestra valores más altos en zonas de arboledas (figuras \ref{BingArboledas} y \ref{DEMConArboledas}):
+El DEM SRTM presenta la particularidad que en lugares donde existen árboles, registra los valores de altura de estos árboles como si fuera la superficie. Este es un efecto no deseado, dado que para el uso hidrológico que se le pretende dar esto presentaría comportamientos no deseados, ya que el agua debe fluir entre los árboles y no debe representar una barrera como ocurriría en zonas donde no es corregido. En la figura \ref{BingArboledas} puede verse una cortina de árboles de una imagen descargada de Google Earth y como aparece la misma en el DEM SRTM (figura \ref{DEMConArboledas}).
 
 \begin{figure}[!htb]
    \begin{minipage}{0.48\textwidth}
@@ -1198,7 +1081,7 @@ Es por eso que es necesario poder identificar estos valores no deseados y ajusta
 
 El DEM SRTM utilizado en este caso es el que ya se encuentra el bandeado corregido por la transformada de Fourier, mencionado en la sección \ref{correccionfourier}.
 
-Una vez que se cuentan con estos datos de entrada se ejecuta una secuencia de pasos que se describen a continuación (Figura \ref{DiagramaArboledas}). 
+En la figura \ref{DiagramaArboledas} se observa el diagrama de proceso de filtrado de cortinas de árboles. Cabe destacar no se corrigen arboledas de menos de 1,5 m por cuanto el error en alturas del DEM es de 1 m.
 
 \begin{figure}[!htb]
    \centering      
@@ -2097,7 +1980,7 @@ En este caso las mayores diferencias se observan entre los días 9 y 17 (varía 
 \begin{figure}[H]
    \centering      
    \includegraphics[width=0.75\textwidth]{imagenes/Precision.jpg}
- \caption{Curva comparativa del valor estadístico $Precisión$. Se grafica el valor estadístico en función de los días de simulación. En color amarillo la curva correspondiente a R\_sim y en color azul la curva correspondiente a H\_sim.}
+ \caption{Curva comparativa del valor estadístico $Precision$. Se grafica el valor estadístico en función de los días de simulación. En color amarillo la curva correspondiente a R\_sim y en color azul la curva correspondiente a H\_sim.}
  \label{Precision}
 \end{figure}
 
