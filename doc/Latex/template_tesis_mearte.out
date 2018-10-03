@@ -68,37 +68,36 @@
 \BOOKMARK [3][-]{subsubsection.3.3.7.1}{Recorte de m\341rgenes}{subsection.3.3.7}% 68
 \BOOKMARK [2][-]{subsection.3.3.8}{Combinaci\363n de los elementos del DEM SRTM y del DEM HydroSHEDS.}{section.3.3}% 69
 \BOOKMARK [0][-]{chapter.4}{Metodolog\355a para la evaluaci\363n de resultados}{}% 70
-\BOOKMARK [1][-]{section.4.1}{Condiciones de simulaci\363n.}{chapter.4}% 71
-\BOOKMARK [2][-]{subsection.4.1.1}{Elecci\363n del umbral de altura de agua}{section.4.1}% 72
-\BOOKMARK [1][-]{section.4.2}{\315ndice de Agua NDWI}{chapter.4}% 73
-\BOOKMARK [1][-]{section.4.3}{Obtenci\363n de las m\351tricas}{chapter.4}% 74
-\BOOKMARK [1][-]{section.4.4}{Estad\355sticos de Inter\351s}{chapter.4}% 75
-\BOOKMARK [2][-]{subsection.4.4.1}{Sensibilidad o Raz\363n de Verdaderos Positivos}{section.4.4}% 76
-\BOOKMARK [2][-]{subsection.4.4.2}{Especificidad o Raz\363n de Verdaderos Negativos}{section.4.4}% 77
-\BOOKMARK [2][-]{subsection.4.4.3}{Fall-out o Raz\363n de Falsos Positivos o de Falsas Alarmas}{section.4.4}% 78
-\BOOKMARK [2][-]{subsection.4.4.4}{Precisi\363n o Valor Predictivo Positivo}{section.4.4}% 79
-\BOOKMARK [2][-]{subsection.4.4.5}{Exactitud}{section.4.4}% 80
-\BOOKMARK [2][-]{subsection.4.4.6}{Valor-F}{section.4.4}% 81
-\BOOKMARK [2][-]{subsection.4.4.7}{Exactitud Balanceada}{section.4.4}% 82
-\BOOKMARK [2][-]{subsection.4.4.8}{Coeficiente de Correlaci\363n de Matthews}{section.4.4}% 83
-\BOOKMARK [2][-]{subsection.4.4.9}{Rotaci\363n de la imagen NDWI}{section.4.4}% 84
-\BOOKMARK [0][-]{chapter.5}{Resultados}{}% 85
-\BOOKMARK [1][-]{section.5.1}{An\341lisis visual comparativo de los Resultados}{chapter.5}% 86
-\BOOKMARK [2][-]{subsection.5.1.1}{Imagen Global}{section.5.1}% 87
-\BOOKMARK [2][-]{subsection.5.1.2}{An\341lisis Visual del algoritmo de detecci\363n de lagunas}{section.5.1}% 88
-\BOOKMARK [2][-]{subsection.5.1.3}{An\341lisis Visual de lagunas no predichas correctamente}{section.5.1}% 89
-\BOOKMARK [2][-]{subsection.5.1.4}{An\341lisis Visual de la correcci\363n Bandeado}{section.5.1}% 90
-\BOOKMARK [2][-]{subsection.5.1.5}{An\341lisis Visual de la correcci\363n de las cortinas de \341rboles}{section.5.1}% 91
-\BOOKMARK [1][-]{section.5.2}{Procesamiento estad\355stico de los resultados para la obtenci\363n de m\351tricas}{chapter.5}% 92
-\BOOKMARK [2][-]{subsection.5.2.1}{Estad\355sticos de inter\351s obtenidos como resultado de la simulaci\363n}{section.5.2}% 93
-\BOOKMARK [1][-]{section.5.3}{An\341lisis comparativo de los Estad\355sticos de los Resultados}{chapter.5}% 94
-\BOOKMARK [2][-]{subsection.5.3.1}{Sensibilidad}{section.5.3}% 95
-\BOOKMARK [2][-]{subsection.5.3.2}{Especificidad}{section.5.3}% 96
-\BOOKMARK [2][-]{subsection.5.3.3}{Fall-Out o Falsas Alarmas}{section.5.3}% 97
-\BOOKMARK [2][-]{subsection.5.3.4}{Precisi\363n}{section.5.3}% 98
-\BOOKMARK [2][-]{subsection.5.3.5}{Exactitud}{section.5.3}% 99
-\BOOKMARK [2][-]{subsection.5.3.6}{Exactitud Balanceada \(BACC\)}{section.5.3}% 100
-\BOOKMARK [2][-]{subsection.5.3.7}{Valor F1}{section.5.3}% 101
-\BOOKMARK [2][-]{subsection.5.3.8}{Coeficiente de Correlaci\363n de Matthews}{section.5.3}% 102
-\BOOKMARK [0][-]{chapter.6}{Conclusiones}{}% 103
-\BOOKMARK [1][-]{section.6.1}{Trabajos a Futuro}{chapter.6}% 104
+\BOOKMARK [1][-]{subsection.4.0.1}{Elecci\363n del umbral de altura de agua}{chapter.4}% 71
+\BOOKMARK [1][-]{section.4.1}{\315ndice de Agua NDWI}{chapter.4}% 72
+\BOOKMARK [1][-]{section.4.2}{Obtenci\363n de las m\351tricas}{chapter.4}% 73
+\BOOKMARK [1][-]{section.4.3}{Estad\355sticos de Inter\351s}{chapter.4}% 74
+\BOOKMARK [2][-]{subsection.4.3.1}{Sensibilidad o Raz\363n de Verdaderos Positivos}{section.4.3}% 75
+\BOOKMARK [2][-]{subsection.4.3.2}{Especificidad o Raz\363n de Verdaderos Negativos}{section.4.3}% 76
+\BOOKMARK [2][-]{subsection.4.3.3}{Fall-out o Raz\363n de Falsos Positivos o de Falsas Alarmas}{section.4.3}% 77
+\BOOKMARK [2][-]{subsection.4.3.4}{Precisi\363n o Valor Predictivo Positivo}{section.4.3}% 78
+\BOOKMARK [2][-]{subsection.4.3.5}{Exactitud}{section.4.3}% 79
+\BOOKMARK [2][-]{subsection.4.3.6}{Valor-F}{section.4.3}% 80
+\BOOKMARK [2][-]{subsection.4.3.7}{Exactitud Balanceada}{section.4.3}% 81
+\BOOKMARK [2][-]{subsection.4.3.8}{Coeficiente de Correlaci\363n de Matthews}{section.4.3}% 82
+\BOOKMARK [2][-]{subsection.4.3.9}{Rotaci\363n de la imagen NDWI}{section.4.3}% 83
+\BOOKMARK [0][-]{chapter.5}{Resultados}{}% 84
+\BOOKMARK [1][-]{section.5.1}{An\341lisis visual comparativo de los Resultados}{chapter.5}% 85
+\BOOKMARK [2][-]{subsection.5.1.1}{Imagen Global}{section.5.1}% 86
+\BOOKMARK [2][-]{subsection.5.1.2}{An\341lisis Visual del algoritmo de detecci\363n de lagunas}{section.5.1}% 87
+\BOOKMARK [2][-]{subsection.5.1.3}{An\341lisis Visual de lagunas no predichas correctamente}{section.5.1}% 88
+\BOOKMARK [2][-]{subsection.5.1.4}{An\341lisis Visual de la correcci\363n Bandeado}{section.5.1}% 89
+\BOOKMARK [2][-]{subsection.5.1.5}{An\341lisis Visual de la correcci\363n de las cortinas de \341rboles}{section.5.1}% 90
+\BOOKMARK [1][-]{section.5.2}{Procesamiento estad\355stico de los resultados para la obtenci\363n de m\351tricas}{chapter.5}% 91
+\BOOKMARK [2][-]{subsection.5.2.1}{Estad\355sticos de inter\351s obtenidos como resultado de la simulaci\363n}{section.5.2}% 92
+\BOOKMARK [1][-]{section.5.3}{An\341lisis comparativo de los Estad\355sticos de los Resultados}{chapter.5}% 93
+\BOOKMARK [2][-]{subsection.5.3.1}{Sensibilidad}{section.5.3}% 94
+\BOOKMARK [2][-]{subsection.5.3.2}{Especificidad}{section.5.3}% 95
+\BOOKMARK [2][-]{subsection.5.3.3}{Fall-Out o Falsas Alarmas}{section.5.3}% 96
+\BOOKMARK [2][-]{subsection.5.3.4}{Precisi\363n}{section.5.3}% 97
+\BOOKMARK [2][-]{subsection.5.3.5}{Exactitud}{section.5.3}% 98
+\BOOKMARK [2][-]{subsection.5.3.6}{Exactitud Balanceada \(BACC\)}{section.5.3}% 99
+\BOOKMARK [2][-]{subsection.5.3.7}{Valor F1}{section.5.3}% 100
+\BOOKMARK [2][-]{subsection.5.3.8}{Coeficiente de Correlaci\363n de Matthews}{section.5.3}% 101
+\BOOKMARK [0][-]{chapter.6}{Conclusiones}{}% 102
+\BOOKMARK [1][-]{section.6.1}{Trabajos a Futuro}{chapter.6}% 103

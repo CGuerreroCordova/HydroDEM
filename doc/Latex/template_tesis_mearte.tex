@@ -1614,29 +1614,58 @@ De esta manera se obtiene el producto final. Podemos observar los tres elementos
 
 En este capítulo se explican los métodos para evaluar los resultados obtenidos.
 
-Claramente es muy difícil evaluar las bondades del DEM obtenido en forma directa. Por ello la propuesta desarrollada aquí se dirige hacia las performances que se espera de su aplicación primaria que son los estudios hidrológicos.
+Claramente es muy difícil evaluar las bondades del DEM obtenido en forma directa. Por ello la propuesta desarrollada aquí se dirige hacia la performance que se espera de su aplicación primaria que son los estudios hidrológicos.
 
-Por ello se ha realizado una simulación usando un modelo hidrológico de escurrimiento de agua en llanuras, sin canales de descarga. Para la ejecución de la simulación se utiliza la aplicación desarrollada en el trabajo de Guerrero (2013) la cual se basó en las hipótesis de LISFLOOD-FP (Bates \textit{et al.} 2011).
+Por ello es que se realizaron ejecuciones de simulación con un modelo hidrológico de llanuras utilizando los DEMs a comparar. El simulador que se utilizó es el desarrollado por Guerrero Cordova (2013). Este es un simulador hidrológico de llanuras, cuyo modelado no tiene incorporado la existencia de canales de grandes caudales como ríos (debido a que su modelacion es diferente). Como salida de la ejecución de las simulaciones se obtiene, por cada hora simulada, la altura de agua (en metros) en la superficie. Estos resultados son los que luego serán de utilidad para la evaluación del desempeño del DEM para usos hidrológicos.
+
+
+El único dato de entrada que varía entre ambas ejecuciones del simulador es el DEM de entrada. Por lo tanto se llevaron a cabo dos simulaciones.
+
+\begin{itemize}
+	\item Con el DEM HydroSHEDS
+	\item Con el DEM Resultado de este trabajo.
+\end{itemize}
+
+Con respecto al resto de los datos de entrada se tiene en consideración que para una correcta ejecución del modelo (Guerrero 2013) de una precipitación real, el simulador requiere tanto de datos de contorno (los cuales caracterizan caracterizan la región) como de datos iniciales de ejecución (caracterizan la simulación). Estos datos son los siguientes:
+
+\begin{itemize}
+	\item Condiciones de Contorno
+		\begin{itemize}
+			\item Profundidad de la primera capa del suelo, o suelo permeable.
+			\item Coeficiente de conductividad hidráulica.
+			\item Capacidad de almacenamiento de la capa permeable.
+			\item Evapotranspiración.			
+		\end{itemize}
+	\item Condiciones iniciales de ejecución
+		\begin{itemize}
+			\item Altura de agua de la capa permeable (nivel freático).
+			\item Altura de agua sobre la superficie (inicialmente esta agua se supone proveniente de las precipitaciones recientes).
+		\end{itemize}
+\end{itemize}
+
+Estos datos no se encuentran disponibles públicamente es por eso que los valores utilizados fueron establecidos de manera que la ejecución del simulador hidrológico pueda representar de manera adecuada el comportamiento del agua sobre la superficie y de este modo, observar como responde el terreno y así poder evaluar el desempeño de ambos DEMs para usos hidrológicos.
+
+Por esto mismo es que los datos mencionados anteriormente toman los siguientes valores:
+
+
+\begin{table}[H]
+   \centering      
+   \includegraphics[width=0.85\textwidth]{imagenes/DatosContorno.jpg}
+ \caption{Tabla donde se indica que valores tomaron los datos de contorno e iniciales y la justificación de porqué tomaron esos valores.}
+ \label{datoscontorno}
+\end{table}
+
+La evapotranspiración utilizada como proceso del simulador es la misma que se usó en el trabajo del desarrollo del simulador (Guerrero 2013). En dicho trabajo se asumió uniforme e independiente del tiempo en todo el dominio, es decir se asumió que no hay gradientes de temperatura, humedad y presión como así también que toda la vegetación transpira igual en todo el dominio. Estas hipótesis se pudieron asumir por simplicidad y debido a la proximidad del área de estudio elegida en este trabajo con el área de estudio elegida para el desarrollo del simulador hidrológico (Guerrero 2013). En el caso en que haya agua superficial la pérdida por evaporación corresponde a esta agua. Para la simulación principal se ha utilizado como evapotranspiración 3 milimetros diarios.
+
+Teniendo en cuenta la ausencia de datos disponibles para la simulación de un evento real de precipitaciones, lo que se realizó es un evento de precipitacion única que no es una simulación de precipitación real, es decir se arroja una gran cantidad de agua (20 milímetros para toda el área de interés) respecto de lo que es una precipitacion, para asegurarnos de esta manera que se llenen todas las cubetas, luego se observa como se enruta el agua y funciona todo el sistema de canales. Esta ejecución del simulador es realizada para una serie larga de días y los resultados son comparados luego con evento de precipitaciones de la zona es decir con un producto NDWI de una imagen Landsat (sección \ref{indiceaguandwi}). Con respecto al tiempo, es arbitrario, se busca ver en que momento se dan las mejores métricas.
+
+El simulador arroja resultados cada una hora. Serán analizadas sólo las salidas del simulador por cada día de simulación, es decir resultados cada 24 horas, el resto de los resultados no serán tenidos en cuenta. La simulación fue ejecutada con proyección de 58 días.
 
 Como verdad de referencia de las zonas anegadas se ha tomado una clasificación de cuerpos de agua, obtenidos del procesamiento de una imagen de OLI de Landsat 8, que se explica en \ref{indiceaguandwi}
 
+Se pretende demostrar que el DEM resultado de este trabajo presenta mejor comportamiento hidrológico, es por eso que se ejecuta la misma simulación de manera independiente con ambos DEMs. De este modo el DEM cuyo resultados arroje mayor aproximación al producto NDWI de Landsat será considerado mejor para usos hidrológicos. No se espera que los resultados sean exactamente iguales al NDWI debido a que el origen del proceso es diferente.
+
 En las secciones siguientes se definen las métricas y los estadísticos utilizados en el análisis.
-
-\section{Condiciones de simulación.}
-\label{condicionesSimulacion}
-
-Teniendo en cuenta que para esta simulación no se disponen datos de suelo, se asumió una capa de subsuelo inexistente por lo tanto solamente se tendrá en cuenta el escurrimiento superficial.
-
-Tampoco se asumen alturas de agua iniciales para la superficie, por lo tanto esto indica que toda al área de estudio se encuentra completamente seca.
-
-Además tampoco se considerará un evento de lluvias real por lo tanto para esta simulación se asumirá un evento de precipitaciones de 20 milímetros para toda el área de estudio. Este evento puede parecer un tanto brusco, pero dado que se asume que el área se encuentra totalmente seca se puede considerar adecuado.
-
-La evapotranspiración utilizada como proceso del simulador es la misma que se usó en el trabajo del desarrollo del simulador (Guerrero 2013). En dicho trabajo se asumió uniforme e independiente del tiempo en todo el dominio, es decir se asumió que no hay gradientes de temperatura, humedad y presión como así también que toda la vegetación transpira igual en todo el dominio. Estas hipótesis se puedieron asumir por simplicidad y debido a la proximidad del área de estudio elegida en este trabajo con el área de estudio elegida para el desarrollo del simulador hidrológico (Guerrero 2013). En el caso en que haya agua superficial la pérdida por evaporación corresponde a esta agua, de lo contrario corresponde al suelo. Para la simulación principal se ha utilizado como evapotranspiración 3 milimetros diarios.
-
-El simulador arroja resultados cada una hora. Serán analizadas las salidas del simulador por cada día de simulación, es decir resultados cada 24 horas, el resto de los resultados no serán tenidos en cuenta. La simulación fue ejecutada con proyección de 58 días.
-
-
-A efectos de este trabajo se pretende realizar una mejora sobre un DEM de base y si bien sería mucho más recomendable poder revisar esta comparación con un evento real de precipitaciones, se necesitaría más información del área de estudio, como las propiedades del suelo, evapotranspiración, etc. Pero esta representación del escenario insume mayor tiempo, lo cual excede el alcance de este trabajo.
 
 \subsection{Elección del umbral de altura de agua}
 

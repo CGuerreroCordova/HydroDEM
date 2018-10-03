@@ -69,37 +69,36 @@
 \contentsline {subsubsection}{\numberline {3.3.7.1}Recorte de m\IeC {\'a}rgenes}{49}{subsubsection.3.3.7.1}
 \contentsline {subsection}{\numberline {3.3.8}Combinaci\IeC {\'o}n de los elementos del DEM SRTM y del DEM HydroSHEDS.}{49}{subsection.3.3.8}
 \contentsline {chapter}{\numberline {4}Metodolog\IeC {\'\i }a para la evaluaci\IeC {\'o}n de resultados}{51}{chapter.4}
-\contentsline {section}{\numberline {4.1}Condiciones de simulaci\IeC {\'o}n.}{51}{section.4.1}
-\contentsline {subsection}{\numberline {4.1.1}Elecci\IeC {\'o}n del umbral de altura de agua}{52}{subsection.4.1.1}
-\contentsline {section}{\numberline {4.2}\IeC {\'I}ndice de Agua NDWI}{52}{section.4.2}
-\contentsline {section}{\numberline {4.3}Obtenci\IeC {\'o}n de las m\IeC {\'e}tricas}{52}{section.4.3}
-\contentsline {section}{\numberline {4.4}Estad\IeC {\'\i }sticos de Inter\IeC {\'e}s}{53}{section.4.4}
-\contentsline {subsection}{\numberline {4.4.1}Sensibilidad o Raz\IeC {\'o}n de Verdaderos Positivos}{53}{subsection.4.4.1}
-\contentsline {subsection}{\numberline {4.4.2}Especificidad o Raz\IeC {\'o}n de Verdaderos Negativos}{53}{subsection.4.4.2}
-\contentsline {subsection}{\numberline {4.4.3}Fall-out o Raz\IeC {\'o}n de Falsos Positivos o de Falsas Alarmas}{54}{subsection.4.4.3}
-\contentsline {subsection}{\numberline {4.4.4}Precisi\IeC {\'o}n o Valor Predictivo Positivo}{54}{subsection.4.4.4}
-\contentsline {subsection}{\numberline {4.4.5}Exactitud}{54}{subsection.4.4.5}
-\contentsline {subsection}{\numberline {4.4.6}Valor-F}{54}{subsection.4.4.6}
-\contentsline {subsection}{\numberline {4.4.7}Exactitud Balanceada}{54}{subsection.4.4.7}
-\contentsline {subsection}{\numberline {4.4.8}Coeficiente de Correlaci\IeC {\'o}n de Matthews}{55}{subsection.4.4.8}
-\contentsline {subsection}{\numberline {4.4.9}Rotaci\IeC {\'o}n de la imagen NDWI}{55}{subsection.4.4.9}
-\contentsline {chapter}{\numberline {5}Resultados}{56}{chapter.5}
-\contentsline {section}{\numberline {5.1}An\IeC {\'a}lisis visual comparativo de los Resultados}{56}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Imagen Global}{56}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}An\IeC {\'a}lisis Visual del algoritmo de detecci\IeC {\'o}n de lagunas}{59}{subsection.5.1.2}
-\contentsline {subsection}{\numberline {5.1.3}An\IeC {\'a}lisis Visual de lagunas no predichas correctamente}{60}{subsection.5.1.3}
-\contentsline {subsection}{\numberline {5.1.4}An\IeC {\'a}lisis Visual de la correcci\IeC {\'o}n Bandeado}{61}{subsection.5.1.4}
-\contentsline {subsection}{\numberline {5.1.5}An\IeC {\'a}lisis Visual de la correcci\IeC {\'o}n de las cortinas de \IeC {\'a}rboles}{62}{subsection.5.1.5}
-\contentsline {section}{\numberline {5.2}Procesamiento estad\IeC {\'\i }stico de los resultados para la obtenci\IeC {\'o}n de m\IeC {\'e}tricas}{64}{section.5.2}
-\contentsline {subsection}{\numberline {5.2.1}Estad\IeC {\'\i }sticos de inter\IeC {\'e}s obtenidos como resultado de la simulaci\IeC {\'o}n}{64}{subsection.5.2.1}
-\contentsline {section}{\numberline {5.3}An\IeC {\'a}lisis comparativo de los Estad\IeC {\'\i }sticos de los Resultados}{67}{section.5.3}
-\contentsline {subsection}{\numberline {5.3.1}Sensibilidad}{67}{subsection.5.3.1}
-\contentsline {subsection}{\numberline {5.3.2}Especificidad}{67}{subsection.5.3.2}
-\contentsline {subsection}{\numberline {5.3.3}Fall-Out o Falsas Alarmas}{68}{subsection.5.3.3}
-\contentsline {subsection}{\numberline {5.3.4}Precisi\IeC {\'o}n}{68}{subsection.5.3.4}
-\contentsline {subsection}{\numberline {5.3.5}Exactitud}{69}{subsection.5.3.5}
-\contentsline {subsection}{\numberline {5.3.6}Exactitud Balanceada (BACC)}{70}{subsection.5.3.6}
-\contentsline {subsection}{\numberline {5.3.7}Valor F1}{70}{subsection.5.3.7}
-\contentsline {subsection}{\numberline {5.3.8}Coeficiente de Correlaci\IeC {\'o}n de Matthews}{70}{subsection.5.3.8}
-\contentsline {chapter}{\numberline {6}Conclusiones}{73}{chapter.6}
-\contentsline {section}{\numberline {6.1}Trabajos a Futuro}{74}{section.6.1}
+\contentsline {subsection}{\numberline {4.0.1}Elecci\IeC {\'o}n del umbral de altura de agua}{52}{subsection.4.0.1}
+\contentsline {section}{\numberline {4.1}\IeC {\'I}ndice de Agua NDWI}{53}{section.4.1}
+\contentsline {section}{\numberline {4.2}Obtenci\IeC {\'o}n de las m\IeC {\'e}tricas}{53}{section.4.2}
+\contentsline {section}{\numberline {4.3}Estad\IeC {\'\i }sticos de Inter\IeC {\'e}s}{54}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Sensibilidad o Raz\IeC {\'o}n de Verdaderos Positivos}{54}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Especificidad o Raz\IeC {\'o}n de Verdaderos Negativos}{54}{subsection.4.3.2}
+\contentsline {subsection}{\numberline {4.3.3}Fall-out o Raz\IeC {\'o}n de Falsos Positivos o de Falsas Alarmas}{54}{subsection.4.3.3}
+\contentsline {subsection}{\numberline {4.3.4}Precisi\IeC {\'o}n o Valor Predictivo Positivo}{55}{subsection.4.3.4}
+\contentsline {subsection}{\numberline {4.3.5}Exactitud}{55}{subsection.4.3.5}
+\contentsline {subsection}{\numberline {4.3.6}Valor-F}{55}{subsection.4.3.6}
+\contentsline {subsection}{\numberline {4.3.7}Exactitud Balanceada}{55}{subsection.4.3.7}
+\contentsline {subsection}{\numberline {4.3.8}Coeficiente de Correlaci\IeC {\'o}n de Matthews}{55}{subsection.4.3.8}
+\contentsline {subsection}{\numberline {4.3.9}Rotaci\IeC {\'o}n de la imagen NDWI}{56}{subsection.4.3.9}
+\contentsline {chapter}{\numberline {5}Resultados}{57}{chapter.5}
+\contentsline {section}{\numberline {5.1}An\IeC {\'a}lisis visual comparativo de los Resultados}{57}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Imagen Global}{57}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}An\IeC {\'a}lisis Visual del algoritmo de detecci\IeC {\'o}n de lagunas}{60}{subsection.5.1.2}
+\contentsline {subsection}{\numberline {5.1.3}An\IeC {\'a}lisis Visual de lagunas no predichas correctamente}{61}{subsection.5.1.3}
+\contentsline {subsection}{\numberline {5.1.4}An\IeC {\'a}lisis Visual de la correcci\IeC {\'o}n Bandeado}{62}{subsection.5.1.4}
+\contentsline {subsection}{\numberline {5.1.5}An\IeC {\'a}lisis Visual de la correcci\IeC {\'o}n de las cortinas de \IeC {\'a}rboles}{63}{subsection.5.1.5}
+\contentsline {section}{\numberline {5.2}Procesamiento estad\IeC {\'\i }stico de los resultados para la obtenci\IeC {\'o}n de m\IeC {\'e}tricas}{65}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Estad\IeC {\'\i }sticos de inter\IeC {\'e}s obtenidos como resultado de la simulaci\IeC {\'o}n}{65}{subsection.5.2.1}
+\contentsline {section}{\numberline {5.3}An\IeC {\'a}lisis comparativo de los Estad\IeC {\'\i }sticos de los Resultados}{68}{section.5.3}
+\contentsline {subsection}{\numberline {5.3.1}Sensibilidad}{68}{subsection.5.3.1}
+\contentsline {subsection}{\numberline {5.3.2}Especificidad}{68}{subsection.5.3.2}
+\contentsline {subsection}{\numberline {5.3.3}Fall-Out o Falsas Alarmas}{69}{subsection.5.3.3}
+\contentsline {subsection}{\numberline {5.3.4}Precisi\IeC {\'o}n}{69}{subsection.5.3.4}
+\contentsline {subsection}{\numberline {5.3.5}Exactitud}{70}{subsection.5.3.5}
+\contentsline {subsection}{\numberline {5.3.6}Exactitud Balanceada (BACC)}{71}{subsection.5.3.6}
+\contentsline {subsection}{\numberline {5.3.7}Valor F1}{71}{subsection.5.3.7}
+\contentsline {subsection}{\numberline {5.3.8}Coeficiente de Correlaci\IeC {\'o}n de Matthews}{71}{subsection.5.3.8}
+\contentsline {chapter}{\numberline {6}Conclusiones}{74}{chapter.6}
+\contentsline {section}{\numberline {6.1}Trabajos a Futuro}{75}{section.6.1}
