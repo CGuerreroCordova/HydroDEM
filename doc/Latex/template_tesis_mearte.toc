@@ -10,7 +10,7 @@
 \contentsline {subsection}{\numberline {2.1.2}Infiltraci\IeC {\'o}n}{5}{subsection.2.1.2}
 \contentsline {subsection}{\numberline {2.1.3}Evaporaci\IeC {\'o}n y Evapotranspiraci\IeC {\'o}n}{6}{subsection.2.1.3}
 \contentsline {subsection}{\numberline {2.1.4}Descripci\IeC {\'o}n del \IeC {\'a}rea de estudio en funci\IeC {\'o}n de los procesos hidrol\IeC {\'o}gicos}{6}{subsection.2.1.4}
-\contentsline {section}{\numberline {2.2}Relevamiento de DEMs para usos hidrol\IeC {\'o}gicos}{7}{section.2.2}
+\contentsline {section}{\numberline {2.2}Relevamiento de DEMs para usos hidrol\IeC {\'o}gicos}{8}{section.2.2}
 \contentsline {subsection}{\numberline {2.2.1}Misi\IeC {\'o}n SRTM}{8}{subsection.2.2.1}
 \contentsline {subsection}{\numberline {2.2.2}ASTER GDEM}{8}{subsection.2.2.2}
 \contentsline {subsection}{\numberline {2.2.3}Comparaci\IeC {\'o}n con SRTM}{8}{subsection.2.2.3}
@@ -22,16 +22,16 @@
 \contentsline {subsubsection}{\numberline {2.3.2.3}Red fluvial vectorizado mundial ArcWorld}{10}{subsubsection.2.3.2.3}
 \contentsline {subsubsection}{\numberline {2.3.2.4}Base de datos global de humedales y lagos (Global Lakes and Wetlands Database - GLWD)}{10}{subsubsection.2.3.2.4}
 \contentsline {subsubsection}{\numberline {2.3.2.5}Mapa Digital del Mundo (DCW) red global vectorizada de r\IeC {\'\i }os.}{10}{subsubsection.2.3.2.5}
-\contentsline {section}{\numberline {2.4}Adecuaci\IeC {\'o}n Hidrol\IeC {\'o}gica}{10}{section.2.4}
-\contentsline {subsection}{\numberline {2.4.1}HydroSHEDS}{10}{subsection.2.4.1}
-\contentsline {subsubsection}{\numberline {2.4.1.1}Correcciones}{11}{subsubsection.2.4.1.1}
+\contentsline {section}{\numberline {2.4}Adecuaci\IeC {\'o}n Hidrol\IeC {\'o}gica}{11}{section.2.4}
+\contentsline {subsection}{\numberline {2.4.1}HydroSHEDS}{11}{subsection.2.4.1}
+\contentsline {subsubsection}{\numberline {2.4.1.1}Correcciones realizadas por USGS a SRTM para obtenci\IeC {\'o}n de HydroSHEDS}{11}{subsubsection.2.4.1.1}
 \contentsline {subsubsection}{\numberline {2.4.1.2}Procesos de adecuaci\IeC {\'o}n hidrol\IeC {\'o}gica aplicados a HydroSHEDS}{12}{subsubsection.2.4.1.2}
 \contentsline {subsection}{\numberline {2.4.2}Una aplicaci\IeC {\'o}n a la llanura Bonaerense}{14}{subsection.2.4.2}
 \contentsline {subsubsection}{\numberline {2.4.2.1}Correcci\IeC {\'o}n de p\IeC {\'\i }xeles faltantes}{14}{subsubsection.2.4.2.1}
 \contentsline {subsubsection}{\numberline {2.4.2.2}Filtrado de ruido de frecuencia media y baja amplitud}{14}{subsubsection.2.4.2.2}
 \contentsline {subsubsection}{\numberline {2.4.2.3}Filtrado de la arboleda}{14}{subsubsection.2.4.2.3}
 \contentsline {subsubsection}{\numberline {2.4.2.4}Correcci\IeC {\'o}n para zonas bajas}{15}{subsubsection.2.4.2.4}
-\contentsline {subsubsection}{\numberline {2.4.2.5}Filtrado de alta frecuencia}{15}{subsubsection.2.4.2.5}
+\contentsline {subsubsection}{\numberline {2.4.2.5}Filtrado de alta frecuencia}{16}{subsubsection.2.4.2.5}
 \contentsline {chapter}{\numberline {3}Procesamiento del DEM}{17}{chapter.3}
 \contentsline {section}{\numberline {3.1}Primeras Pruebas}{18}{section.3.1}
 \contentsline {subsection}{\numberline {3.1.1}Aplicaci\IeC {\'o}n de correcci\IeC {\'o}n de bandeado a HydroSHEDS}{18}{subsection.3.1.1}
