@@ -1,45 +1,15 @@
- % Descripción: Template para la generación de la tesis de la MAEARTE
-% Autor: Romina Solorza
-% Fecha: 20/05/2016
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 
-%%	PARA INSERTAR FIGURAS USAR LA FUNCION PREDEFINIDA \imagen
-%%
-%%      \imagen{escala}{path imagen}{caption}{referencia}
-%%
-%% donde:
-%% 	* escala: es un valor numérico. Preferentemente usar valores entre 0 y 1.
-%%		(ejemplo: 0.2)
-%% 	* path: imagen es el directorio relativo donde se encuentra la imagen
-%%		(ejemplo: Figures/Logos/conae-logo.png)
-%%	* caption: texto de pie de figura.
-%%	* referencia: texto que sirve para citar la figura. 
-%%		(ejemplo: fig:conaelogo) luego se podrá hacer referencia \ref{fig:conaelogo}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-%Formato del documento
 \documentclass[10pt,a4paper, twoside]{report}
 
-%Configuración de los márgenes
 \usepackage[top=3cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
 \usepackage{setspace}
-
-%Llamar al template
-% \usepackage{mio}
 \usepackage{maeartedoc}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%% Definicion de subsubsubsection
 \usepackage{titlesec}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{hyperref}
 
 \setcitestyle{square}
-
 
 \titleclass{\subsubsubsection}{straight}[\subsection]
 
@@ -241,7 +211,7 @@ En la figura \ref{SRTMAndShape} se muestra el área geográfica de interés del 
  \label{SRTMAndShape}
 \end{figure}
 
-Existe una gran cantidad de modelos hidrodinámicos que estudian las inundaciones de llanuras pertenecientes a cuencas hídricas. Estos modelos generalmente tienen centrado su interés en predecir el hidrograma del río en distintos puntos para eventos seleccionados, considerando a la llanura circundante más bien como una zona de alimentación de agua al río. De esta forma la inundación está considerada a través del desborde del río y el proceso que se simula es esencialmente escurrimiento superficial en la llanura y en el canal propio del río. Como ejemplo de estos modelos podemos citar entre otros: Mike-11, ONDA, HEC-RAS y LISFLOOD-FP (Bates \textit{et al.} 2011). Estos modelos tienen distintos grados de sofisticación en lo referente a los esquemas de ecuaciones que resuelven, pero como señalan Bates \textit{et al.} (2011), dado que la topografía tiene un peso determinante en la simulación, el uso de esquemas complejos no aseguran un mayor grado de predicción. En tal sentido, es preferible usar esquemas simples que se ajusten al requerimiento de predicción deseado por el usuario y que integren adecuadamente los datos de entrada. Estas características son reunidas por el modelo LISFLOOD-FP, el cual ha sido tomado como base para nuestro modelado.
+Existe una gran cantidad de modelos hidrodinámicos que estudian las inundaciones de llanuras pertenecientes a cuencas hídricas. Estos modelos generalmente tienen centrado su interés en predecir el hidrograma del río en distintos puntos para eventos seleccionados, considerando a la llanura circundante más bien como una zona de alimentación de agua al río. De esta forma la inundación está considerada a través del desborde del río y el proceso que se simula es esencialmente escurrimiento superficial en la llanura y en el canal propio del río. Como ejemplo de estos modelos se puede citar entre otros: Mike-11, ONDA, HEC-RAS y LISFLOOD-FP (Bates \textit{et al.} 2011). Estos modelos tienen distintos grados de sofisticación en lo referente a los esquemas de ecuaciones que resuelven, pero como señalan Bates \textit{et al.} (2011), dado que la topografía tiene un peso determinante en la simulación, el uso de esquemas complejos no aseguran un mayor grado de predicción. En tal sentido, es preferible usar esquemas simples que se ajusten al requerimiento de predicción deseado por el usuario y que integren adecuadamente los datos de entrada. Estas características son reunidas por el modelo LISFLOOD-FP, el cual ha sido tomado como base para nuestro modelado.
 
 La zona de estudio, tal como se mencionó, es el sur de la provincia de Córdoba limitante con la provincia de Santa Fe, Carignano \textit{et al.} (2014) describen detalladamente el área de estudio desde una visión geomorfológica la cual contiene los siguientes ambientes:
 
@@ -401,11 +371,11 @@ Los siguientes procedimientos de acondicionamiento hidrológicos se han aplicado
 
 
 \begin{itemize}
-	\item \textbf{Profundización de la superficie de aguas abiertas:} Todos los ríos y lagos, identificados en SWBD fueron cavados en 10 metros con el fin de forzar el flujo derivado de mantenerse dentro de estos objetos. Así como los vacíos sin datos en los datos de elevación SRTM originales pueden indicar superficies de agua, todas las áreas de no datos y vacío se redujeron en 10 metros también. El umbral de 10 metros fue elegido como el que representa un efecto suficientemente fuerte en áreas planas (donde la identificación de los cauces de los ríos y lagos es particularmente difícil), mientras que produce solo insignificantes cambios en áreas con pendientes más pronunciadas (donde la existencia de no datos son probablemente causados por la sombra de radar en lugar de aguas abiertas).
+	\item \textbf{Profundización de la superficie de aguas abiertas:} Todos los ríos y lagos, identificados en SWBD fueron cavados en 10 metros con el fin de forzar al flujo derivado de mantenerse dentro de estos objetos. Así como los vacíos sin datos en los datos de elevación SRTM originales pueden indicar superficies de agua, todas las áreas de no datos y vacío se redujeron en 10 metros también. El umbral de 10 metros fue elegido como aquel que representa un efecto suficientemente fuerte en áreas planas (donde la identificación de los cauces de los ríos y lagos es particularmente difícil), mientras que produce solo insignificantes cambios en áreas con pendientes más pronunciadas (donde la existencia de no datos son probablemente causados por la sombra de radar en lugar de aguas abiertas).
 	
-	\item \textbf{El deshierbe de las zonas costeras:} En el modelo de elevación obtenido por radar, los manglares o cinturones de vegetación costeros pueden ser interpretados como un bajo pero continuo terraplén que bloquea cualquier flujo directo hacia el océano. En el modelo de la red fluvial obtenida, estas barreras pueden provocar significativos efectos de remansos. Para reducir este efecto, la zona costera, es decir, un buffer de ancho 0,02 grados (aproximadamente 2 km en el ecuador) a lo largo de la costa del océano fueron desmalezados mediante la reducción de 5 metros cada tres celulas al azar. Este cambio sutil, en combinación con los siguientes filtros, obliga ocasionales rupturas o pasos de agua en los diques costeros ligeramente elevados.
+	\item \textbf{El deshierbe de las zonas costeras:} En el modelo de elevación obtenido por radar, los manglares o cinturones de vegetación costeros pueden ser interpretados como un bajo pero continuo terraplén que bloquea cualquier flujo directo hacia el océano. En el modelo de la red fluvial obtenida, estas barreras pueden provocar significativos efectos de remansos. Para reducir este efecto, la zona costera, es decir un buffer de ancho 0,02 grados (aproximadamente 2 km en el ecuador) a lo largo de la costa del océano fueron desmalezados mediante la reducción de 5 metros cada tres células al azar. Este cambio sutil, en combinación con los siguientes filtros, obliga ocasionales rupturas o pasos de agua en los diques costeros ligeramente elevados.
 	
-	\item \textbf{Demarcación de flujos de agua:} El más importante proceso de adecuación en la generación de HydroSHEDS ha sido el llamado procedimiento de "Stream Burning", que es la demarcación de flujos de agua. La demarcación de flujos de agua es un proceso que se utiliza a menudo para establecer el curso de los ríos conocidos en la superficie. Los valores de altura a lo largo de los ríos, como se describió por ejemplo, en una capa vectorial existente, son reducidos a un cierto valor, por lo que demarca gargantas profundas en la elevación de la superficie. La demarcación puede ser extendida para incluir un buffer alrededor de las líneas de los ríos con el fin de dar moldear una transición más suave entre la superficie original y la garganta. Para HydroSHEDS, sólo los grandes ríos y lagos fueron demarcados en la superficie de elevación con el fin de evitar alteraciones excesivas de la superficie SRTM. Se utilizaron todos los ríos permanentes e intermitentes y lagos de ArcWorld (Sección \ref{ArcWorldLabel}), así como todos los ríos y lagos de GLWD (Sección \ref{GLWDLabel}), mientras que los de resolución mayor pero no clasificados de DCW se omitieron. Dado que la exactitud de los mapas globales existentes es desconocida, se hicieron ensayos para minimizar el impacto de estos conjuntos de datos en los datos de SRTM. Después de múltiples pruebas, la profundidad de la demarcación de los ríos se fijó a 12 metros, con un buffer de 0.005 grados (aproximadamente 500 metros en el ecuador) alrededor de los cursos de ríos. La profundidad de demarcación se redujo, de manera escalonada, de 12 metros en la hondonada a 2 metros en el borde de la linea de separación. Lagos fueron demarcados con una profundidad de 14 metros y una distancia de separación de 0,0025 grados. El ajuste de parámetros se orientó a notable refuerzo de los principales ríos de zonas planas, donde de otro modo la correcta delimitación de los ríos es difícil. En las regiones escarpadas, las pequeñas profundidades demarcadas resultan más bien en cambios insignificantes de la superficie de elevación, por lo tanto, los datos de SRTM mantienen la información dominante para derivar direcciones de drenaje.	
+	\item \textbf{Demarcación de flujos de agua:} El más importante proceso de adecuación en la generación de HydroSHEDS ha sido el llamado procedimiento de "Stream Burning", que es la demarcación de flujos de agua. La demarcación de flujos de agua es un proceso que se utiliza a menudo para establecer el curso de los ríos conocidos en la superficie. Los valores de altura a lo largo de los ríos, como se describió por ejemplo, en una capa vectorial existente, son reducidos a un cierto valor, por lo que demarca gargantas profundas en la elevación de la superficie. La demarcación puede ser extendida para incluir un buffer alrededor de las líneas de los ríos con el fin de moldear una transición más suave entre la superficie original y la garganta. Para HydroSHEDS, sólo los grandes ríos y lagos fueron demarcados en la superficie de elevación con el fin de evitar alteraciones excesivas de la superficie SRTM. Se utilizaron todos los ríos permanentes e intermitentes y lagos de ArcWorld (Sección \ref{ArcWorldLabel}), así como todos los ríos y lagos de GLWD (Sección \ref{GLWDLabel}), mientras que los de resolución mayor pero no clasificados de DCW se omitieron. Dado que la exactitud de los mapas globales existentes es desconocida, se hicieron ensayos para minimizar el impacto de estos conjuntos de datos en los datos de SRTM. Después de múltiples pruebas, la profundidad de la demarcación de los ríos se fijó a 12 metros, con un buffer de 0.005 grados (aproximadamente 500 metros en el ecuador) alrededor de los cursos de ríos. La profundidad de demarcación se redujo, de manera escalonada, de 12 metros en la hondonada a 2 metros en el borde de la linea de separación. Lagos fueron demarcados con una profundidad de 14 metros y una distancia de separación de 0,0025 grados. El ajuste de parámetros se orientó a un refuerzo notable de los principales ríos de zonas planas, donde de otro modo la correcta delimitación de los ríos es difícil. En las regiones escarpadas, las pequeñas profundidades demarcadas resultan más bien en cambios insignificantes de la superficie de elevación, por lo tanto, los datos de SRTM mantienen la información dominante para derivar direcciones de drenaje.	
 	
 	\item \textbf{Filtrado:} A continuación, se filtró toda la superficie elevada aplicando un análisis de vecinos direccional de 3x3. Los valores de elevación de todas las posibles trayectorias de flujo ángulo rectos y obtusos en una ventana de 3x3 fueron promediados y se les asignó el valor mínimo a la celda central. Este filtro tiene como objetivo eliminar los restantes picos y pozos, preservando y haciendo cumplir los cursos fluviales lineales y el fondo de los valles. En particular, los píxeles individuales que puedan bloquear una vía de flujo continuo son eliminados.
 	\item \textbf{Moldeo de cursos valle} Luego, los valles fueron expuestos a través de un análisis del terreno de píxeles cercanos, y fueron profundizados en 3 metros. Los valles fueron identificados por medio de un filtro de mediana de 5x5 combinado con un algoritmo de afinamiento de grilla para detectar características lineales. Este procedimiento de moldeado de valles ha sido desarrollado específicamente para mejorar las delineaciones de los ríos en tierras bajas tropicales removiendo pequeños obstáculos en valles poco profundos. Debido a la pequeña profundización de 3 metros, no se producen cambios significativos en las zonas con relieve más fuerte.
@@ -413,7 +383,7 @@ Los siguientes procedimientos de acondicionamiento hidrológicos se han aplicado
 	En un proceso estándar, todos los piletones espurios en la superficie fueron llenados. Piletones naturales fueron removidos con el fin de excluirlos de la eliminación	
 	\item \textbf{Escarbado a través de barreras:} Después de llenar las depresiones, un mapa del río fue generado a partir de los datos de elevación ya procesados. Los principales cursos de ríos, definidos como ríos con un área de cuenca aguas arriba de más de 1000 celdas (aproximadamente 8 km\textsuperscript{2} en el ecuador), fueron plasmados. Los principales ríos, fueron proyectados en el modelo de elevación HydroSHEDS inicial, y todas los ascensos en elevaciones río abajo fueron identificadas. Estos aumentos en la elevación de la superficie original, los cuales obviamente han sido removidos a través de la aplicación de filtros o llenado de depresiones en el proceso de adecuación, pueden representar presas, puentes, muros de contención de cualquier tipo, o gargantas estrechas que bloquean la vía de flujo. En muchos de estos casos, el efecto de llenado de depresiones (es decir, la elevación y el aplanamiento implícito de la zona embalsada) puede no ser deseable la corrección. Para minimizar este efecto, se realizó una segunda iteración del proceso de adecuación: primero, todas las elevaciones crecientes a lo largo de los principales cursos de agua fueron nivelados en los datos iniciales de elevación mediante la reducción adecuada de sus alturas respectivas, luego cavando a través de las barreras. Después de este proceso, todos los demás procesamientos de adecuación fueron repetidos.
 	
-	\item \textbf{Correcciones Manuales:} La red de ríos derivada fue comparada visualmente con los ríos que se pueden encontrar en otras fuentes de datos con DCW (Sección \ref{DCWLabel}) o ArcWorld (Sección \ref{ArcWorldLabel}). 
+	\item \textbf{Correcciones Manuales:} La red de ríos derivada fue comparada visualmente con los ríos que se pueden encontrar en otras fuentes de datos como DCW (sección \ref{DCWLabel}) o ArcWorld (sección \ref{ArcWorldLabel}). 
 	
 \end{itemize}
 
@@ -423,25 +393,24 @@ Los siguientes procedimientos de acondicionamiento hidrológicos se han aplicado
 Lehner \textit{et al.} (2006) también exhiben algunas comparaciones con conjuntos de datos hidrográficos globales y pudieron demostrar que:
 
 \begin{itemize}
-	\item En general, HydroSHEDS muestra significativamente mejor precisión que HYDRO1k debido a que HydroSHEDS está basado en un modelo de elevación digital superior.
-	\item En general, HydroSHEDS muestra significativamente mejor precisión que ArcWorld (Sección \ref{ArcWorldLabel}) (incluso en áreas con algunas dificultades), es por esto que ArcWorld ha sido incorporado en el proceso de adecuación de HydroSHEDS.
-	\item En general, HydroSHEDS muestra significativamente mejor precisión que DCW. Sin embargo, la precisión de ambos conjuntos de datos varía dependiendo de la zona. En algunas regiones en donde HydroSHEDS es susceptible a errores, como en planicies inundables con vegetación, la calidad de DCW puede ser superior.	
+	\item En general, HydroSHEDS muestra significativamente mejor precisión que HYDRO1k, un conjunto de datos hidrográficos globales a 1 km de resolución (USGS 2000), debido a que HydroSHEDS está basado en un modelo de elevación digital superior.
+	\item En general, HydroSHEDS muestra significativamente mejor precisión que la capa de ríos de ArcWorld (Sección \ref{ArcWorldLabel}) (incluso en áreas con algunas dificultades), es por esto que ArcWorld ha sido incorporado en el proceso de adecuación de HydroSHEDS.
+	\item En general, HydroSHEDS muestra significativamente mejor precisión que DCW. Sin embargo, la precisión de ambos conjuntos de datos varía dependiendo de la zona. En algunas regiones en donde HydroSHEDS es susceptible a errores, como en planicies inundables con vegetación, la calidad de DCW puede ser superior a HydroSHEDS..
 \end{itemize}
 
-%***********************************************************************************************
 
 
-
-
-\subsection{Una aplicación a la llanura Bonaerense}
+\subsection{Adecuación de DEM para aplicación a la llanura Bonaerense}
 \label{trabajoSergioAntecedente}
 
-Otro antecedente de adecuación del DEM para usos hidrológicos es el trabajo realizado por Masuelli \textit{et al.} (2009). Dicho trabajo fue realizado con el DEM SRTM como base y los procesamiento aplicados fueron realizados de manera manual. Presentaba 3 inconvenientes principales a resolver:
+En esta sección se describe el trabajo realizado por Masuelli \textit{et al.} (2009) para adecuación de un DEM para usos hidrológicos, la descripción detallada de este antecedente es importante debido a que gran parte de su desarrollo sirvió como base para la realización del presente trabajo.
+
+Masuelli \textit{et al.} (2009) tomaron el DEM SRTM como base y los procesamientos aplicados fueron realizados de manera manual. dicho trabajo presentaba 3 inconvenientes principales a resolver:
 
 \begin{itemize}
-	\item \textbf{Cortinas de árboles:} El DEM del SRTM que se baja por Internet tiene esencialmente la información en un estado crudo por cuanto la altura que muestra para cada píxel tiene que ver con la primera superficie reflectante, es decir por ejemplo que está dando cuenta del tope de la foresta y no del suelo en si mismo (Miliaresis \textit{et al.} 2009). Para nuestra aplicación en hidrología, puede darse la paradoja de que los cursos naturales de drenaje, al poseer generalmente monte en sus inmediaciones, tengan en el DEM una altura mayor que su entorno y por lo tanto, para el DEM no procesado, significar un obstáculo en vez de una vía de escurrimiento.
+	\item \textbf{Cortinas de árboles:} El DEM SRTM que se baja por Internet tiene esencialmente la información en un estado crudo por cuanto la altura que muestra para cada píxel tiene que ver con la primera superficie reflectante, es decir por ejemplo que está dando cuenta del tope de la foresta y no del suelo en si mismo (Miliaresis \textit{et al.} 2009). Para nuestra aplicación en hidrología, puede darse la paradoja de que los cursos naturales de drenaje, al poseer generalmente monte en sus inmediaciones, tengan en el DEM una altura mayor que su entorno y por lo tanto, para el DEM no procesado, significar un obstáculo en vez de una vía de escurrimiento.
 	\item \textbf{Datos espurios:} Además es reconocido por el USGS que estos datos tienen algunas fallas, como ser datos extremadamente altos o extremadamente bajos, especialmente en zonas que involucran cuerpos de agua pues su nivel de retrodispersión es muy bajo y así su procesamiento es generalmente muy ruidoso y por lo tanto el DEM obtenido es generalmente muy ruidoso (Lehner \textit{et al.} 2006). Es claro que los datos espurios que tiene pueden determinar la total imposibilidad para un uso específico mientras que para otra aplicación pueden resultar éstos irrelevantes.
-	\item \textbf{Bandeado:} Para zonas muy planas está presente un ruido de baja frecuencia de 1 metro de amplitud que es notable en zonas de llanura en dirección NO-SE aproximadamente. El origen de estas franjas se debe a que las imágenes usadas para obtener este DEM son de modo ScanSAR (Masuelli \textit{et al.} 2009). El uso directo de este DEM para modelos hidrológicos en zonas de llanuras puede ser muy problemático. Por cuestiones de estabilidad numérica para pendientes inferiores a 1:100 y para celdas de 100m se necesitan precisiones verticales del orden de algunos centímetros. La metodología planteada es para implementar los siguientes objetivos: Filtrar el ruido de baja amplitud y frecuencia media; filtrar las arboledas y corregir la topografía aledaña a las lagunas.	
+	\item \textbf{Bandeado:} Para zonas muy planas está presente un ruido de baja frecuencia de 1 metro de amplitud que es notable en zonas de llanura en dirección NO-SE aproximadamente. El origen de estas franjas se debe a que las imágenes usadas para obtener este DEM son de modo ScanSAR (Masuelli \textit{et al.} 2009). El uso directo de este DEM para modelos hidrológicos en zonas de llanuras puede ser muy problemático. Por cuestiones de estabilidad numérica para pendientes inferiores a 1:100 y para celdas de 100m se necesitan precisiones verticales del orden de algunos centímetros. La metodología planteada fue para implementar los siguientes objetivos: filtrar el ruido de baja amplitud y frecuencia media; filtrar las arboledas y corregir la topografía aledaña a las lagunas.	
 \end{itemize}
 
 
@@ -450,7 +419,7 @@ En dicho trabajo, que fue investigado como antedecente y que se toma como base d
 \begin{figure}[!htb]
    \centering      
    \includegraphics[width=0.85\textwidth]{imagenes/metodologiaSergio.jpg}
- \caption{Diagrama de flujo de los procesos para la obtención del DEM adecuado (Masuelli \textit{et al.} 2009}.
+ \caption{Diagrama de flujo de los procesos para la obtención del DEM adecuado hidrológicamente (Masuelli \textit{et al.} 2009}.
  \label{metodologiaSergio}
 \end{figure}
 
@@ -458,11 +427,13 @@ En dicho trabajo, que fue investigado como antedecente y que se toma como base d
 
 Los píxeles con datos faltantes en el DEM de entrada se completaron con los valores de los vecinos más próximos.
 
-\subsubsection{Filtrado de ruido de frecuencia media y baja amplitud}
+\subsubsection{Filtrado de ruido de frecuencia media y baja amplitud para corrección de bandeado}
+\label{filtroBandeadoSergio}
 
-Se midieron sobre la imagen las frecuencias en vertical y en horizontal. Luego, sobre la imagen transformada de Fourier se buscaron las regiones correspondientes a la frecuencia medida y sus armónicas y se las eliminó. Antitransformando se obtiene la imagen filtrada.
+Se midieron sobre la imagen las frecuencias en vertical y en horizontal. Luego, sobre la imagen transformada de Fourier se buscaron las regiones correspondientes a la frecuencia medida y sus armónicas y se las eliminó. Antitransformando se obtiene la imagen filtrada con el bandeado inherente corregido.
 
 \subsubsection{Filtrado de la arboleda}
+\label{filtroArbolSergio}
 
 \begin{itemize}
 	\item \textbf{Clasificación de zonas arboladas en imagen Landsat:} Se realizó una clasificación supervisada en imágenes Landsat mediante el método del paralelepípedo de zonas con firmas espectrales similares a bosque.
@@ -470,11 +441,11 @@ Se midieron sobre la imagen las frecuencias en vertical y en horizontal. Luego, 
 	\item \textbf{Muestreo a 90 metros:} Luego, esta clasificación fue submuestreada a píxeles de 90 metros de lado. 
 	\item \textbf{Énfasis de rasgos sobresalientes en DEM:}	
 	\begin{itemize}
-		\item \textbf{Filtro cuadrático:} Se obtuvo a partir de la imagen original subdividiendo la imagen original en cuadrados de 10 píxeles de lado, calculando el valor medio sobre cada uno y luego interpolando cuadráticamente en ambas direcciones para cada punto interior del mismo. 
-		\item \textbf{Imagen resaltada:} Se obtuvo a partir de la diferencia entre la imagen original y la imagen filtrada cuadráticamente.
+		\item \textbf{Imagen con filtro cuadrático aplicado:} Se obtuvo a partir de la imagen original y aplicando el siguiente filtro: subdividiendo la imagen original en cuadrados de 10 píxeles de lado, calculando el valor medio sobre cada uno y luego interpolando cuadráticamente en ambas direcciones para cada punto interior del mismo. 
+		\item \textbf{Imagen resaltada:} Se obtuvo a partir de la diferencia entre la imagen original y la imagen filtrada cuadráticamente. A esta imagen se le aplicaron los procedimientos que siguen en el próximo item.
 	\end{itemize}
-	\item \textbf{Clasificación de arboledas:} Para clasificar los píxeles candidatos a corresponder a zonas arboladas se determinó en el DEM resaltado aquellos que correspondieran a árboles en la clasificación del Landsat y con alturas mayores a 4,5m. Luego en forma iterativa se hizo crecer la clasificación a los píxeles contiguos con alturas mayores a 2m. Finalmente, se eliminaron píxeles dispersos.
-	\item \textbf{DEM Enfatizado corregido:} Una vez identificadas las arboledas, estos valores son directamente llevados a cero en el DEM enfatizado.	
+	\item \textbf{Clasificación de arboledas:} Para clasificar los píxeles candidatos a corresponder a zonas arboladas se determinó en la imagen resaltada aquellos que correspondieran a árboles en la clasificación del Landsat y con alturas mayores a 4,5m. Luego en forma iterativa se hizo crecer la clasificación a los píxeles contiguos con alturas mayores a 2m. Finalmente, se eliminaron píxeles dispersos.
+	\item \textbf{DEM Enfatizado corregido:} Una vez identificadas las arboledas, estos valores fueron directamente llevados a cero en el DEM enfatizado.	
 	\item \textbf{DEM con arboledas corregidas:} El DEM final sin arboledas resulta de la recuperación del DEM por medio de la suma del DEM con filtro cuadrático y el enfatizado sin arboledas detectadas.	
 \end{itemize}
 
@@ -487,7 +458,7 @@ Se excavó directamente usando la clasificación de frecuencia de anegamiento so
 
 Luego de las correcciones anteriores, persiste en el DEM el ruido de alta frecuencia que complica su utilización para modelos hidrológicos. Téngase presente que su resolución en altura (no su error) es de un metro y que para la región extremadamente plana en que se está tratando de usar y teniendo en cuenta el espaciamiento entre puntos de grilla de 90 metros de lado, el terreno se presenta muy fragmentado de modo que prácticamente el agua sólo podría fluir, en el mejor de los casos, en trayectos cortos de muy pocos píxeles.
 
-Por lo tanto, para que el agua fluya, la discretización en altura debe ser del orden de algunos cm. Para lograr esto, se le aplicó al DEM un filtro cuadrático de nueve puntos en las direcciones vertical, horizontal y las diagonales principales. El efecto es que suavizan las alturas entre los píxeles vecinos pero respetando las alturas mínimas y máximas locales, lo que en un filtro de media común los valores de los píxeles se verían severamente afectados.
+Por lo tanto, para que el agua fluya, la discretización en altura debe ser del orden de algunos cm. Para lograr esto, se le aplicó al DEM un filtro cuadrático de nueve puntos en las direcciones vertical, horizontal y las diagonales principales. El efecto logrado es el de suavizar las alturas entre los píxeles vecinos pero respetando las alturas mínimas y máximas locales, lo que en un filtro de media común los valores de los píxeles (alturas) se verían severamente afectados.
 
 
 \chapter{Procesamiento del DEM}
@@ -496,9 +467,9 @@ Por lo tanto, para que el agua fluya, la discretización en altura debe ser del 
 En este capítulo se describe el desarrollo de los procesamientos aplicados para obtención de un DEM adecuado hidrológicamente y la metodología para la evaluación de los resultados.
 
 
-Por lo desarrollado en el capítulo anterior el DEM candidato a usarse en modelado hidrológico sobre el área de interés (Este de la provincia de Córdoba) tendría que ser el HydroSHEDS.
+Por lo analizado en el capítulo anterior el DEM candidato a usarse en modelado hidrológico sobre el área de interés (Este de la provincia de Córdoba) tendría que ser el HydroSHEDS.
 
-Sin embargo, en la figura \ref{HSHEDSPaleta} pueden observarse claramente 2 defectos importantes: bandeado de baja amplitud y cortinas de árboles. Ambos defectos son corregidos por Masuelli \textit{et al.} (2009), tal como ha sido presentado en la sección \ref{trabajoSergioAntecedente}, y cuyo impacto negativo para realizar simulaciones sobre llanuras ha sido demostrado en dicho trabajo.
+En la figura \ref{HSHEDSPaleta} pueden observarse claramente 2 defectos importantes: bandeado de baja amplitud y cortinas de árboles. Ambos defectos son corregidos por Masuelli \textit{et al.} (2009), tal como ha sido presentado en la sección \ref{trabajoSergioAntecedente}, y cuyo impacto negativo para realizar simulaciones sobre llanuras ha sido demostrado en dicho trabajo.
 
 
 \begin{figure}[!htb]
@@ -513,13 +484,12 @@ En vista de este problema el presente trabajo consiste en obtener un DEM corregi
 
 \section{Primeras Pruebas}
 
-
-Inicialmente se abordaron los problemas de bandeado y cortinas de árboles al DEM HydroSHEDS, en cada caso de corrección se encontraron algunos comportamientos no esperados que se describen a continuación:
+Inicialmente se abordaron los problemas de bandeado y cortinas de árboles al DEM HydroSHEDS aplicando los mismos procesos utilizados por Masuelli \textit{et al.} (2009) descriptos en la sección \ref{filtroBandeadoSergio} y \ref{filtroArbolSergio}. En ambos procesos de corrección aplicados se encontraron algunos comportamientos no esperados que son descriptos a continuación:
 
 \subsection{Aplicación de corrección de bandeado a HydroSHEDS}
 \label{aplicacionBandeado}
 
-Como vimos en la figura \ref{HSHEDSPaleta} HydroSHEDS presenta el problema de bandedado, por lo que se aplicó la corrección utilizando el método de transformada de Fourier. El resultado no fue satisfactorio como podemos observar en las siguientes figuras:
+Como se ve en la figura \ref{HSHEDSPaleta} HydroSHEDS presenta el problema de bandedado, por lo que se aplicó la corrección utilizando el método de transformada de Fourier descripta en la seccion \ref{filtroBandeadoSergio} (Masuelli \textit{et al.} 2009). El resultado no fue satisfactorio como se puede observar en las siguientes figuras:
 
 \begin{figure}[!htb]
    \begin{minipage}{0.48\textwidth}
@@ -531,12 +501,12 @@ Como vimos en la figura \ref{HSHEDSPaleta} HydroSHEDS presenta el problema de ba
    \begin {minipage}{0.48\textwidth}
 			\centering
 			\includegraphics[width=1.0\linewidth]{imagenes/HydroSHEDSBandeadoZoomFourier.jpg}
-			\caption{DEM HydroSHEDS en donde podemos distinguir que el bandeado se trasladó del área sin lagunas a las lagunas.}
+			\caption{DEM HydroSHEDS en donde se puede distinguir que el bandeado se trasladó del área sin lagunas a las lagunas.}
 			\label{HydroSHEDSBandeadoZoomFourier}
    \end{minipage}
 \end{figure}
 
-En la figura \ref{HydroSHEDSBandeadoZoom}, un zoom de la \ref{HSHEDSPaleta}, puede observarse que el bandeado se presenta sobre el suelo pero no sobre las lagunas. Sin embargo, cuando se aplica la corrección de Fourier propuesta en \ref{correccionfourier} \ref{HydroSHEDSBandeadoZoomFourier}, se observa que el bandeado se trasladó de las áreas sin lagunas a las lagunas. Esto es un efecto no deseado para el uso del DEM para hidrológía.
+En la figura \ref{HydroSHEDSBandeadoZoom}, un zoom de la \ref{HSHEDSPaleta}, puede observarse que el bandeado se presenta sobre el suelo pero no sobre las lagunas. Sin embargo, cuando se aplica la corrección de Fourier propuesta en \ref{correccionfourier} \ref{HydroSHEDSBandeadoZoomFourier}, se observa de una comparación entre ambas figuras, que el bandeado se trasladó de las áreas sin lagunas a las lagunas. Esto es un efecto no deseado para el uso del DEM con fines hidrológicos.
 
 \subsection{Aplicación de corrección de cortinas de árboles a HydroSHEDS}
 
@@ -547,31 +517,33 @@ De igual manera se aplicó la corrección de cortinas de árboles al DEM HydroSH
    \begin{minipage}{0.48\textwidth}
 			\centering
 			\includegraphics[width=1.0\linewidth]{imagenes/HydroSHEDSTreesZoom.jpg}
-			\caption{DEM HydroSHEDS sin haber aplicado la corrección de cortinas de árboles. Observamos destacado en azul la presencia de cortinas de árboles no deseadas y objetivo de la corrección.}
+			\caption{DEM HydroSHEDS sin haber aplicado la corrección de cortinas de árboles. Se observa destacado en azul la presencia de cortinas de árboles no deseadas y objetivo de la corrección.}
 			\label{HydroSHEDSTreesZoom}
    \end{minipage}\hfill
    \begin {minipage}{0.48\textwidth}
 			\centering
 			\includegraphics[width=1.0\linewidth]{imagenes/HydroSHEDSTreesZoomCorrected.jpg}
-			\caption{DEM HydroSHEDS en donde podemos distinguir los errores no deseados en lo que respecta a los bordes de las cañadas, destacados con elipses negras. Además con azul observamos que las cortinas de árboles fueron corregidas.}
+			\caption{DEM HydroSHEDS en donde se puede distinguir los errores no deseados en lo que respecta a los bordes de las cañadas, destacados con elipses negras. Además con azul se observa que las cortinas de árboles fueron corregidas.}
 			\label{HydroSHEDSTreesZoomCorrected}
    \end{minipage}
 \end{figure}
 
-En este caso, observamos que la aplicación de la corrección a cortinas de árboles resuelve ese problema pero produce resultados no deseados en los bordes de cañadas, como podemos observar en las zonas destacas en la figura \ref{HydroSHEDSTreesZoomCorrected} en comparación con la figura \ref{HydroSHEDSTreesZoom} (antes de la corrección). El aumento espurio en las alturas en los bordes de las cañadas implicaría que el agua fuera de las cañadas no podría desembocar en las mismas.
+En este caso, se observa que la aplicación de la corrección a cortinas de árboles resuelve ese problema pero produce resultados no deseados en los bordes de cañadas, como se puede observar en las zonas destacas en la figura \ref{HydroSHEDSTreesZoomCorrected} en comparación con la figura \ref{HydroSHEDSTreesZoom} (antes de la corrección). El aumento espurio en las alturas en los bordes de las cañadas implicaría que el agua fuera de las cañadas podría no desembocar dentro de las mismas.
+
+Debido a estos resultados obtenidos en pruebas preliminares sobre HydroSHEDS y, teniendo en cuenta los antecedentes del trabajo de Masuelli \textit{et al.} (2009) realizados sobre SRTM, se propone una implementación que realiza una combinación de procesamientos a diferentes DEM, la cual se describe en la siguiente sección.
 
 \section{Propuesta a implementar}
 
 Por lo mencionado anteriormente se ve que no es factible el uso de HydroSHEDS aplicando solo las correcciones antes mencionadas. De igual manera es notable las mejoras que provee HydroSHEDS en cuanto a lagunas y cañadas respecto de SRTM. Es por eso que en este trabajo se combina lo mejor de ambos DEM, con los procesamientos necesarios de correcciones y de extracción de información según corresponda.
 
-A partir de esto se toma como metodología la utilizada en el trabajo de preprocesamiento del DEM (Masuelli \textit{et al.} 2009) realizado como parte del antecedente del modelo hidrológico y descripto en la sección \ref{trabajoSergioAntecedente}. Este trabajo explica y describe la secuencia de pasos realizados para llegar a un DEM mejorado para usos hidrológicos a partir de un DEM SRTM. Con el objetivo del uso de modelos hidrológicos en diferentes áreas de estudio, los procesos aplicados en el trabajo de base fueron estudiados, implementados en python y automatizados. Además se agregaron a esta implementación y automatización procesamientos que fueron realizados sobre el DEM HydroSHEDS y luego combinados con los procesos realizados al DEM SRTM.
+A partir de esto se toma como metodología la utilizada en el trabajo de preprocesamiento del DEM (Masuelli \textit{et al.} 2009) realizado como parte del antecedente del modelo hidrológico y descripto en la sección \ref{trabajoSergioAntecedente}. Este trabajo explica y describe la secuencia de pasos realizados para llegar a un DEM mejorado para usos hidrológicos a partir de un DEM SRTM. Con el objetivo del uso de modelos hidrológicos en diferentes áreas de estudio, los procesos aplicados en el trabajo de base fueron estudiados, implementados en python y automatizados. Además de esto, se agregaron procesamientos que fueron realizados sobre el DEM HydroSHEDS y luego combinados con los procesos realizados al DEM SRTM.
 
 
 En resumen se detallan ventajas y desventajas de cada DEM:
 
 \begin{itemize}
-	\item \textbf{SRTM:} La corrección del bandeado aplicando Fourier genera resultados satisfactorios. Además aplicar el filtro de suavizado cuadrático no genera problemas en zona de cañadas como si ocurre para HydroSHEDS.
-	\item \textbf{HydroSHEDS:} Se supuso que aplicar la corrección del bandeado por el método de Fourier, haría factible el uso de este DEM, pero esta corrección introduce errores en zonas de lagunas o cañadas en donde se aplicaron otros metodos de mejoras. De manera similar, en el proceso de detección de árboles, al aplicar el filtro cuadrático se observaron valores muy altos en zonas de bordes de cañadas. Por otra parte, se considera que HydroSHEDS provee un socavado de cañadas y lagunas muy bien logrado.	
+	\item \textbf{SRTM:} La corrección del bandeado aplicando Fourier genera resultados satisfactorios (Masuelli \textit{et al.} 2009). Además aplicar el filtro de suavizado cuadrático no genera problemas en zona de cañadas como si ocurre para HydroSHEDS.
+	\item \textbf{HydroSHEDS:} Se supuso que aplicar la corrección del bandeado por el método de Fourier, haría factible el uso de este DEM, pero esta corrección introduce errores en zonas de lagunas o cañadas en donde se aplicaron otros metodos de mejoras. De manera similar, en el proceso de detección de árboles, al aplicar el filtro cuadrático se observaron valores muy altos en zonas de bordes de cañadas. Por otra parte, se considera que HydroSHEDS provee un socavado de cañadas y lagunas muy bien logrado (Lehner \textit{et al.} 2006).
 \end{itemize}
 
 Analizando las ventajas y desventajas que aparecieron al usar uno u otro DEM de entrada se concluyó que una combinación de ellos prorporcionarían mejores resultados. En la Tabla \ref{tablaCombinacion} se muestran los principales problemas para los cuales se ha usado uno u otro DEM. 
@@ -609,22 +581,22 @@ Asimismo, para llegar a obtener tal combinación de ambos DEMs se realizó una s
 	\item En color azul oscuro se muestran los datos principales de salida, mientras que en azul más claro y al final, el producto de salida, resultado del procesamiento completo.
 \end{itemize}
 
-A continuación se describen brevemente los procesamientos realizados siguiendo la numeración de la figura \ref{FlowCompleto}. Una descripción más detallada se encuentra en las secciones posteriores.
+A continuación se listan los procesamientos realizados siguiendo la numeración de la figura \ref{FlowCompleto}. Una descripción más detallada de cada procesamiento se encuentra en las secciones posteriores.
 
 \begin{enumerate}
 	\item El DEM HydroSHEDS viene en formato adf (Application Definition File). Se convierte a formato tiff como primer paso de su procesamiento.
-	\item A partir del shape del área de estudio se determina el área sobre la cual se trabajará en casi la totalidad del trabajo. Para evitar tener que hacer interpolaciones el área de trabajo enmarca al área de estudio mediante un rectángulo con lados paralelos al ecuador.	
-	\item El DEM HydroSHEDS ya en formato tiff, el DEM SRTM, y la clasificación de arboledas son reproyectadas, recortadas y remuestradas utilizando el archivo shape del área de interés procesado previamente. Esto se hace para tener una correspondencia entre los píxeles a procesar.
-	\item Se corrigen los valores sin valor (NaN) de estos elementos.
+	\item A partir del archivo en formato "`shape"' del área de estudio se determina el área sobre la cual se trabajará en este trabajo. Para evitar tener que hacer interpolaciones el área de trabajo enmarca al área de estudio mediante un rectángulo con lados paralelos al ecuador.	
+	\item El DEM HydroSHEDS ya en formato tiff, el DEM SRTM, y la clasificación de arboledas son reproyectadas, recortadas y remuestradas utilizando el archivo en formato shape del área de interés procesado previamente. Esto se hace para tener una correspondencia entre los píxeles a procesar.
+	\item Los píxeles con valores NaN (Not a Number) son corregidos utilizando los valores de píxeles vecinos..
 	\item El DEM SRTM es procesado por separado del DEM HydroSHEDS.
-	\item Se aplica a SRTM la corrección de ruido de baja amplitud y alta frecuencia.
-	\item Luego de aplicada la corrección usando la transformada de Fourier se aplica a SRTM la corrección de cortinas de árboles.
+	\item Se aplica a SRTM la corrección de ruido de baja amplitud y alta frecuencia (bandeado) utilizando la transformada de Fourier.
+	\item Luego de aplicada la corrección usando la transformada de Fourier se aplica al resultado la corrección de cortinas de árboles.
 	\item El DEM HydroSHEDS es procesado por separado del DEM SRTM.
 	\item Se aplica a HydroSHEDS el algoritmo de detección de lagunas.
 	\item Se rasteriza el vector de ríos y cañadas y teniendo como base HydroSHEDS se aplica el algoritmo de enrutamiento de ríos y cañadas.
 	\item DEM SRTM corregido
-	\item Se extraen de HydroSHEDS los valores que corresponden con lagunas detectadas
-	\item Se extraen de HydroSHEDS los valores que corresponden con ríos y cañadas luego de procesados.
+	\item Se extraen de HydroSHEDS los valores de los píxeles que corresponden a lagunas detectadas
+	\item Se extraen de HydroSHEDS los valores de los píxeles que corresponden a ríos y cañadas luego de procesados.
 	\item Los elementos mencionados anteriormente se combinan en uno solo.
 	\item Se aplica la rotación correspondiente con el shape original y se recorta.	
 \end{enumerate}
@@ -632,7 +604,7 @@ A continuación se describen brevemente los procesamientos realizados siguiendo 
 \subsection{Clasificación de Arboledas}
 \label{clasificacionArboledas}
 
-Para poder disponer de uno de los datos de entrada necesarios para este trabajo se realizó una clasificación supervisada de las arboledas existentes en el área. Esta clasíficación se realizó de modo manual, debido a que su automatización extendería demasiado el alcance de este trabajo.
+Para poder disponer de uno de los datos de entrada necesarios para este trabajo se realizó una clasificación supervisada de la vegetación existente en el área (Chuvieco 1996). Es decir una identificación de los píxeles que se corresponden con las arboledas presentes en la zona. Se denomina supervisada debido a que se diponen datos de verdad de la zona, áreas que se sabe exactamente si son arboledas y áreas que se sabe que no lo son. Esta clasificación se realizó de modo manual, debido a que su automatización extendería demasiado el alcance de este trabajo.
 
 Los pasos realizados para lograr tal clasificación son descriptos a continuación.
 
@@ -642,7 +614,7 @@ Los pasos realizados para lograr tal clasificación son descriptos a continuaci�
 \textbf{Imágenes Opticas Landsat}
 \label{imagenesLandsat}
 
-Para la clasificacion se escogen imágenes Landsat que contienen el área de estudio. Se busca en el sitio EarthExplorer perteneciente al USGS de los Estados Unidos (https://earthexplorer.usgs.gov/) el path y el row correspondiente. En este caso es el path: 228, row: 83 Fig. \ref{footprintLandsat}. Se realiza el pedido del producto OLI/TIRS HigherLevel ya que provee productos de reflectancia de superficie. Los productos de reflectancia de superficie proporcionan una estimación de la reflectancia espectral de la superficie, como si hubieran sido medidos a nivel del suelo en ausencia de dispersión atmosférica o absorción. \cite{OLITIRS} 
+Para la clasificación se escogen imágenes Landsat que contienen el área de estudio. Se busca en el sitio EarthExplorer perteneciente al USGS de los Estados Unidos (https://earthexplorer.usgs.gov/) el path y el row correspondiente. En este caso es el path: 228, row: 83 Fig. \ref{footprintLandsat}. Se realiza el pedido del producto OLI/TIRS HigherLevel ya que provee productos de reflectancia de superficie. Los productos de reflectancia de superficie proporcionan una estimación de la reflectancia espectral de la superficie, como si hubieran sido medidos a nivel del suelo en ausencia de dispersión atmosférica o absorción. \cite{OLITIRS} 
 
 \begin{figure}[!htb]
    \centering      
@@ -651,7 +623,7 @@ Para la clasificacion se escogen imágenes Landsat que contienen el área de est
  \label{footprintLandsat}
 \end{figure}
 
-Se buscaron imágenes de diferentes épocas del año, para que la clasificación sea más representativa. Las imágenes utilizadas para esta clasificación corresponden a las fechas:
+Se buscaron imágenes de diferentes épocas del año, para que la clasificación sea más representativa. De este modo se conocerán los valores de píxeles correspondientes a arboledas y a cultivos en diferentes epocas del año y la clasificación será más precisa. Las imágenes utilizadas para esta clasificación corresponden a las fechas:
 
 \begin{itemize}	
 	\item 23 de Agosto de 2016
@@ -670,7 +642,7 @@ Se cuenta con datos de verdad disponibles correspondientes a cultivos de la zona
  \label{DatosDeVerdadCultivos}
 \end{figure}
 
-Además, utilizando la herramienta de información geográfica QGIS se crearon polígonos correspondientes a árboles, Figura \ref{ShapeArboles}. Esta tarea fue realizada cargando el complemento de mapas libre Bing que tiene alta resolución de imagen superponiéndolo con una de las bandas de las imágenes Landsat antes mencionadas. También fueron identificados ríos y lechos de río.
+Además, utilizando la herramienta de información geográfica QGIS se crearon polígonos correspondientes a árboles, Figura \ref{ShapeArboles}. Esta tarea fue realizada cargando el complemento de mapas libre Bing que tiene una alta resolución de imagen y superponiéndolo con una de las bandas de las imágenes Landsat antes mencionadas. Además fueron identificados ríos y lechos de río.
 
 \begin{figure}[!htb]
    \centering      
@@ -694,14 +666,14 @@ El complemento de clasificación de QGIS llamado Dztesaka \cite{dzetsaka} es uti
 \item Archivo SRTM en formato .tif descargado del sitio USGS
 \item Archivo HydroSHEDS en formato .adf descargado del sitio USGS
 \item Archivo en formato shape (.shp). Este debe ser rectangular para poder llegar a una rasterización correcta de la imagen. Puede tener cierto angulo de inclinación, debe ser conocido.
-\item Clasificación de Arboledas. Debe ser una imagen tif cuyos valores de píxeles deben ser 1 (presencia de árboles) o 0 (ausencia de árboles).
+\item Clasificación de arboledas. Debe ser una imagen en formato tif cuyos valores de píxeles deben ser 1 (presencia de árboles) o 0 (ausencia de árboles).
 \item Vector de Ríos y Cañadas: Debe estar recortado para la zona que cubre el área de estudio y que es paralela horizontalmente con los paralelos geográficos.
 \end{itemize}
 
 
 \subsubsection{DEM SRTM en formato TIF}
 
-DEM SRTM en formato TIF. Este dato de entrada fue descripto de manera detallada en la sección \ref{SRTMDefincion}, puede descargarse de manera gratuita del sitio WEB del Servicio Geológico de Estados Unidos (USGS) del siguiente link  \hyperref[http://srtm.csi.cgiar.org/SELECTION/inputCoord.asp]{``http://srtm.csi.cgiar.org/SELECTION/inputCoord.asp"}.
+Este dato de entrada fue descripto de manera detallada en la sección \ref{SRTMDefincion}; puede descargarse de manera gratuita del sitio WEB del Servicio Geológico de Estados Unidos (USGS) del siguiente link  \hyperref[http://srtm.csi.cgiar.org/SELECTION/inputCoord.asp]{``http://srtm.csi.cgiar.org/SELECTION/inputCoord.asp"}.
 
 
 \subsubsection{DEM HydroSHEDS Conditioned en formato ADF}
@@ -709,8 +681,7 @@ DEM SRTM en formato TIF. Este dato de entrada fue descripto de manera detallada 
 
 DEM en formato ADF acondicionado para usos hidrológicos. Este dato de entrada fue descripto de manera detallada en la sección \ref{HydroSHEDSDef}, puede descargarse de manera gratuita del sitio WEB del USGS, por medio del siguiente enlace  \hyperref[http://hydrosheds.cr.usgs.gov/dataavail.php]{``http://hydrosheds.cr.usgs.gov/dataavail.php"}. Cada uno de los mosaicos de este tipo de DEM se corresponden geográficamente con los DEM SRTM.
 
-
-ADF es un formato de datos de trama interno utilizado por productos de ESRI como ArcGIS, ArcView y ArcInfo Workstation. Almacena datos espaciales como una cuadrícula binario y es uno de varios archivos ADF que en conjunto constituyen la red total. Se utiliza para representar objetos espaciales geográficas o de otro tipo, tales como mapas y las características del mapa.
+ADF es un formato de datos de trama interno utilizado por productos de ESRI como ArcGIS, ArcView y ArcInfo Workstation. Almacena datos espaciales como una cuadrícula binaria y es uno de varios archivos ADF que en conjunto constituyen la red total. Se utiliza para representar objetos espaciales geográficos o de otro tipo, tales como mapas y las características del mapa.
 
 A partir de este dato de entrada se obtendrán las regiones del área de estudio correspondientes a lagunas y cañadas.
 
@@ -739,6 +710,8 @@ El usuario puede proveer su propia clasificación realizada con la metodología 
 \subsubsection{Ríos y Cañadas}
 \label{vectorRiosArea}
 
+Una imagen de máscara es simplemente una imagen donde algunos de los valores de intensidad de píxel son cero y otros son distintos de cero. En todo este trabajo hablaremos de máscaras binarias, en donde los píxeles con valores 0 corresponden a elementos en la imagen que no son de interés o que queremos descartar y los píxeles con valor 1 se corresponden con elementos de la imagen que queremos destacar o recuperar. Trabajar con máscaras binarias (solo compuestas por ceros o unos) permite operaciones entre ellas como complementos (invertir los píxeles a destacar), resta, etc.
+
 Es importante proveer una imagen de máscara de ríos y cañadas debido a que es necesaria para extraer esta información de manera automática del DEM provisto por HydroSHEDS. HydroSHEDS provee buena información de datos de altura para estas áreas. Contando con una buena máscara se identificarán con facilidad y se podrá combinar luego con el DEM SRTM.
 
 Los datos de ríos y cañadas de la zona también son provistos por el sitio de HydroSHEDS y pueden ser descargados libremente de \cite{hydroShedsSite}. Fue descargado el producto correspondiente a Sudamérica. Estos datos son provistos en formato vectorial de líneas. A esta capa vectorial se le aplicó un recorte de un rectángulo horizontal que contiene en su totalidad al área de estudio (Figura \ref{areaestudiorios}).
@@ -760,7 +733,7 @@ Se realizó una reproyección de la imagen al Marco de Referencia Geodésico Nac
 
 \subsubsection{Recorte y Remuestreo}
 
-Una vez que la imagen fue reproyectada y con el archivo shape rectangular del área de estudio a disposición, ee puede proceder a realizar el recorte del área de estudio. Se debe recordar que el área abarcada por el archivo de polígono se debe encontrar dentro del área comprendida por el DEM en formato tif. Figura \ref{SRTMAndShape}.
+Una vez que la imagen fue reproyectada y con el archivo shape rectangular del área de estudio a disposición, se puede proceder a realizar el recorte del área de estudio. Se debe recordar que el área abarcada por el archivo de polígono se debe encontrar dentro del área comprendida por el DEM en formato tif. Figura \ref{SRTMAndShape}.
 
 Algo a tener en cuenta es que los píxeles contenidos no abarcan áreas cuadradas, esto se debe a que cada píxel comprende 3 arco-segundos en coordenadas de latitud-longitud. Teniendo en cuenta las latitudes en las cuales se trabaja, el lado vertical de cada píxel es mayor que los horizontales. Este efecto es logrado al hacer una proyección del DEM sobre el terreno, por lo que fue necesario realizar un remuestreo de los píxeles contenidos en la imagen.
 
@@ -768,11 +741,11 @@ Por medio de la herramienta $gdal\_warp$ comprendida en $gdal$ se puede realizar
 
 \begin{itemize}
 \item Recorte de área de un archivo tif usando un archivo shape contenido dentro del tif.
-\item Especificación en el tamaño de cada píxel, de esta forma se realiza un remuestreo de la imagen utilizando el método del vecino más cercano. El tamaño es establecido en 90 metros de lado.
+\item Especificación en el tamaño de cada píxel, de esta forma se realiza un remuestreo de la imagen utilizando el método del vecino más cercano. El tamaño es establecido en 90 metros de lado, para hacerlo coincidente con el tamaño del píxel de los DEM SRTM e HydroSHEDS.
 \item El tipo de dato es convertido a flotante de 32 bits.
 \end{itemize}
 
-Como resultado se obtiene una imagen en formato tif rectangular perpendicular al norte. En el caso en que el shape que se provee como dato de entrada tenga algún grado de inclinación, la imagen recortada puede tener huecos en los bordes para completar el cuadrado que contiene al área definida por el shape. Estos "`huecos"' son considerados por gdal como valores NaN a los cuales les asigna el menor valor posible (-32768).
+Como resultado se obtiene una imagen en formato tif rectangular perpendicular al norte. En el caso en que el shape que se provee como dato de entrada tenga algún grado de inclinación, la imagen recortada puede tener huecos en los bordes para completar el cuadrado que contiene al área definida por el shape. Estos "`huecos"' son considerados por GDAL como valores NaN a los cuales les asigna el menor valor posible (-32768).
 
 Se debe tener en cuenta que la imagen por si misma puede traer píxeles con valores NaN, por errores propios de la imagen provista por USGS.
 
@@ -791,7 +764,7 @@ Para determinar el valor que obtendrá el píxel a corregir solo se deben tener 
 
 
 
-El DEM SRTM provisto por USGS trae un bandeado inherente (Figura \ref{SinFourier}), similar al que se observa para el DEM de Hydroshed mostrado en la figura \ref{HSHEDSPaleta}, el cual debe ser corregido si se quiere utilizar con fines hidrológicos. Es importante tener en cuenta que el DEM al cual se le debe corregir tal bandeado puede haber sido rotado, por lo tanto la orientación del bandeado puede variar y por consecuencia los valores a corregir en la transformada de Fourier, dependiendo la rotación aplicada y el tamaño de la imagen.
+El DEM SRTM provisto por USGS trae un bandeado inherente (Figura \ref{SinFourier}), similar al que se observa para el DEM de Hydroshed mostrado en la figura \ref{HSHEDSPaleta}, el cual debe ser corregido si se quiere utilizar con fines hidrológicos. Es importante tener en cuenta que el DEM al cual se le debe corregir tal bandeado puede haber sido rotado, por lo tanto la orientación del bandeado puede variar y en consecuencia los valores a corregir en la transformada de Fourier, dependiendo la rotación aplicada y el tamaño de la imagen.
 
 \begin{figure}[!htb]
    \centering      
@@ -814,7 +787,7 @@ Es por eso que es deseable que la corrección de tal bandeado usando la transfor
 
 \textbf{Obtención de la transformada de Fourier a partir del DEM SRTM}
 
-Como primer paso se debe obtener la transformada de Fourier de la imagen a corregir (González \textit{et al.} 1993). Esto se hace de manera muy simple con funciones incluidas en librerías matemáticas, se obtiene como resultado la imagen que podemos observar en la figura \ref{FourierNoCentrada}:
+Como primer paso se debe obtener la transformada de Fourier de la imagen a corregir (González \textit{et al.} 1993). Esto se hace de manera muy simple con funciones incluidas en librerías matemáticas, se obtiene como resultado la imagen que se puede observar en la figura \ref{FourierNoCentrada}:
 
 \begin{figure}[!htb]
    \centering      
@@ -826,7 +799,7 @@ Como primer paso se debe obtener la transformada de Fourier de la imagen a corre
 
 \textbf{Cambiar las frecuencias cero al centro de la imagen por desplazamiento}
 
-La transformada de Fourier representa el espectro centrado de frecuencia de Fourier (Figura \ref{FourierTransform}). Si hacemos zoom sobre esta imagen de frecuencias centrada podemos observar más claramente los blancos que deben ser corregidos (figura \ref{ZoomFourierTransformBlancos}).
+La transformada de Fourier se suele representar centrada, para colocar el píxel (0,0) en el centro se aplica una función de cambio. De esta manera obtenemos la imagen que representa el espectro centrado de frecuencia de Fourier (Figura \ref{FourierTransform}). Si se hace un zoom sobre esta imagen de frecuencias centrada se puede observar más claramente los blancos que deben ser corregidos (figura \ref{ZoomFourierTransformBlancos}).
 
 \begin{figure}[!htb]
    \centering      
@@ -852,16 +825,16 @@ El próximo paso consiste en detectar de manera automática los blancos a correg
 
 
 
-La cruz central de la imagen que representa debe ser excluida de la detección de blancos a corregir ya que ofrece valores tanto o más altos que los blancos buscados. Si dividimos la imagen por la mitad, tanto horizontal como verticalmente obtenemos cuatro cuartos determinados por esta cruz central y los numeramos como se puede ver en la figura \ref{CuartosFourier} 
+La cruz central de la imagen que representa debe ser excluida de la detección de blancos a corregir ya que ofrece valores tanto o más altos que los blancos buscados. Si se divide la imagen por la mitad, tanto horizontal como verticalmente se obtiene cuatro cuartos determinados por esta cruz central y se numeran como se puede ver en la figura \ref{CuartosFourier} 
 
 \begin{figure}[!htb]
    \centering      
    \includegraphics[width=0.85\textwidth]{imagenes/CuartosFourier.jpg}
- \caption{Enumeración de los cuartos en los que dividimos la imagen de frecuencias de Fourier para su procesamiento.}
+ \caption{Enumeración de los cuartos en los que se divide la imagen de frecuencias de Fourier para su procesamiento.}
  \label{CuartosFourier}
 \end{figure}
 
-Podemos observar que el primer cuarto es simétrico con respecto al cuarto, espejado diagonalmente, es decir horizontal y verticalmente, así como el segundo se corresponde con el tercero, espejado también por la diagonal.
+Se puede observar que el primer cuarto es simétrico con respecto al cuarto, espejado diagonalmente, es decir horizontal y verticalmente, así como el segundo se corresponde con el tercero, espejado también por la diagonal.
 
 Con esta información, se realiza la detección de blancos para los dos primeros cuadrantes por separado para luego espejarlos y obtener los cuadrantes tres y cuatro. Se debe destacar que, dada la independencia en la detección de blancos para los dos primeros cuartos, se pudo aplicar paralelismo al procesamiento, lo que logra una mayor eficiencia en la ejecución.
 
@@ -967,7 +940,7 @@ y teniendo en cuenta además que la detección de blancos en los cuadrantes uno 
 
 \subsubsubsection{Obtención de los cuadrantes 3 y 4, y armado de la imagen completa}
 
-El algoritmo mencionado anteriormente es aplicado a los cuadrantes 1 y 2. Y se obtiene como resultado, las máscaras 1 y 2. Recordemos que a estos cuadrantes se les han recortado las franjas correspondientes con los bordes que limitan con las mitades de la imagen, tanto horizontal como verticalmente.
+El algoritmo mencionado anteriormente es aplicado a los cuadrantes 1 y 2. Y se obtiene como resultado, las máscaras 1 y 2. Se recuerda que a estos cuadrantes se les han recortado las franjas correspondientes con los bordes que limitan con las mitades de la imagen, tanto horizontal como verticalmente.
 
 \textbf{Agregado de márgenes:} Es por eso que antes de realizar el espejado diagonalmente para obtener los cuadrantes 3 y 4 se deben completar estas franjas, en particular con valores 0, ya que en estas partes de la imagen no se encuentran blancos que indiquen correcciones.
 
@@ -988,7 +961,7 @@ El algoritmo mencionado anteriormente es aplicado a los cuadrantes 1 y 2. Y se o
    \end{minipage}
 \end{figure}
 
-\textbf{Armado de la imagen con los 4 cuartos:} Una vez obtenidos los 4 cuadrantes, deben ser unidos en una imagen grande, del tamaño de la original. En este caso se debe recordar si tanto filas como columnas eran de cantidad impar. Ya que en ese caso, al armar la imagen de máscara completa se debió completar tal fila o columna faltante al momento de dividir la imagen por la mitad. Se obtiene la imagen que podemos ver en la figura \ref{maskFourierComplete}
+\textbf{Armado de la imagen con los 4 cuartos:} Una vez obtenidos los 4 cuadrantes, deben ser unidos en una imagen grande, del tamaño de la original. En este caso se debe recordar si tanto filas como columnas eran de cantidad impar. Ya que en ese caso, al armar la imagen de máscara completa se debió completar tal fila o columna faltante al momento de dividir la imagen por la mitad. Se obtiene la imagen que se puede ver en la figura \ref{maskFourierComplete}
 
 \begin{figure}[!htb]
    \centering      
@@ -1028,7 +1001,7 @@ Para poder aplicar la antitransformada se debe retornar las frecuencias cero a s
 
 
 
-A partir de esta imagen corregida y luego de aplicar la antitransformada a la imagen original, obtendremos que el problema de bandeado fue corregido exitosamente (Figura \ref{SRTMSinFourierCorrected}).
+A partir de esta imagen corregida y luego de aplicar la antitransformada a la imagen original, se obtiene que el problema de bandeado fue corregido exitosamente (Figura \ref{SRTMSinFourierCorrected}).
 
 \begin{figure}[H]
    \centering      
@@ -1037,7 +1010,7 @@ A partir de esta imagen corregida y luego de aplicar la antitransformada a la im
  \label{SRTMSinFourierCorrected}
 \end{figure}
 
-Comparando esta imagen con la original sin corregir (ver Figura \ref{SinFourier}) podemos distinguir con mayor claridad la ausencia de bandeado.
+Comparando esta imagen con la original sin corregir (ver Figura \ref{SinFourier}) se puede distinguir con mayor claridad la ausencia de bandeado.
 
 
 \subsubsection{Corrección de Cortinas de Árboles}
@@ -1074,11 +1047,11 @@ En la figura \ref{DiagramaArboledas} se observa el diagrama de proceso de filtra
  \label{DiagramaArboledas}
 \end{figure}
 
-Recordemos que esta parte del procesamiento ya se encuentra integrado al programa que procesa completamente el DEM.
+Se recuerda que esta parte del procesamiento ya se encuentra integrado al programa que procesa completamente el DEM.
 
 \textbf{Aplicación de filtro cuadrático.}
 
-Como primer paso de este proceso se aplica un filtro cuadrático de suavizado de la imagen. El filtro cuadrático que se usa es debido a las características del terreno. Este filtro nos da como resultado un DEM en donde se han planchado todas las irregularidades del terreno y dejando a las ondulaciones más relevantes. A modo de ilustrar el efecto de este filtro sobre el terreno podemos ver la figura \ref{filtroCuadratico}:
+Como primer paso de este proceso se aplica un filtro cuadrático de suavizado de la imagen. El filtro cuadrático que se usa es debido a las características del terreno. Este filtro nos da como resultado un DEM en donde se han planchado todas las irregularidades del terreno y dejando a las ondulaciones más relevantes. A modo de ilustrar el efecto de este filtro sobre el terreno se puede ver la figura \ref{filtroCuadratico}:
 
 \begin{figure}[H]
    \centering      
@@ -1090,7 +1063,7 @@ Como primer paso de este proceso se aplica un filtro cuadrático de suavizado de
 \textbf{DEM Resaltado}
 \label{resta}
 
-A partir de la diferencia entre el DEM SRTM y el suavizado cuadrático obtenido en el paso anterior se puede obtener una imagen que llamaremos "`Resaltado"', Figura \ref{demResaltado}.
+A partir de la diferencia entre el DEM SRTM y el suavizado cuadrático obtenido en el paso anterior se puede obtener una imagen que será llamada "`Resaltado"', Figura \ref{demResaltado}.
 
 \begin{figure}[H]
    \centering      
@@ -1103,7 +1076,7 @@ Esta imagen representa las alturas que sobresalen abruptamente del suelo.
 
 \textbf{Máscara de valores mayores a 1.5 mts}
 
-Aplicando una condición sobre los valores del DEM Resaltado, podemos obtener una máscara para diferentes alturas, en particular elegimos los valores que superen la altura de 1.5 metros. Figura \ref{maskTrees}
+Aplicando una condición sobre los valores del DEM Resaltado, se puede obtener una máscara para diferentes alturas, en particular se eligen los valores que superen la altura de 1.5 metros. Figura \ref{maskTrees}
 
 \begin{figure}[H]
    \centering      
@@ -1130,7 +1103,7 @@ Previamente, se realizó un análisis visual del uso de este filtro evaluando lo
    \end{minipage}
 \end{figure}
 
-Luego, se necesitan conocer los píxeles que pertenecen a ambas máscaras, alturas mayores a 1.5 mts y arboledas. Esto lo logramos realizando un producto entre ambas imagenes. Teniendo en cuenta que las máscaras tienen valor 1 para valores positivos y 0 en caso negativo de presencia de objeto, la nueva máscara arrojará un valor 1 donde se cumpla la condición en ambas imágenes.
+Luego, se necesitan conocer los píxeles que pertenecen a ambas máscaras, alturas mayores a 1.5 mts y arboledas. Esto se logra realizando un producto entre ambas imagenes. Teniendo en cuenta que las máscaras tienen valor 1 para valores positivos y 0 en caso negativo de presencia de objeto, la nueva máscara arrojará un valor 1 donde se cumpla la condición en ambas imágenes.
 
 Se obtiene como resultado la siguiente imagen que representa la máscara de árboles mayores a 1.5 metros (Figura \ref{maskTressHeight}).
 
@@ -1197,7 +1170,7 @@ Para realizar la corrección de arboledas se utilizaron imágenes Landsat 8 del 
 \subsection{Procesamiento a HydroSHEDS para extracción de lagunas, ríos y cañadas}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-El DEM de HydroSHEDS ofrece interesantes características para uso hidrológico ya que provee una mejor definición de las cañadas y de pequeñas lagunas del terreno. Asimismo, viene con la desventaja del bandeado inherente al DEM, excepto en los cuerpos de agua que provee. La existencia de estos cuerpos de agua en donde no existe el bandeado dificulta la corrección por transformada de Fourier debido a que cuando se intenta corregir introduce errores en estos cuerpos de agua, como vimos en la sección \ref{aplicacionBandeado}. Debido a esto, solo se extraen los datos correspondientes a lagunas, ríos y cañadas.
+El DEM de HydroSHEDS ofrece interesantes características para uso hidrológico ya que provee una mejor definición de las cañadas y de pequeñas lagunas del terreno. Asimismo, viene con la desventaja del bandeado inherente al DEM, excepto en los cuerpos de agua que provee. La existencia de estos cuerpos de agua en donde no existe el bandeado dificulta la corrección por transformada de Fourier debido a que cuando se intenta corregir introduce errores en estos cuerpos de agua, como se ve en la sección \ref{aplicacionBandeado}. Debido a esto, solo se extraen los datos correspondientes a lagunas, ríos y cañadas.
 
 Las operaciones realizadas a partir de HydroSHEDS son descriptas a continuación (Figura \ref{DiagramaLagunas}):
 
@@ -1258,7 +1231,7 @@ Luego de la máscara obtenida en el paso anterior, se observo la presencia de nu
 			\item Conservación de demarcación de lagunas originalmente detectadas.
 		\end{itemize}		
 		
-		Podemos ver el resultado en la figura \ref{lagunasDetectadas}
+		Se puede ver el resultado en la figura \ref{lagunasDetectadas}
 
 \begin{figure}[H]
    \centering      
@@ -1281,7 +1254,7 @@ Las lagunas detectadas tienen bordes muy definidos, una expansión a esta detecc
 
 \subsubsection{Procesamiento de Ríos y Cañadas.}
 
-Como vimos en la sección \ref{vectorRiosArea} uno de los datos de entrada es un archivo vectorial de ríos y cañadas del área que cubre abarca completamente el área de estudio. En la figura \ref{caniada} podemos observar una foto de un ejemplo real de una cañada en zona de llanuras:
+Como se vio en la sección \ref{vectorRiosArea} uno de los datos de entrada es un archivo vectorial de ríos y cañadas del área que cubre abarca completamente el área de estudio. En la figura \ref{caniada} se puede observar una foto de un ejemplo real de una cañada en zona de llanuras:
 
 \begin{figure}[H]
    \centering      
@@ -1389,12 +1362,12 @@ Como resultado se obtiene una máscara que, en el DEM HydroSHEDS, abarca con may
 
 \textbf{Intersección entre Ríos y Lagunas}
 
-El curso de los ríos y cañadas provisto atraviesa lagunas en sus recorridos. Como vimos anteriormente (Sección \ref{deteccionLagunas}) las lagunas son detectadas a partir del DEM HydroSHEDS original. Dado que los ríos y cañadas vienen en formato vectorial de líneas, estos no tienen en cuenta el ancho de las lagunas. Esto lo podemos ver en la Figura \ref{lagunasSobreRios} en donde se superpusieron las dos imágenes de máscaras.
+El curso de los ríos y cañadas provisto atraviesa lagunas en sus recorridos. Como se vio anteriormente (Sección \ref{deteccionLagunas}) las lagunas son detectadas a partir del DEM HydroSHEDS original. Dado que los ríos y cañadas vienen en formato vectorial de líneas, estos no tienen en cuenta el ancho de las lagunas. Esto lo se puede ver en la Figura \ref{lagunasSobreRios} en donde se superpusieron las dos imágenes de máscaras.
 
 \begin{figure}[H]
    \centering      
    \includegraphics[width=0.85\textwidth]{imagenes/lagunasSobreRios.jpg}
- \caption{Superposición de máscara de lagunas detectadas y de ríos y cañadas. Podemos ver en colores más claros las intersecciones entre ambos.}
+ \caption{Superposición de máscara de lagunas detectadas y de ríos y cañadas. Se puede ver en colores más claros las intersecciones entre ambos.}
  \label{lagunasSobreRios}
 \end{figure}
 
@@ -1427,7 +1400,7 @@ Una vez que se identificaron las intersecciones entre ríos y lagunas, éstas so
  \label{riversSinLagunas}
 \end{figure}
 
-Superponiendo la ultima máscara generada con la de lagunas podemos ver que ya no se presenta este efecto (Figura \ref{riversYLagunas}).
+Superponiendo la ultima máscara generada con la de lagunas se puede ver que ya no se presenta este efecto (Figura \ref{riversYLagunas}).
 
 \begin{figure}[H]
    \centering      
@@ -1458,11 +1431,11 @@ Esta función compara los valores contenidos dentro de cada línea de la imagen 
 
 \subsection{Combinación de los elementos del DEM SRTM y del DEM HydroSHEDS.}
 
-Una vez identificados los ríos, cañadas y lagunas, los valores correspondientes a estos píxeles deben ser extraídos del DEM HydroSHEDS, por lo que las grillas que representan estas máscaras primero deben ser combinadas en una sola para que luego a partir de esta combinación se pueda extraer en un paso los valores de HydroSHEDS. Para combinar estas grillas en una sola debemos recordar que no existe solapamiento entre ambas (seccion \ref{restarioscaniadas}) por lo tanto se pueden sumar ambas grillas píxel a píxel sin solapamiento de píxeles. Luego de que se dispone una máscara de ambos elementos combinados (ríos, cañadas y lagunas), ésta es multiplicada píxel a píxel con el DEM de HydroSHEDS generando así una grilla con los valores de este DEMen cada posición perteneciente a río, cañada y laguna.
+Una vez identificados los ríos, cañadas y lagunas, los valores correspondientes a estos píxeles deben ser extraídos del DEM HydroSHEDS, por lo que las grillas que representan estas máscaras primero deben ser combinadas en una sola para que luego a partir de esta combinación se pueda extraer en un paso los valores de HydroSHEDS. Para combinar estas grillas en una sola se debe recordar que no existe solapamiento entre ambas (seccion \ref{restarioscaniadas}) por lo tanto se pueden sumar ambas grillas píxel a píxel sin solapamiento de píxeles. Luego de que se dispone una máscara de ambos elementos combinados (ríos, cañadas y lagunas), ésta es multiplicada píxel a píxel con el DEM de HydroSHEDS generando así una grilla con los valores de este DEMen cada posición perteneciente a río, cañada y laguna.
 
 El resto de la imagen debe ser obtenido del DEM SRTM en donde ya fue corregido el bandeado por Fourier y las cortinas de árboles, por lo cual el complemento de la máscara mencionada en el párrafo anterior es el que se utiliza para obtener estos valores del DEM SRTM. De esta manera, esta máscara (complemento de la anterior) es multiplicada por el DEM SRTM con las correcciones aplicadas.
 
-De esta manera se obtiene el producto final. Podemos observar los tres elementos que son combinados en la imagen final (Figura \ref{elementosACombinar}):
+De esta manera se obtiene el producto final. Se puede observar los tres elementos que son combinados en la imagen final (Figura \ref{elementosACombinar}):
 
 \begin{figure}[H]
 	\centering
@@ -1534,7 +1507,7 @@ En las secciones siguientes se definen las métricas y los estadísticos utiliza
 
 A medida que la simulación va ejecutándose las alturas de agua de la escena van variando y el área va secándose paulatinamente arrojando diferentes alturas de agua. Para este análisis no se discriminará entre diferentes alturas de agua, es decir se obtendrá una imagen binaria de ceros y unos (normalmente llamada máscara en el procesamiento de imágenes). Esta imagen binaria es obtenida a partir de determinar el umbral para el cual se considera que en cada punto hay presencia de agua o no.
 
-Lo mismo aplica para la imagen NDWI (veremos la utilización en la validación en la siguiente sección). No se distingue entre diferentes índices de agua. Se creó una imagen binaria a partir del NDWI conteniendo unos donde el índice tiene un valor positivo, y cero en caso contrario.
+Lo mismo aplica para la imagen NDWI (se observa la utilización en la validación en la siguiente sección). No se distingue entre diferentes índices de agua. Se creó una imagen binaria a partir del NDWI conteniendo unos donde el índice tiene un valor positivo, y cero en caso contrario.
 
 \section{Índice de Agua NDWI}
 \label{indiceaguandwi}
@@ -1585,7 +1558,7 @@ La relación entre estos datos puede ser sintetizada en la siguiente tabla \ref{
 
 \section{Estadísticos de Interés}
 
-A partir del conteo de valores negativos y positivos descripto en la sección anterior se calculó un conjunto de datos estadísticos de interés para clasificaciones binarias.  Las clasificaciones binarias apuntan a predecir valores positivos o negativos en un conjunto de datos, es por eso que fueron considerados para el análisis de estos resultados. Para lo cual citamos el trabajo de Bekkar \textit{et al.} (2013).
+A partir del conteo de valores negativos y positivos descripto en la sección anterior se calculó un conjunto de datos estadísticos de interés para clasificaciones binarias.  Las clasificaciones binarias apuntan a predecir valores positivos o negativos en un conjunto de datos, es por eso que fueron considerados para el análisis de estos resultados. Para lo cual se cita el trabajo de Bekkar \textit{et al.} (2013).
 
 Los estadísticos a analizar son los siguientes:
 
@@ -1642,8 +1615,8 @@ Se utiliza para tener un valor medio ponderado entre la precisión y la especifi
 F_{\beta}=\frac{(1+\beta^{2})*VP}{(1+\beta^{2})*VP + \beta^{2}*FN + FP }
 \end{equation}
 
-Si $\beta > 1$ damos más importancia a Especificidad, mientras que si $\beta < 1$ se le da más importancia a la Precisión. 
-En este caso tomaremos $\beta = 1$, es decir se dará la misma ponderación (o importancia) a Precisión que a la Especificidad:
+Si $\beta > 1$ se da más importancia a Especificidad, mientras que si $\beta < 1$ se le da más importancia a la Precisión. 
+En este caso se toma $\beta = 1$, es decir se dará la misma ponderación (o importancia) a Precisión que a la Especificidad:
 
 \begin{equation}
 F_{1}=\frac{2*VP}{2 * VP + FN + FP }
@@ -1672,7 +1645,7 @@ MCC=\frac{VP*VN - FP*FN}{\sqrt{(VP+FP)(VP+FN)(VN+FP)(VN+FN)}}
 
 \subsection{Rotación de la imagen NDWI}
 
-Recordemos que el área de interés tiene una forma rectangular con una inclinación dada. El DEM resultado es rotado al final del procesamiento ya que el simulador requiere grillas cuadradas. Esto requirió que la imagen con índice NDWI tambien fuera rotada con la misma inclinación que el DEM de resultado. En este caso 57.8 grados.
+Se recuerda que el área de interés tiene una forma rectangular con una inclinación dada. El DEM resultado es rotado al final del procesamiento ya que el simulador requiere grillas cuadradas. Esto requirió que la imagen con índice NDWI tambien fuera rotada con la misma inclinación que el DEM de resultado. En este caso 57.8 grados.
 
 
 
@@ -1687,7 +1660,7 @@ Ambos DEMs fueron utilizados de manera independiente como dato de entrada en el 
 \section{Análisis visual comparativo de los Resultados}
 \label{analisisVisual}
 
-Se realizó un análisis comparativo visual de los resultados del simulador para el día de simulación que se estima se aproxima más a la realidad con respecto a la imagen NDWI obtenida de la imagen Landsat. Es decir, se analizaron los resultados de la simulación para el DEM de Resultado y para el DEM HydroSHEDS a los cuales de aquí en adelante llamaremos R\_sim y H\_sim respectivamente. A la imagen NDWI obtenida de Landsat la denominaremos IM\_L. Se analizaron diferentes puntos a tener en cuenta, sobretodo orientado a las mejoras realizadas en el procesamiento de este trabajo.
+Se realizó un análisis comparativo visual de los resultados del simulador para el día de simulación que se estima se aproxima más a la realidad con respecto a la imagen NDWI obtenida de la imagen Landsat. Es decir, se analizaron los resultados de la simulación para el DEM de Resultado y para el DEM HydroSHEDS a los cuales de aquí en adelante se denominarán R\_sim y H\_sim respectivamente. La imagen NDWI obtenida de Landsat será llamada IM\_L. Se analizaron diferentes puntos a tener en cuenta, sobretodo orientado a las mejoras realizadas en el procesamiento de este trabajo.
 
 El objetivo de este análisis fue observar cualitativamente los comportamientos del agua obtenido en base a los propuestos inicialmente.
 
@@ -1740,7 +1713,7 @@ Para un mejor análisis visual se pondrán ambas imágenes de NWDI en una combin
 	\item Canal Azul (B): IM\_L
 \end{itemize}
 
-Podremos observar de manera rápida las regiones donde coincide la presencia de agua para diferentes imágenes. Teniendo en cuenta esto, la interpretación de colores es la siguiente. Tabla \ref{tablaColores}:
+Se puede observar de manera rápida las regiones donde coincide la presencia de agua para diferentes imágenes. Teniendo en cuenta esto, la interpretación de colores es la siguiente. Tabla \ref{tablaColores}:
 
 \begin{table}[H]
    \centering      
@@ -1756,7 +1729,7 @@ Podremos observar de manera rápida las regiones donde coincide la presencia de 
  \label{RGBDia10}
 \end{figure}
 
-Observando la imagen completa (figura \ref{RGBDia10}) podemos distinguir:
+Observando la imagen completa (figura \ref{RGBDia10}) se puede distinguir:
 
 \begin{itemize}
 	\item Numerosas "`manchas"' en azul, esto indica lugares en donde hay lagunas reales pero que no se presenta evidencia en ninguna de las imágenes correspondientes a R\_sim y H\_sim. Es decir, no fueron "`predichas"' correctamente en ninguno de los dos casos.
@@ -1781,7 +1754,7 @@ Haciendo referencia a la figura \ref{RGBDia10} se puede ver claramente el compor
 
 \subsection{Análisis Visual de lagunas no predichas correctamente}
 \label{obscorreccionlagunas}
-Como se mencionó anteriormente, no todas las lagunas son predichas de manera correcta como podemos ver en diferentes casos, estas se corresponden con el color rojo, ya que es una laguna predicha por R\_sim y que no está presente en IM\_L. Por otro lado las que son solo de color azul se da el efecto inverso: existente en la realidad y no predicha por R\_sim:
+Como se mencionó anteriormente, no todas las lagunas son predichas de manera correcta como se puede ver en diferentes casos, estas se corresponden con el color rojo, ya que es una laguna predicha por R\_sim y que no está presente en IM\_L. Por otro lado las que son solo de color azul se da el efecto inverso: existente en la realidad y no predicha por R\_sim:
 
 A partir de esto se puede observar que estas lagunas pueden estar conectadas por una cañada con dirección de desembocadura hacia la laguna predicha por R\_sim. Figura \ref{LagunaProblema1}: 
 
@@ -1834,7 +1807,7 @@ En R\_sim esta condición fue resuelta, por lo que en la imagen luego de una hor
 
 \subsection{Análisis Visual de la corrección de las cortinas de árboles}
 
-Es interesante además analizar el comportamiento R\_sim luego de que fueron corregidas las cortinas de árboles. En la siguiente figura (\ref{HydoSHEDSOriginalArboles}) correspondiente a los DEMs (en este caso no a alturas de agua sino al DEM para el cual se corrieron las simulaciones) observamos en color más claro lo que resultó luego de que fueran corregidas un par de cortinas de árboles, sección \ref{correccionACortinasDeArboles}. 
+Es interesante además analizar el comportamiento R\_sim luego de que fueron corregidas las cortinas de árboles. En la siguiente figura (\ref{HydoSHEDSOriginalArboles}) correspondiente a los DEMs (en este caso no a alturas de agua sino al DEM para el cual se corrieron las simulaciones) se observa en color más claro lo que resultó luego de que fueran corregidas un par de cortinas de árboles, sección \ref{correccionACortinasDeArboles}. 
 
 \begin{figure}[H]
    \centering      
@@ -1844,7 +1817,7 @@ Es interesante además analizar el comportamiento R\_sim luego de que fueron cor
 \end{figure}
 
 
-En H\_sim podemos observar que no existe agua entre la cortina de árboles. Esto se ve dados los píxeles negros existentes, con esto también se asume que el agua no fluye entre la cortina de árboles, ya que para todos los fines prácticos la cortina de árboles podría interpretarse como una loma, en cuya cresta no hay agua y que impide el movimiento del agua a través suyo. Este era el comportamiento no deseado, figura \ref{HydoSHEDSOriginalArbolesEjecucion}:
+En H\_sim se puede observar que no existe agua entre la cortina de árboles. Esto se ve dados los píxeles negros existentes, con esto también se asume que el agua no fluye entre la cortina de árboles, ya que para todos los fines prácticos la cortina de árboles podría interpretarse como una loma, en cuya cresta no hay agua y que impide el movimiento del agua a través suyo. Este era el comportamiento no deseado, figura \ref{HydoSHEDSOriginalArbolesEjecucion}:
 
 
 \begin{figure}[H]
@@ -1904,17 +1877,14 @@ Para cada una de las salidas que serán analizadas se calcularon los valores est
 
 \section{Análisis comparativo de los Estadísticos de los Resultados}
 
-Observando las diferencias a simple vista (Tabla \ref{TablaDiferencias}) se puede notar que R\_sim ofrece mejor desempeño para todos los días de simulación y para todos los valores estadísticos como veremos en detalle a continuación. Asimismo se debe recordar que IM\_L de la zona es estática, es decir corresponde a un solo instante, y los resultados arrojados por el simulador son uno por día como se puede observar en la tabla de la sección anterior.
+Observando las diferencias a simple vista (Tabla \ref{TablaDiferencias}) se puede notar que R\_sim ofrece mejor desempeño para todos los días de simulación y para todos los valores estadísticos como se observa en detalle a continuación. Asimismo se debe recordar que IM\_L de la zona es estática, es decir corresponde a un solo instante, y los resultados arrojados por el simulador son uno por día como se puede observar en la tabla de la sección anterior.
 
 
-% VER SI ESTO VA
-% Por todo esto mencionado es que a partir de dicha tabla se debió determinar el día de simulación al cual más se aproximan los mejores resultados.
-
-Para realizar el análisis comparativo de los estadísticos de los resultados se graficó el valor de cada estadístico en función de los días de ejecución del simulador hidrológico, tanto para R\_sim de este trabajo como para H\_sim de base. Ambas curvas fueron superpuestas en el mismo gráfico para una mejor visualización. Como podemos ver de ejemplo en la figura \ref{Sensibilidad}
+Para realizar el análisis comparativo de los estadísticos de los resultados se graficó el valor de cada estadístico en función de los días de ejecución del simulador hidrológico, tanto para R\_sim de este trabajo como para H\_sim de base. Ambas curvas fueron superpuestas en el mismo gráfico para una mejor visualización. Como se puede ver de ejemplo en la figura \ref{Sensibilidad}.
 
 \subsection{Sensibilidad}
 
-Observando las curvas de Sensibilidad vemos que R\_sim ofrece mejor métrica a lo largo de toda la simulación ya que esta curva se encuentra por encima de la curva de sensibilidad correspondiente a H\_sim casi en la totalidad de la simulación.
+Observando las curvas de Sensibilidad se distingue que R\_sim ofrece mejor métrica a lo largo de toda la simulación ya que esta curva se encuentra por encima de la curva de sensibilidad correspondiente a H\_sim casi en la totalidad de la simulación.
 
 La curva es decreciente debido a que para la simulación se inunda toda el área de estudio y a medida que transcurren los días el agua en superficie se va desplazando saliendo por los bordes y secando debido a la evapotranspiración, por lo tanto es mucho más probable que los casos positivos (agua existente) predichos coincidan con los casos positivos de agua realmente existente.
 
@@ -1970,7 +1940,7 @@ En este caso las mayores diferencias se observan entre los días 9 y 17 (varía 
 
 \subsection{Exactitud}
 
-La exactitud combina los aciertos tantos de lugares con agua como los lugares sin agua. Observamos comportamiento similar a la Sensibilidad, siempre destacando la notable mejora de los valores estadísticos de R\_sim con respecto a H\_sim. En particular entre los días 13 y 20, existen diferencias de hasta el 7 \% mejores (tabla \ref{TablaDiferencias}).
+La exactitud combina los aciertos tantos de lugares con agua como los lugares sin agua. Se observa comportamiento similar a la Sensibilidad, siempre destacando la notable mejora de los valores estadísticos de R\_sim con respecto a H\_sim. En particular entre los días 13 y 20, existen diferencias de hasta el 7 \% mejores (tabla \ref{TablaDiferencias}).
 
 \begin{figure}[H]
    \centering      
@@ -2008,9 +1978,9 @@ Nuevamente se observa mejora en toda la curva y diferencias de entre 14 y 15 \% 
 
 \subsection{Coeficiente de Correlación de Matthews}
 
-El coeficiente de correlación de Matthews es considerado el mejor indicador para clasificaciones binarias ya que incluye todas las métricas de manera balanceada como vimos en la sección \ref{defMatthews}.
+El coeficiente de correlación de Matthews es considerado el mejor indicador para clasificaciones binarias ya que incluye todas las métricas de manera balanceada como pudo verse en la sección \ref{defMatthews}.
 
-Nuevamente se observa una mejora en toda la curva y diferencias de entre 15 y 19 \% entre los días 7 y 17 de simulación. Esto es muy importante de destacar debido a que en H\_sim para esas instancias muestra porcentajes por debajo del 5 \%, lo que en magnitud representa un valor considerable. Observando la gráfica (figura \ref{MCC}) vemos que e R\_sim muestra valores de hasta el 25\% lo que provoca una mejora de hasta el 500\%. Un detalle no menor a tener en cuenta en el análisis de estos resultados.
+Nuevamente se observa una mejora en toda la curva y diferencias de entre 15 y 19 \% entre los días 7 y 17 de simulación. Esto es muy importante de destacar debido a que en H\_sim para esas instancias muestra porcentajes por debajo del 5 \%, lo que en magnitud representa un valor considerable. Observando la gráfica (figura \ref{MCC}) se puede ver que e R\_sim muestra valores de hasta el 25\% lo que provoca una mejora de hasta el 500\%. Un detalle no menor a tener en cuenta en el análisis de estos resultados.
 
 El rango de valores del coeficiente de correlación de Matthews va de -1 a 1 (de -100 a 100 en este caso en donde se le dio otro orden de magnitud). En donde 100 significa una perfecta predicción, 0 una predicción aleatoria y -100 una total discordancia entre predicción y observación. 
 
@@ -2043,9 +2013,7 @@ Luego de todo el trabajo realizado y el análisis de los resultados obtenidos ta
 
 	\item Se determinó que el mejor DEM que se obtiene resulta de una combinación entre datos y procesos de a los DEMs SRTM e HydroSHEDS.
 
-		%\item En este trabajo provee todo el estudio y la aplicación de diversas técnicas y algoritmos para el procesamiento del DEM.
-		
-		
+	
 	\item El DEM resultante resuelve lo siguiente con respecto a HydroSHEDS:	
 		\begin{itemize}
 			\item Problema de cortinas de árboles.
@@ -2059,7 +2027,7 @@ Luego de todo el trabajo realizado y el análisis de los resultados obtenidos ta
 			\item Asimismo se considera que el procesamiento del DEM de Resultado se puede mejorar aún más, teniendo en cuenta que el coeficiente de Matthews tiene mucho margen aún. Probablemente en el algoritmo de detección de lagunas proveyendo información a traves de un análisis temporal de NWDI.
 			%y que viendo el análisis visual en muchos casos, muchas lagunas existentes en la imagen NDWI contienen agua luego de la simulación.
 
-		\item No es un detalle menor recordar que SRTM e HydroSHEDS (los DEMs que se tomaron como base para este trabajo) ya tienen más de 17 años de existencia. Si bien presentan muy buenas características para procesamientos en el ámbito hidrológico, en algunas situaciones pueden presentar casos evidentes de cambios con respecto a la superficie, como observamos en las secciones \ref{obscorreccionlagunas} y \ref{obscorreccionArboledas}. Además es notable, sobretodo en el análisis visual cualitativo, las numerosas lagunas que no fueron predichas de manera correcta. Luego de 17 años de vigencia de estos DEMs, es altamente probable la construcción de obras (canales de drenaje, terraplenes, etc) para conducir de manera distinta el flujo del agua y evitar áreas inundadas. Disponer de un DEM libre, global y más reciente requiere una nueva misión. La propuesta para afrontar estos casos puntuales sería anaĺizar cada uno y ajustar el DEM para mantenerlo actualizado y operativo.
+		\item No es un detalle menor recordar que SRTM e HydroSHEDS (los DEMs que se tomaron como base para este trabajo) ya tienen más de 17 años de existencia. Si bien presentan muy buenas características para procesamientos en el ámbito hidrológico, en algunas situaciones pueden presentar casos evidentes de cambios con respecto a la superficie, como se observa en las secciones \ref{obscorreccionlagunas} y \ref{obscorreccionArboledas}. Además es notable, sobretodo en el análisis visual cualitativo, las numerosas lagunas que no fueron predichas de manera correcta. Luego de 17 años de vigencia de estos DEMs, es altamente probable la construcción de obras (canales de drenaje, terraplenes, etc) para conducir de manera distinta el flujo del agua y evitar áreas inundadas. Disponer de un DEM libre, global y más reciente requiere una nueva misión. La propuesta para afrontar estos casos puntuales sería anaĺizar cada uno y ajustar el DEM para mantenerlo actualizado y operativo.
 		\item Además es importante recordar que con el Simulador Hidrológico no se ejecutó un evento real de precipitaciones e inundaciones y que no se disponían de datos de suelo, lo que indica que con mejores condiciones de simulaciones las concordancias globales pueden mejorar.
 		
 		

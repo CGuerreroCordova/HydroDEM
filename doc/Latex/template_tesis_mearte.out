@@ -18,16 +18,16 @@
 \BOOKMARK [2][-]{subsection.2.3.2}{Evoluci\363n y versiones de SRTM}{section.2.3}% 18
 \BOOKMARK [3][-]{subsubsection.2.3.2.1}{Datos de elevaci\363n SRTM - Versi\363n 1 \(Datos sin terminar SRTM-1 y SRTM-3\)}{subsection.2.3.2}% 19
 \BOOKMARK [3][-]{subsubsection.2.3.2.2}{Datos de elevaci\363n SRTM - Versi\363n 2 \(Datos terminados DTED-1 y DTED-3\)}{subsection.2.3.2}% 20
-\BOOKMARK [3][-]{subsubsection.2.3.2.3}{Red fluvial vectorizado mundial ArcWorld}{subsection.2.3.2}% 21
+\BOOKMARK [3][-]{subsubsection.2.3.2.3}{Red fluvial vectorizada mundial ArcWorld}{subsection.2.3.2}% 21
 \BOOKMARK [3][-]{subsubsection.2.3.2.4}{Base de datos global de humedales y lagos \(Global Lakes and Wetlands Database - GLWD\)}{subsection.2.3.2}% 22
 \BOOKMARK [3][-]{subsubsection.2.3.2.5}{Mapa Digital del Mundo \(DCW\) red global vectorizada de r\355os.}{subsection.2.3.2}% 23
 \BOOKMARK [1][-]{section.2.4}{Adecuaci\363n Hidrol\363gica}{chapter.2}% 24
 \BOOKMARK [2][-]{subsection.2.4.1}{HydroSHEDS}{section.2.4}% 25
 \BOOKMARK [3][-]{subsubsection.2.4.1.1}{Correcciones realizadas por USGS a SRTM para obtenci\363n de HydroSHEDS}{subsection.2.4.1}% 26
 \BOOKMARK [3][-]{subsubsection.2.4.1.2}{Procesos de adecuaci\363n hidrol\363gica aplicados a HydroSHEDS}{subsection.2.4.1}% 27
-\BOOKMARK [2][-]{subsection.2.4.2}{Una aplicaci\363n a la llanura Bonaerense}{section.2.4}% 28
+\BOOKMARK [2][-]{subsection.2.4.2}{Adecuaci\363n de DEM para aplicaci\363n a la llanura Bonaerense}{section.2.4}% 28
 \BOOKMARK [3][-]{subsubsection.2.4.2.1}{Correcci\363n de p\355xeles faltantes}{subsection.2.4.2}% 29
-\BOOKMARK [3][-]{subsubsection.2.4.2.2}{Filtrado de ruido de frecuencia media y baja amplitud}{subsection.2.4.2}% 30
+\BOOKMARK [3][-]{subsubsection.2.4.2.2}{Filtrado de ruido de frecuencia media y baja amplitud para correcci\363n de bandeado}{subsection.2.4.2}% 30
 \BOOKMARK [3][-]{subsubsection.2.4.2.3}{Filtrado de la arboleda}{subsection.2.4.2}% 31
 \BOOKMARK [3][-]{subsubsection.2.4.2.4}{Correcci\363n para zonas bajas}{subsection.2.4.2}% 32
 \BOOKMARK [3][-]{subsubsection.2.4.2.5}{Filtrado de alta frecuencia}{subsection.2.4.2}% 33
