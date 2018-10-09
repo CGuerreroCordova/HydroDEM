@@ -18,7 +18,7 @@ To see a detailed explanation of this work the pdf report on work can be
 found at: 
 [Thesis Report](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/template_tesis_mearte.pdf)
 
-### The processing flow to process a DEM corresponds to the following diagram:
+### The flow to process a DEM corresponds to the following diagram:
 
 ![alt text](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/imagenes/DiagramaFlujo_EN.jpg)
 
