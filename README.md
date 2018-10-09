@@ -1,4 +1,4 @@
-# HYDRODREM
+# HydroDEM
 
 This project correspond with the thesis work to get the title of Master's 
 Degree in "Applications with satellite images".
