@@ -8,7 +8,7 @@ Hydrological Uses"**
 
 ## Description of Thesis work: 
 
-Methodology and software to process a public SRTM DEM (HydroSHEDS) to 
+Methodology and software to process a public SRTM and HydroSHEDS DEM's to 
 improve the behavior of water (coming from rainfalls) on it. This included a
 lot of tasks related to processing rasterized images: operations between 
 rasters, masks, Fourier transforms, reprojections, resampling, new and existing 
