@@ -6,7 +6,7 @@ Degree in "Applications with satellite images".
 Name Thesis: **"Automated Adaptation of Digital Elevation Model (DEM) for 
 Hydrological Uses"**
 
-##Description of Thesis: 
+## Description of Thesis: 
 
 Methodology and software to process a public SRTM DEM (HydroSHEDS) to 
 improve the behavior of water (coming from rainfalls) on it. This included a
