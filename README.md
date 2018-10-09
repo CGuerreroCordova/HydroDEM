@@ -3,7 +3,7 @@
 This project correspond with the thesis work to get the title of Master's 
 Degree in "Applications with satellite images".
 
-Name Thesis: **"Automated Adaptation of Digital Elevation Model (DEM) for 
+Thesis Name: **"Automated Adaptation of Digital Elevation Model (DEM) for 
 Hydrological Uses"**
 
 ## Description of Thesis work: 
@@ -14,9 +14,11 @@ This include several tasks related to processing rasterized images: operations
 between rasters, masks, Fourier transforms, reprojections, resampling, new and existing 
 filter, etc. All of these was developed using mainly python GDAL and NumPy libraries.
 
-### The processing flow corresponds to the following diagram:
+To see a detailed explanation of this work please check update pdf report on work at: [Thesis Report](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/template_tesis_mearte.pdf)
+
+### The processing flow to process a DEM corresponds to the following diagram:
 
 ![alt text](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/imagenes/DiagramaFlujo_EN.jpg)
 
 
-To see a detailed explanation of this work please check update pdf report on work at: [Thesis Report](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/template_tesis_mearte.pdf)
+
