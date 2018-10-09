@@ -817,13 +817,11 @@ La transformada de Fourier se suele representar centrada, para colocar el píxel
 
 \textbf{Convertir Transformada de Fourier a Valores Absolutos}
 
-Teniendo en cuenta que la imagen de transformada de Fourier esta compuesta por números complejos, será más simple obtener el valor absoluto de este numero complejo para simplificar el procesamiento. Por lo tanto se aplica esta operación sobre la imagen de frecuencias.
+Teniendo en cuenta que la imagen de transformada de Fourier esta compuesta por números complejos, será más simple obtener el valor absoluto de este número complejo para simplificar el procesamiento. Por lo tanto se aplica esta operación sobre la imagen de frecuencias.
 
 \textbf{Extracción de los cuartos}
 
 El próximo paso consiste en detectar de manera automática los blancos a corregir en la imagen de frecuencias.
-
-
 
 La cruz central de la imagen que representa debe ser excluida de la detección de blancos a corregir ya que ofrece valores tanto o más altos que los blancos buscados. Si se divide la imagen por la mitad, tanto horizontal como verticalmente se obtiene cuatro cuartos determinados por esta cruz central y se numeran como se puede ver en la figura \ref{CuartosFourier} 
 
@@ -860,17 +858,18 @@ Es importante tener en cuenta la paridad de las dimensiones de la imagen (cantid
 Es por eso que este proceso tiene varias partes:
 
 \begin{itemize}
-	\item Obtención dimensiones de la imagen.
+	\item Obtención de las dimensiones de la imagen.
 	\item Cálculo de paridad de la dimensión.
 	\item Obtención de la mitad de la imagen.
 	\item Determinación de primer y segundo cuarto.
 	\item Agregado de márgenes a los cuartos.
+	\item Agregado de línea extra en caso que aplique debido a la no paridad de alguna de las dimensiones de la imagen.
 \end{itemize}
 
 \textbf{Algoritmo de detección de blancos}
 Una vez obtenidas las áreas correspondientes a los dos primeros cuartos, se aplica el algoritmo de detección de blancos para cada una de ellas.
 
-\textbf{Filtro de Blancos:} El filtro consta de una ventana de vecinos móviles de 55x55, en este caso sería una ventana "`hueca"' ya que son omitidos los píxeles cercanos al núcleo hasta una distancia de 5 píxeles de lado. Figura \ref{filtroBlancosFourier}
+\textbf{Filtro de Blancos:} El filtro consta de una ventana de vecinos móviles de 55x55 píxeles de dimensión, en este caso sería una ventana "`hueca"' ya que son omitidos los píxeles cercanos al núcleo hasta una distancia de 5 píxeles de lado. Figura \ref{filtroBlancosFourier}
 
 \begin{figure}[!htb]
    \centering      
@@ -879,7 +878,7 @@ Una vez obtenidas las áreas correspondientes a los dos primeros cuartos, se apl
  \label{filtroBlancosFourier}
 \end{figure}
 
-Analizando manualmente los valores de los píxeles de tales blancos (Figura \ref{ZoomFourierTransformBlancos}) se pudo determinar que, tienen valores que exceden hasta cuatro veces más que el valor de sus \textbf{vecinos} (vecinos adyacentes dentro en un radio de distancia de veinte píxeles). 
+Analizando manualmente los valores de los píxeles de tales blancos (Figura \ref{ZoomFourierTransformBlancos}) se pudo determinar que, tienen valores que exceden hasta cuatro veces el valor de sus \textbf{vecinos} (vecinos adyacentes dentro en un radio de distancia de veinte píxeles). 
 
 \subsubsubsection{Condición de pertenencia a la máscara - Filtro: } El filtro aplicado es un kernel de 50x50 excluyendo a los 5x5 vecinos más cercanos al centro del kernel. Se calcula el valor medio de todo el conjunto de vecinos. Se incluirá a la máscara de resultado a los píxeles del centro de la ventana si su valor es por lo menos \textbf{cuatro veces más grande} que la media de los vecinos dentro de la ventana de 50x50.
 
@@ -891,17 +890,15 @@ En cada iteración de aplicación del filtro dos resultados son retornados y act
 
 \begin{itemize}
 \item La máscara con los píxeles que cumplen la condición del filtro. Esta máscara es sumada a la máscara calculada en el paso anterior, o a la inicial (todos ceros) en caso que sea la primera iteración, por lo cual se irán acumulando los blancos detectados. De esta manera la cantidad de blancos detectados va creciendo en cada iteración.
-\item La imagen de entrada del filtro en donde los píxeles que fueron detectados como blancos se les asignó el valor cero.  Esto se hace porque si fue agregado a la máscara, implica que es un valor alto y, al asignarle el valor cero, no interferirá en el calculo de valores medios para iteraciones posteriores.
+\item La imagen de entrada del filtro en donde los píxeles que fueron detectados como blancos se les asignó el valor cero.  Esto se hace porque si fue agregado a la máscara, implica que es un valor alto y, al asignarle el valor cero, no interferirá en el cálculo de valores medios para iteraciones posteriores.
 \end{itemize}
 
-Se realizaron pruebas con diversos valores de cantidad de iteraciones. En algunos casos se necesitaron hasta 5 iteraciones para detectar todos los blancos presentes, mientras que en las últimas pruebas alcanzó con 2 iteraciones, de igual manera este valor se dejó establecido en 5 para estar más seguro de la detección completa.
+Se realizaron pruebas con diversos valores de cantidad de iteraciones. En algunos casos se necesitaron hasta 5 iteraciones para detectar todos los blancos presentes, mientras que en las últimas pruebas alcanzó con 2 iteraciones, de igual manera este valor se dejó establecido en 5 para asegurar de la detección completa.
 
 Como salida luego de las iteraciones definidas se obtiene una imagen con ceros donde no se detectaron blancos, y unos donde se satisface la condición de la máscara.
 
 
 \textbf{Eliminar Blancos Detectados Aislados} Debido a que los blancos a detectar suelen ser un conjunto de puntos agrupados, es probable que, ademas de los blancos detectados, se detecten puntos sueltos que satisfagan la condición del filtro, pero que no correspondan a valores que se deben corregir en la transformada de Fourier. Estos son falsos positivos por lo que se definió una función para la eliminación de estos puntos aislados. Básicamente, si un píxel perteneciente a la máscara tiene todos sus vecinos dentro de una ventana de 13x13 con valores cero, dicho píxel debe ser quitado de la máscara. 
-
-% Esquema con el filtro que se usa.
 
 \textbf{Expandir Blancos Detectados:} Una vez obtenida la máscara, se aplica un filtro de dilatación de 13x13 sobre los píxeles detectados (González \textit{et al.} 1993). Este filtro asigna valor 1 a todos los vecinos de un píxel que en la imagen original tenga valor 1 expandiendo así las áreas de la imagen con valor 1. Garantiza de este modo la cobertura del conjunto de vecinos que determinan un blanco en la imagen de la transformada de Fourier. 
 
@@ -975,7 +972,7 @@ El algoritmo mencionado anteriormente es aplicado a los cuadrantes 1 y 2. Y se o
 
 
 Una vez que fueron identificados los blancos en la transformada de Fourier que deben ser neutralizados en la imagen, se debe combinar esta información con la de la transformada de Fourier.
-Teniendo en cuenta que la máscara disponible tiene valores 1's para los píxeles a neutralizar y 0's para el resto, se necesitará trabajar con el complemento de esta máscara (Figura \ref{maskFourierComplement}). 
+Teniendo en cuenta que la máscara disponible tiene valores 1's para los píxeles a neutralizar y 0's para el resto, se necesita trabajar con el complemento de esta máscara (Figura \ref{maskFourierComplement}). 
 
 \begin{figure}[H]
    \centering      
@@ -1016,7 +1013,7 @@ Comparando esta imagen con la original sin corregir (ver Figura \ref{SinFourier}
 \subsubsection{Corrección de Cortinas de Árboles}
 \label{correccionACortinasDeArboles}
 
-El DEM SRTM presenta la particularidad que en lugares donde existen árboles, registra los valores de altura de estos árboles como si fuera la superficie. Este es un efecto no deseado, dado que para el uso hidrológico que se le pretende dar esto presentaría comportamientos no deseados, ya que el agua debe fluir entre los árboles y no debe representar una barrera como ocurriría en zonas donde no es corregido. En la figura \ref{BingArboledas} puede verse una cortina de árboles de una imagen descargada de Google Earth y como aparece la misma en el DEM SRTM (figura \ref{DEMConArboledas}).
+El DEM SRTM presenta la particularidad que en lugares donde existen árboles, registra los valores de altura de estos árboles como si fuera la superficie. Este es un efecto no deseado, dado que para uso hidrológico, esto presentaría comportamientos no deseados, ya que el agua debe fluir entre los árboles y no debe representar una barrera como ocurriría en zonas donde no es corregido. En la figura \ref{BingArboledas} puede verse una cortina de árboles de una imagen descargada de Google Earth y como aparece la misma en el DEM SRTM (figura \ref{DEMConArboledas}).
 
 \begin{figure}[!htb]
    \begin{minipage}{0.48\textwidth}
@@ -1034,11 +1031,9 @@ El DEM SRTM presenta la particularidad que en lugares donde existen árboles, re
 \end{figure}
 
 
-Es por eso que es necesario poder identificar estos valores no deseados y ajustarlos a los valores reales de altura del suelo. Para poder llevar a cabo esto se debe contar como dato de entrada, ademas del DEM SRTM del área de estudio, una clasificación vegetación obtenida a partir de valores semilla correspondientes a estos conjuntos de árboles.
+De una comparación entre estas figuras se puede advertir que es necesario poder identificar estos valores no deseados y ajustarlos a los valores reales de altura del suelo. Para poder llevar a cabo esto se debe contar como dato de entrada, ademas del DEM SRTM del área de estudio, una clasificación de vegetación obtenida a partir de los datos de verdad correspondientes a estos conjuntos de árboles.
 
-El DEM SRTM utilizado en este caso es el que ya se encuentra el bandeado corregido por la transformada de Fourier, mencionado en la sección \ref{correccionfourier}.
-
-En la figura \ref{DiagramaArboledas} se observa el diagrama de proceso de filtrado de cortinas de árboles. Cabe destacar no se corrigen arboledas de menos de 1,5 m por cuanto el error en alturas del DEM es de 1 m.
+El DEM SRTM utilizado en este caso es el que ya se encuentra el bandeado corregido por la transformada de Fourier, mencionado en la sección \ref{correccionfourier}. En la figura \ref{DiagramaArboledas} se observa el diagrama de proceso de filtrado de cortinas de árboles. Cabe destacar no se corrigen arboledas de menos de 1,5 m por cuanto el error en alturas del DEM es de 1 m.
 
 \begin{figure}[!htb]
    \centering      
@@ -1051,7 +1046,7 @@ Se recuerda que esta parte del procesamiento ya se encuentra integrado al progra
 
 \textbf{Aplicación de filtro cuadrático.}
 
-Como primer paso de este proceso se aplica un filtro cuadrático de suavizado de la imagen. El filtro cuadrático que se usa es debido a las características del terreno. Este filtro nos da como resultado un DEM en donde se han planchado todas las irregularidades del terreno y dejando a las ondulaciones más relevantes. A modo de ilustrar el efecto de este filtro sobre el terreno se puede ver la figura \ref{filtroCuadratico}:
+Como primer paso de este proceso se aplica un filtro cuadrático de suavizado de la imagen. El filtro cuadrático que se usa es debido a las características del terreno. Este filtro nos da como resultado un DEM en donde se han suavizado, es decir, se hacen más uniformes los valores de los píxeles, las irregularidades del terreno y dejando a las ondulaciones más relevantes, es decir con valores muy diferentes entre vecinos. A modo de ilustrar el efecto de este filtro sobre el terreno se puede ver la figura \ref{filtroCuadratico}:
 
 \begin{figure}[H]
    \centering      
@@ -1063,20 +1058,11 @@ Como primer paso de este proceso se aplica un filtro cuadrático de suavizado de
 \textbf{DEM Resaltado}
 \label{resta}
 
-A partir de la diferencia entre el DEM SRTM y el suavizado cuadrático obtenido en el paso anterior se puede obtener una imagen que será llamada "`Resaltado"', Figura \ref{demResaltado}.
-
-\begin{figure}[H]
-   \centering      
-   \includegraphics[width=0.5\textwidth]{imagenes/demResaltado.jpg}
- \caption{DEM resaltado, producto de la resta entre el DEM SRTM y el filtro cuadrático.}
- \label{demResaltado}
-\end{figure}
-
-Esta imagen representa las alturas que sobresalen abruptamente del suelo.
+A partir de la diferencia entre el DEM SRTM y el suavizado cuadrático obtenido en el paso anterior se puede obtener una imagen que será llamada "`Resaltado"'. Ya que son destacadas las irregularidades mas notables en la imagen.
 
 \textbf{Máscara de valores mayores a 1.5 mts}
 
-Aplicando una condición sobre los valores del DEM Resaltado, se puede obtener una máscara para diferentes alturas, en particular se eligen los valores que superen la altura de 1.5 metros. Figura \ref{maskTrees}
+Aplicando una condición sobre los valores del DEM Resaltado, se puede obtener una máscara para diferentes alturas, en particular se eligen los valores de los píxeles que superan la altura de 1.5 metros. En la figura \ref{maskTrees} se pueden observar en blanco estos píxeles, los valores en negro representan los píxeles cuyos valores no superan 1.5 metros de altura.
 
 \begin{figure}[H]
    \centering      
@@ -1087,8 +1073,8 @@ Aplicando una condición sobre los valores del DEM Resaltado, se puede obtener u
 
 \textbf{Máscara de valores mayores a 1.5 mts que son árboles}
 
-Dentro de los valores que superan los 1.5 puede haber alturas que no pertenecen a árboles. Es por eso que es importante poder diferencias las alturas que son árboles o vegetación de las que no lo son. Es acá donde se hace uso de la clasificación de árboles necesaria como dato de entrada, (Sección \ref{clasificacionArboledas}). A esta clasificación se le aplica previamente un filtro de cierre (González \textit{et al.} 1993).
-Previamente, se realizó un análisis visual del uso de este filtro evaluando los resultados, se realizaron unas pruebas manuales utilizando un complemento de QGIS y la máscara de arboledas en transparencia, teniendo como fondo la capa de mapas de Bing (Figuras \ref{sinFiltroCierre} y \ref{conFiltroCierre}).
+Dentro de los valores que superan los 1.5 puede haber alturas que no pertenecen a árboles. Es por eso que es importante poder diferenciar las alturas que representan árboles o vegetación de las que no lo hacen. Es acá donde se hace uso de la clasificación de árboles necesaria como dato de entrada (sección \ref{clasificacionArboledas}). A esta clasificación se le aplica previamente un filtro de cierre (González \textit{et al.} 1993) para unión de puntos aislados.
+Previamente, se realizó un análisis visual del uso de este filtro evaluando los resultados, se realizaron unas pruebas manuales utilizando un complemento de QGIS y la máscara de arboledas en transparencia, teniendo como fondo la capa de mapas de Bing. Se puede observar el efecto del filtro de cierre en las figuras \ref{sinFiltroCierre} y \ref{conFiltroCierre}.
 
 \begin{figure}[H]
    \begin{minipage}{0.48\textwidth}
@@ -1103,7 +1089,7 @@ Previamente, se realizó un análisis visual del uso de este filtro evaluando lo
    \end{minipage}
 \end{figure}
 
-Luego, se necesitan conocer los píxeles que pertenecen a ambas máscaras, alturas mayores a 1.5 mts y arboledas. Esto se logra realizando un producto entre ambas imagenes. Teniendo en cuenta que las máscaras tienen valor 1 para valores positivos y 0 en caso negativo de presencia de objeto, la nueva máscara arrojará un valor 1 donde se cumpla la condición en ambas imágenes.
+Luego, es necesario conocer los píxeles que pertenecen a ambas máscaras, alturas mayores a 1.5 mts y arboledas. Esto se logra realizando un producto entre ambas imagenes. Teniendo en cuenta que las máscaras tienen valor 1 para valores positivos y 0 en caso negativo de presencia de objeto, la nueva máscara arroja un valor 1 donde se cumpla la condición en ambas imágenes.
 
 Se obtiene como resultado la siguiente imagen que representa la máscara de árboles mayores a 1.5 metros (Figura \ref{maskTressHeight}).
 
@@ -1116,7 +1102,7 @@ Se obtiene como resultado la siguiente imagen que representa la máscara de árb
 
 \textbf{Complemento: Máscara de valores menores a 1.5 mts que son árboles}
 
-A partir de la máscara de árboles con valores mayores a 1.5 metros, es posible llevarlos a 0, estas alturas son consideradas no deseadas. Una técnica para esto es obtener el complemento de la máscara de árboles. Esto se logra restarle la máscara de árboles a una imagen completamente compuesta por unos. De esta manera en la nueva máscara, donde había un 1 habrá un 0 y donde había un 0 ahora habrá un 1 (Figura \ref{maskTressHeightCompl}).
+A partir de la máscara de árboles con valores mayores a 1.5 metros, es posible llevarlos a 0, estas alturas son consideradas no deseadas. Una técnica para esto es obtener el complemento de la máscara de árboles. Esto se logra restando la máscara de árboles a una imagen completamente compuesta por 1's. De esta manera en la nueva máscara, donde había un 1 habrá un 0 y donde había un 0 ahora habrá un 1 (Figura \ref{maskTressHeightCompl}).
 
 
 \begin{figure}[H]
@@ -1131,18 +1117,12 @@ A partir de la máscara de árboles con valores mayores a 1.5 metros, es posible
 
 A partir del producto entre el complemento de la máscara de árboles y el DEM Resaltado se obtiene una imagen de alturas resaltadas, sin árboles mayores a 1.5 metros. Esto se debe a que en los lugares donde hay árboles mayores a 1.5 la máscara contiene un valor 0 y en el resto un valor 1. El producto deja todo como está, excepto en los lugares con árboles, donde el valor es llevado a 0. Es difícil distinguir a simple vista donde fueron corregidos estos valores. 
 
-%\begin{figure}[!htb]
-   %\centering      
-   %\includegraphics[width=0.7\textwidth]{imagenes/demResaltadoSinArboles.jpg}
- %\caption{DEM Resaltado en donde fueron corregidas los árboles detectados. Es difícil apreciar a simple vista donde fueron corregidos estos valores.}
- %\label{demResaltadoSinArboles}
-%\end{figure}
 
 \textbf{SRTM corregido: sin árboles}
 
 Una vez eliminados los árboles de la imagen de alturas resaltadas, se puede reconstruir el DEM SRTM que contiene estas correcciones. Esto se puede llevar a cabo aplicando el proceso inverso al paso \ref{resta}, es decir sumando el DEM Resaltado (ya corregido en el paso anterior) más el DEM Suavizado por el filtro cuadrático.
 
-Se obtiene de esta manera, el DEM SRTM con corrección de cortinas de árboles (Figura \ref{fig:comparacionArboledas}):
+Se obtiene de esta manera, el DEM SRTM con corrección de cortinas de árboles, el cual se puede observar el efecto de la corrección a partir de un recorte de ambos DEM (sin corregir y corregido) en la figura \ref{fig:comparacionArboledas}:
 
 \begin{figure}[H]
 	\centering
@@ -1170,7 +1150,7 @@ Para realizar la corrección de arboledas se utilizaron imágenes Landsat 8 del 
 \subsection{Procesamiento a HydroSHEDS para extracción de lagunas, ríos y cañadas}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-El DEM de HydroSHEDS ofrece interesantes características para uso hidrológico ya que provee una mejor definición de las cañadas y de pequeñas lagunas del terreno. Asimismo, viene con la desventaja del bandeado inherente al DEM, excepto en los cuerpos de agua que provee. La existencia de estos cuerpos de agua en donde no existe el bandeado dificulta la corrección por transformada de Fourier debido a que cuando se intenta corregir introduce errores en estos cuerpos de agua, como se ve en la sección \ref{aplicacionBandeado}. Debido a esto, solo se extraen los datos correspondientes a lagunas, ríos y cañadas.
+El DEM HydroSHEDS ofrece interesantes características para uso hidrológico ya que provee una mejor definición de las cañadas y de pequeñas lagunas del terreno. Asimismo, viene con la desventaja del bandeado inherente al DEM, excepto en los cuerpos de agua que provee. La existencia de estos cuerpos de agua en donde no existe el bandeado dificulta la corrección por transformada de Fourier debido a que cuando se intenta corregir introduce errores en estos cuerpos de agua, como se ve en la sección \ref{aplicacionBandeado}. Debido a esto, solo se extraen los datos correspondientes a lagunas, ríos y cañadas.
 
 Las operaciones realizadas a partir de HydroSHEDS son descriptas a continuación (Figura \ref{DiagramaLagunas}):
 
@@ -1193,7 +1173,7 @@ Para poder realizar de manera correcta la conversión se debe pasar como argumen
 
 \textbf{Filtro de Mayoría}
 
-Para eso se definió un filtro de Mayoría con una ventana de 11 x 11, el cual decide si el píxel central pertenece a una laguna si la mayoría de sus vecinos dentro de la ventana de 11 x 11 tienen el mismo valor. En caso de ser así, el píxel del núcleo conserva su valor original, (el que trae del DEM HydroSHEDS). Caso contrario, toma el valor 0. Figura \ref{filtroMayoria}
+Para detección de las cavidades mencionadas eso se definió un filtro de Mayoría con una ventana de 11 x 11, el cual opera de la siguiente manera: si el píxel central pertenece a una laguna si la mayoría de sus vecinos dentro de la ventana de 11 x 11 tienen el mismo valor. En caso de ser así, el píxel del núcleo conserva su valor original, (el que trae del DEM HydroSHEDS), caso contrario, toma el valor 0. En la figura \ref{filtroMayoria} se puede observar en colores distintos de negro las lagunas detectadas:
 
 \begin{figure}[H]
    \centering      
@@ -1204,9 +1184,9 @@ Para eso se definió un filtro de Mayoría con una ventana de 11 x 11, el cual d
 
 \textbf{Eliminación de píxeles aislados}
 
-Luego de la máscara obtenida en el paso anterior, se observo la presencia de numerosos píxeles aislados, o agrupados solo en conjuntos de dos o tres píxeles. Estos valores no son deseados, ya que no representan algún cuerpo de agua, es solo un caso aislado, es por eso que no deben formar parte de las lagunas a detectar. Para la eliminación de estos casos se procedió de la siguiente manera:
+Luego de la máscara obtenida en el paso anterior, se observó la presencia de numerosos píxeles aislados, o agrupados solo en conjuntos de dos o tres píxeles. Estos valores no son deseados, ya que no representan algún cuerpo de agua, es solo un caso aislado, es por eso que no deben formar parte de las lagunas a detectar. Para la eliminación de estos casos se procedió de la siguiente manera:
 		
-		\textbf{Erosión:} Se aplicó un filtro de erosión con 2 iteraciones a la máscara obtenida en el paso anterior. Esto desgasta los bordes de las lagunas sometidas a la erosión. Varias lagunas reducirán su tamaño y las más pequeñas o píxeles aislados desaparecerán. Figura \ref{puntosAislados}
+		\textbf{Erosión:} Se aplicó un filtro de erosión con 2 iteraciones a la máscara obtenida en el paso anterior. Este filtro desgasta los bordes de las lagunas sometidas a la erosión. De este modo varias lagunas reducen su tamaño y las más pequeñas o píxeles aislados desaparecen. Figura \ref{puntosAislados}
 		
 \begin{figure}[H]
    \centering      
@@ -1275,7 +1255,7 @@ El objetivo del uso de este dato de entrada es poder determinar los ríos y cañ
 
 \textbf{Rasterizar Vector de Ríos}
 
-Como primer paso se procedió a rasterizar el archivo vectorial. Esto significa convertir a imagen de píxeles los datos vectoriales según los valores de cada línea y dejando en cero donde no existen vectores. Esto se realizó con una herramienta de la librería $gdal$ llamada $gdal_rasterize$ indicando filas y columnas del raster de destino.
+Como primer paso se procedió a rasterizar el archivo vectorial. Esto significa convertir a imagen de píxeles los datos vectoriales según los valores de cada línea y dejando en cero donde no existen vectores. Esto se realizó con una herramienta de la librería $gdal$ llamada $gdal\_rasterize$ indicando filas y columnas del raster de destino.
 
 %Como resultado se obtiene la siguiente imagen. Figura \ref{RiosRasterizados}
 
