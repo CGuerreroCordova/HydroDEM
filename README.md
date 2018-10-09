@@ -14,7 +14,9 @@ This include several tasks related to processing rasterized images: operations
 between rasters, masks, Fourier transforms, reprojections, resampling, new and existing 
 filter, etc. All of these was developed using mainly python GDAL and NumPy libraries.
 
-To see a detailed explanation of this work please check update pdf report on work at: [Thesis Report](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/template_tesis_mearte.pdf)
+To see a detailed explanation of this work the pdf report on work can be 
+found at: 
+[Thesis Report](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/template_tesis_mearte.pdf)
 
 ### The processing flow to process a DEM corresponds to the following diagram:
 
