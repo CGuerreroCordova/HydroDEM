@@ -61,7 +61,7 @@
 \contentsline {subsubsubsection}{\numberline {3.3.5.1.4}Retornar las frecuencias cero a su posici\IeC {\'o}n original}{34}{subsubsubsection.3.3.5.4}
 \contentsline {subsubsubsection}{\numberline {3.3.5.1.5}Aplicaci\IeC {\'o}n de la Antitransformada}{34}{subsubsubsection.3.3.5.5}
 \contentsline {subsubsection}{\numberline {3.3.5.2}Correcci\IeC {\'o}n de Cortinas de \IeC {\'A}rboles}{35}{subsubsection.3.3.5.2}
-\contentsline {subsection}{\numberline {3.3.6}Procesamiento a HydroSHEDS para extracci\IeC {\'o}n de lagunas, r\IeC {\'\i }os y ca\IeC {\~n}adas}{39}{subsection.3.3.6}
+\contentsline {subsection}{\numberline {3.3.6}Procesamiento a HydroSHEDS para extracci\IeC {\'o}n de lagunas, r\IeC {\'\i }os y ca\IeC {\~n}adas}{40}{subsection.3.3.6}
 \contentsline {subsubsection}{\numberline {3.3.6.1}Conversi\IeC {\'o}n de formato adf a tif (HydroSHEDS)}{40}{subsubsection.3.3.6.1}
 \contentsline {subsubsection}{\numberline {3.3.6.2}Detecci\IeC {\'o}n de Lagunas}{40}{subsubsection.3.3.6.2}
 \contentsline {subsubsection}{\numberline {3.3.6.3}Procesamiento de R\IeC {\'\i }os y Ca\IeC {\~n}adas.}{43}{subsubsection.3.3.6.3}
