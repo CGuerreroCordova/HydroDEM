@@ -1,5 +1,8 @@
 # HYDRODREM
 
+To see a detailed explanation of this work please check update pdf report at:
+
+https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/template_tesis_mearte.pdf
 
 Table of Contents
 
