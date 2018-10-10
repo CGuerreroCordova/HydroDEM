@@ -129,7 +129,7 @@ Un dato importante de entrada en forma de grilla digitalizada es el DEM. Para us
 	\item Estudiar los procesamientos que se realizan a los DEMs en forma manual con el fin de automatizarlos.
 	\item Aplicar lo desarrollado a la región Sur-Oriental de Córdoba por su importancia socio-económica y por presentar una llanura similar a la del trabajo antecedente y de esta manera verificar la generalidad de las hipótesis de trabajo o identificar nuevos problemas.
 	\item Generar métricas estadísticas para comparar las salidas de píxeles anegados con lo obtenido con imágenes ópticas.
-	\item Realizar ejecuciones del simulador para el área de estudio utilizando tanto el DEM procesado por la herramienta obtenida como resultado de este trabajo como para el DEM de base.	
+	\item Realizar ejecuciones del simulador para el área de estudio utilizando tanto el DEM procesado por la herramienta obtenida como resultado de este trabajo, como para el DEM de base.	
 \end{itemize}
 
 \chapter{Antecedentes y Marco Teórico}
@@ -220,10 +220,7 @@ En el resto del área, los interfluvios en general corresponden a extensas área
 
 Desde el punto de vista hidrológico, la escasa pendiente de la zona elegida hace que no existan canales importantes que permitan conducir el escurrimiento superficial sino que éste se realiza en mantos sobre grandes áreas y en escalas de tiempo relativamente largas. En el balance hidrológico general predominan los procesos verticales (evapotranspiración e infiltración) por sobre el escurrimiento. Sin embargo, el escurrimiento superficial es importante para determinar la zona anegada que estará sujeta a los flujos verticales de pérdida. Por otra parte, cada laguna funciona como un reservorio limitado de una microcuenca, pero al superarse su capacidad de almacenamiento se produce escurrimiento superficial encadenando unas con otras y generando un área anegada que las contiene (Masuelli \textit{et al.} 2009).
 
-Dadas las características de la zona estudiada, el modelado tiene en cuenta varios detalles. El hecho de que el terreno sea tan extremadamente plano hace que el DEM que se usa deba estar muy pulido, reduciendo el nivel de ruido de los metros a los centímetros para que el agua no encuentre obstáculo espurios para drenar (Masuelli \textit{et al.} 2009). El no poseer canales importantes hace que el escurrimiento sobre la planicie y la existencia de pequeños bajos conduzca a que éstos se conviertan en zonas anegadas, cuando en los otros modelos este proceso era funcional para obtener la carga del río, el que con su desborde determina dichas zonas. La importancia de los procesos verticales hace que se los deba incluir en el modelo, con la complicación de que estos procesos tienen escalas espaciales y temporales muy distintas.
-
-
-%***********************************************************************************************
+Dadas las características de la zona estudiada, el modelado tiene en cuenta varios detalles. El hecho de que el terreno sea tan plano hace que el DEM que se usa deba estar muy pulido, reduciendo el nivel de ruido de los metros a los centímetros para que el agua no encuentre obstáculo espurios para drenar (Masuelli \textit{et al.} 2009). El hecho de no poseer canales importantes hace que el escurrimiento sobre la planicie y la existencia de pequeños bajos conduzca a que éstos se conviertan en zonas anegadas. En otros modelos este proceso de interacción entre la planicie y los canales era funcional para obtener la carga del río, el cual con su eventual desborde puede determinar también zonas anegadas. La importancia de los procesos verticales hace que se los deba incluir en el modelo, con la complicación de que estos procesos tienen escalas espaciales y temporales muy distintas.
 
 
 
@@ -1268,7 +1265,7 @@ Como primer paso se procedió a rasterizar el archivo vectorial. Esto significa 
 
 \textbf{Crear Máscara de Ríos}
 
-El raster de ríos y cañadas generados posee los valores que traen los vectores, se necesita tener una máscara binaria de ríos, por lo que se crea la misma a partir de una condición sobre los píxeles de la imagen de ríos. %Figura \ref{MascaraRios}
+El raster de ríos y cañadas generados posee los valores que traen los vectores, para poder extraer los valores correspondientes a estos elementos (ríos y cañadas) es necesario disponer de una máscara binaria de ríos, por lo que se crea la misma a partir de una condición sobre los píxeles de la imagen de ríos. %Figura \ref{MascaraRios}
 
 %\begin{figure}[H]
    %\centering      
@@ -1278,8 +1275,9 @@ El raster de ríos y cañadas generados posee los valores que traen los vectores
 %\end{figure}
 
 \textbf{Expandir máscara de Ríos}
+\label{expansionRios}
 
-Teniendo en cuenta que el archivo vectorial ofrece los ríos y cañadas como vectores, estos se ven como líneas delgadas en la superficie. Tales ríos y cañadas en la realidad representan una superficie más amplia que la línea por la cual son representados, es por eso que se aplica un filtro de dilatación a la máscara obtenida en el paso anterior. Figura \ref{riosExpandidos}
+Teniendo en cuenta que el archivo vectorial ofrece los ríos y cañadas como vectores, estos se ven como líneas delgadas en la superficie. Tales ríos y cañadas en la realidad representan una superficie más amplia que la línea por la cual son representados, ya que esta línea solo indica el curso de los mismos pero el ancho real es mucho mayor, es por eso que se aplica un filtro de dilatación a la máscara obtenida en el paso anterior. Con la aplicación de este filtro de dilatación todas esta líneas son engrosadas abarcando así la superficie de los ríos y cañadas. En la figura \ref{riosExpandidos} podemos ver la máscara de ríos expandida, los píxeles en color blanco representan el curso de los ríos mientras que las áreas en color negro (valor o) indica ausencia de río o cañada.
 
 \begin{figure}[H]
    \centering      
@@ -1306,22 +1304,23 @@ Para esto se aplicaron varios procesos, entre ellos la creación e implementaci�
 Se desarrolló un filtro para la detección de canales, ríos y cañadas el cual se denominó: $enrouteRivers$. El funcionamiento del filtro se describe a continuación:
 
 \begin{itemize}
-	\item Este filtro consta de una ventana de 5x5. 
-	\item A diferencia de la mayoría de los filtros que se usan en imágenes los cuales son aplicados al total de la imagen, en este caso es sólo aplicado a los píxeles con valor 1, es decir a los píxeles que indican presencia de río o cañada. 
-	\item Estos índices de la imagen a los cuales serán aplicados son tomados de la imagen de máscara que se tiene hasta el momento y la imagen evaluada es el DEM de HydroSHEDS.
+	\item Este filtro consta de una ventana de 5x5 píxeles. 
+	\item A diferencia de la mayoría de los filtros que se usan en imágenes, los cuales son aplicados al total de la imagen, en este caso es sólo aplicado a los píxeles con valor 1, es decir a los píxeles que indican presencia de río o cañada. 
+	\item Se debe recordar que la imagen es representada por una grilla con índices de ubicación, según la posición en la imagen. Primero los índices correspondientes a presencia de ríos o cañadas son obtenidos.
+	\item Estos índices de la imagen, a los cuales les será aplicado el filtro de enrutamiento, son tomados de la imagen de máscara mencionada en la sección \ref{expansionRios}. A partir de estos índices, los píxeles que caen dentro del filtro serán evaluados en el DEM de HydroSHEDS.
 	\item A partir de estas dos imágenes combinadas por el filtro se obtendrá una tercera imagen.
 	\item Esta tercera imagen contendrá una nueva máscara de ríos y cañadas en donde los valores serán establecidos en 1 siguiendo el siguiente algoritmo:	
 	\begin{itemize}
 		\item La ventana se posiciona en un píxel con valor 1 en la máscara de cañadas.
 		\item Esta ventana evalúa la misma posición y vecinos en el DEM HydroSHEDS.
 		\item Se obtiene el valor mínimo de estos vecinos (incluido el valor central)
-		\item Con este valor mínimo se obtienen los indices de todos los píxeles dentro de esta ventana que son igual al valor mínimo.
+		\item Con este valor mínimo se obtienen los índices de todos los píxeles dentro de esta ventana que son igual al valor mínimo.
 		\item Para las posiciones en la imagen que se corresponden con la ventana y que tienen este valor mínimo se establece el valor 1, es decir, pertenecen a la nueva máscara de ríos y cañadas.
 		\item Se establece un valor muy alto (10000) en el DEM HydroSHEDS para estas posiciones. De esta manera estos valores no interferirán en la evaluación de pasos siguientes para determinar el valor mínimo dentro de la ventana.
 	\end{itemize}
 \end{itemize}
 
-Como resultado se obtiene una máscara que, en el DEM HydroSHEDS, abarca con mayor precisión los ríos y cañadas (Figura \ref{riversEnrouted}).
+Como resultado se obtiene una máscara que, en el DEM HydroSHEDS, abarca con mayor precisión los ríos y cañadas. En la figura \ref{riversEnrouted} se puede ver la superposición de la máscara de ríos luego de aplicado el algoritmo de enrutamiento con el DEM HydroSHEDS, se puede apreciar que tiene una mayor cobertura en contraposición a lo que se puede observar en la fuigura \ref{riverToEnroute}.
 
 
 \begin{figure}[H]
@@ -1342,7 +1341,7 @@ Como resultado se obtiene una máscara que, en el DEM HydroSHEDS, abarca con may
 
 \textbf{Intersección entre Ríos y Lagunas}
 
-El curso de los ríos y cañadas provisto atraviesa lagunas en sus recorridos. Como se vio anteriormente (Sección \ref{deteccionLagunas}) las lagunas son detectadas a partir del DEM HydroSHEDS original. Dado que los ríos y cañadas vienen en formato vectorial de líneas, estos no tienen en cuenta el ancho de las lagunas. Esto lo se puede ver en la Figura \ref{lagunasSobreRios} en donde se superpusieron las dos imágenes de máscaras.
+El curso de los ríos y cañadas provisto atraviesa lagunas en su recorrido. Como se vio anteriormente (Sección \ref{deteccionLagunas}) las lagunas son detectadas a partir del DEM HydroSHEDS original. Dado que los ríos y cañadas vienen en formato vectorial de líneas, estos no tienen en cuenta el ancho de las lagunas. Esto lo se puede ver en la Figura \ref{lagunasSobreRios} en donde se superpusieron las dos imágenes de máscaras.
 
 \begin{figure}[H]
    \centering      
@@ -1371,7 +1370,7 @@ El curso de los ríos y cañadas provisto atraviesa lagunas en sus recorridos. C
 \textbf{Resta entre Ríos y Lagunas}
 \label{restarioscaniadas}
 
-Una vez que se identificaron las intersecciones entre ríos y lagunas, éstas son removidas de la máscara de ríos y cañadas aplicando una resta entre imágenes. Obteniendo como resultado. Figura \ref{riversSinLagunas}:
+Una vez que se identificaron las intersecciones entre ríos y lagunas, éstas son removidas de la máscara de ríos y cañadas aplicando una resta entre imágenes. Se puede ver parte de este resultado en la figura \ref{riversSinLagunas}:
 
 \begin{figure}[H]
    \centering      
@@ -1434,15 +1433,14 @@ Claramente es muy difícil evaluar las bondades del DEM obtenido en forma direct
 
 Por ello es que se realizaron ejecuciones de simulación con un modelo hidrológico de llanuras utilizando los DEMs a comparar. El simulador que se utilizó es el desarrollado por Guerrero Cordova (2013). Este es un simulador hidrológico de llanuras, cuyo modelado no tiene incorporado la existencia de canales de grandes caudales como ríos (debido a que su modelacion es diferente). Como salida de la ejecución de las simulaciones se obtiene, por cada hora simulada, la altura de agua (en metros) en la superficie. Estos resultados son los que luego serán de utilidad para la evaluación del desempeño del DEM para usos hidrológicos.
 
-
-El único dato de entrada que varía entre ambas ejecuciones del simulador es el DEM de entrada. Por lo tanto se llevaron a cabo dos simulaciones.
+El único dato de entrada que varía entre ambas ejecuciones del simulador es el DEM de entrada. Por lo tanto se llevaron a cabo dos simulaciones:
 
 \begin{itemize}
 	\item Con el DEM HydroSHEDS
 	\item Con el DEM Resultado de este trabajo.
 \end{itemize}
 
-Con respecto al resto de los datos de entrada se tiene en consideración que para una correcta ejecución del modelo (Guerrero 2013) de una precipitación real, el simulador requiere tanto de datos de contorno (los cuales caracterizan caracterizan la región) como de datos iniciales de ejecución (caracterizan la simulación). Estos datos son los siguientes:
+Con respecto al resto de los datos de entrada se tiene en consideración que para una correcta ejecución del modelo (Guerrero Cordova 2013) de una precipitación real, el simulador requiere tanto de datos de contorno (los cuales caracterizan caracterizan la región) como de datos iniciales de ejecución (caracterizan la simulación). Estos datos son los siguientes:
 
 \begin{itemize}
 	\item Condiciones de Contorno
@@ -1471,13 +1469,13 @@ Por esto mismo es que los datos mencionados anteriormente toman los siguientes v
  \label{datoscontorno}
 \end{table}
 
-La evapotranspiración utilizada como proceso del simulador es la misma que se usó en el trabajo del desarrollo del simulador (Guerrero 2013). En dicho trabajo se asumió uniforme e independiente del tiempo en todo el dominio, es decir se asumió que no hay gradientes de temperatura, humedad y presión como así también que toda la vegetación transpira igual en todo el dominio. Estas hipótesis se pudieron asumir por simplicidad y debido a la proximidad del área de estudio elegida en este trabajo con el área de estudio elegida para el desarrollo del simulador hidrológico (Guerrero 2013). En el caso en que haya agua superficial la pérdida por evaporación corresponde a esta agua. Para la simulación principal se ha utilizado como evapotranspiración 3 milimetros diarios.
+La evapotranspiración utilizada como proceso del simulador es la misma que se usó en el trabajo del desarrollo del simulador (Guerrero Cordova 2013). En dicho trabajo se asumió uniforme e independiente del tiempo en todo el dominio, es decir se asumió que no hay gradientes de temperatura, humedad y presión como así también que toda la vegetación transpira igual en todo el dominio. Estas hipótesis se pudieron asumir por simplicidad y debido a la proximidad del área de estudio elegida en este trabajo con el área de estudio elegida para el desarrollo del simulador hidrológico (Guerrero Cordova 2013). En el caso en que haya agua superficial la pérdida por evaporación corresponde a esta agua. Para la simulación principal se ha utilizado como evapotranspiración 3 milimetros diarios.
 
 Teniendo en cuenta la ausencia de datos disponibles para la simulación de un evento real de precipitaciones, lo que se realizó es un evento de precipitacion única que no es una simulación de precipitación real, es decir se arroja una gran cantidad de agua (20 milímetros para toda el área de interés) respecto de lo que es una precipitacion, para asegurarnos de esta manera que se llenen todas las cubetas, luego se observa como se enruta el agua y funciona todo el sistema de canales. Esta ejecución del simulador es realizada para una serie larga de días y los resultados son comparados luego con evento de precipitaciones de la zona es decir con un producto NDWI de una imagen Landsat (sección \ref{indiceaguandwi}). Con respecto al tiempo, es arbitrario, se busca ver en que momento se dan las mejores métricas.
 
 El simulador arroja resultados cada una hora. Serán analizadas sólo las salidas del simulador por cada día de simulación, es decir resultados cada 24 horas, el resto de los resultados no serán tenidos en cuenta. La simulación fue ejecutada con proyección de 58 días.
 
-Como verdad de referencia de las zonas anegadas se ha tomado una clasificación de cuerpos de agua, obtenidos del procesamiento de una imagen de OLI de Landsat 8, que se explica en \ref{indiceaguandwi}
+Como dato de verdad de referencia de las zonas anegadas se ha tomado una clasificación de cuerpos de agua, obtenidos del procesamiento de una imagen de OLI de Landsat 8, que se explica en \ref{indiceaguandwi}
 
 Se pretende demostrar que el DEM resultado de este trabajo presenta mejor comportamiento hidrológico, es por eso que se ejecuta la misma simulación de manera independiente con ambos DEMs. De este modo el DEM cuyo resultados arroje mayor aproximación al producto NDWI de Landsat será considerado mejor para usos hidrológicos. No se espera que los resultados sean exactamente iguales al NDWI debido a que el origen del proceso es diferente.
 
@@ -1496,7 +1494,7 @@ Para evaluar los resultados obtenidos con métricas estadísticas luego de las s
 
 Esta área de estudio ha presentado eventos de inundaciones en el último año confluyendo en extensas áreas con índices de agua elevados lo que ofrece un buen elemento para poder comparar los resultados.
 
-Para ello se descargaron imágenes Landsat 8 OLI TIRS del último año con poca presencia cobertura de nubes. Para cada una de las imágenes se calculó el índice NDWI combinando las bandas 3 y 6, se eligió la imagen con mayor cantidad de cuerpos de agua presentes. Esta imagen se corresponde con la fecha: 11 de Septiembre de 2017. La descarga fue realizada de manera libre a través del sitio Earth Explorer perteneciente al USGS \cite{earthExplorer}.
+Para ello se descargaron imágenes Landsat 8 OLI TIRS del último año con poca presencia de cobertura de nubes. Para cada una de las imágenes se calculó el índice NDWI combinando las bandas 3 y 6, se eligió la imagen con mayor cantidad de cuerpos de agua presentes. Esta imagen se corresponde con la fecha: 11 de Septiembre de 2017. La descarga fue realizada de manera libre a través del sitio Earth Explorer perteneciente al USGS \cite{earthExplorer}.
 
 La imagen Landsat corresponde a una situación real para la cual no se consiguieron los datos iniciales y de contorno para simular un escenario que se asemeje a la situación que dio origen a dicha imagen. Por ello es que se guarda gran volumen de datos de distintas horas para ver cual "`tiempo"' es el más apropiado para realizar la comparación.
 
@@ -1538,7 +1536,7 @@ La relación entre estos datos puede ser sintetizada en la siguiente tabla \ref{
 
 \section{Estadísticos de Interés}
 
-A partir del conteo de valores negativos y positivos descripto en la sección anterior se calculó un conjunto de datos estadísticos de interés para clasificaciones binarias.  Las clasificaciones binarias apuntan a predecir valores positivos o negativos en un conjunto de datos, es por eso que fueron considerados para el análisis de estos resultados. Para lo cual se cita el trabajo de Bekkar \textit{et al.} (2013).
+A partir del conteo de valores negativos y positivos descripto en la sección anterior se calculó un conjunto de datos estadísticos de interés para clasificaciones binarias.  Las clasificaciones binarias apuntan a predecir valores positivos o negativos en un conjunto de datos, es por eso que fueron considerados para el análisis de estos resultados. Para lo cual seguimos lo propuesto por Bekkar \textit{et al.} (2013).
 
 Los estadísticos a analizar son los siguientes:
 
@@ -1604,7 +1602,7 @@ F_{1}=\frac{2*VP}{2 * VP + FN + FP }
 
 \subsection{Exactitud Balanceada}
 
-Llamado\textit{ Balanced Accuracy (BACC)} en inglés, establece una media entre la sensibilidad y la especificidad, esto indicaría bien fueron predichos en promedio los lugares donde existe agua y los lugares en los que no existe. Este estadístico nos ayuda a comprender mejor la estimación eliminando los casos de sobreestimación de valores positivos o negativos. Por ejemplo, uno podría asumir que tener agua en toda el área de estudio nos daría una sensibilidad alta, pero esto no sería un buen indicador, ya que recaerá sobre la especificidad.
+Llamado\textit{ Balanced Accuracy (BACC)} en inglés, establece una media entre la sensibilidad y la especificidad, esto indicaría que tan bien fueron predichos en promedio los lugares donde existe agua y los lugares en los que no existe agua. Este estadístico nos ayuda a comprender mejor la estimación eliminando los casos de sobreestimación de valores positivos o negativos. Por ejemplo, uno podría asumir que tener agua en toda el área de estudio nos daría una sensibilidad alta, pero esto no sería un buen indicador, ya que recaerá sobre la especificidad.
 
 \begin{equation}
 BACC=\frac{\frac{VP}{TP}+\frac{VN}{TN}}{2}
@@ -1614,7 +1612,7 @@ BACC=\frac{\frac{VP}{TP}+\frac{VN}{TN}}{2}
 \subsection{Coeficiente de Correlación de Matthews}
 \label{defMatthews}
 
-El coeficiente de correlación de Matthews o MCC (Matthews \textit{et al.} 1975) tiene en cuenta todas las métricas, verdaderos positivos ($VP$), verdaderos negativos ($VN$), falsos positivos ($FP$) y falsos negativos ($FN$). Es generalmente utilizado como un estadístico de medidas balanceadas la cual puede ser utilizada incluso si los tamaños de las clases son distintos. En esencia es un coeficiente de correlación entre la clasificación predicha y los datos observados. Su valor oscila entre -1 y 1. Un valor de 1 nos indica una perfecta predicción, 0 una predicción aleatoria sin indicarnos nada, y arrojará -1 en total desacuerdo con la predicción. Este coeficiente está relacionado con el estadístico ${\chi}^2$ (chi-cuadrado) para una tabla de contingencia de 2x2. Es calculado de la siguiente manera:
+El coeficiente de correlación de Matthews o MCC (Matthews \textit{et al.} 1975) tiene en cuenta todas las métricas, verdaderos positivos ($VP$), verdaderos negativos ($VN$), falsos positivos ($FP$) y falsos negativos ($FN$). Es generalmente utilizado como un estadístico de medidas balanceadas el cual puede ser utilizado incluso si los tamaños de las clases son distintos. En este caso las clases son: presencia de agua y ausencia de agua. En esencia es un coeficiente de correlación entre la clasificación predicha y los datos observados. Su valor oscila entre -1 y 1. Un valor de 1 nos indica una perfecta predicción, 0 una predicción aleatoria y arrojará -1 en total desacuerdo con la predicción. Este coeficiente está relacionado con el estadístico ${\chi}^2$ (chi-cuadrado) para una tabla de contingencia de 2x2. Es calculado de la siguiente manera:
 
 
 \begin{equation}
@@ -1631,18 +1629,18 @@ Se recuerda que el área de interés tiene una forma rectangular con una inclina
 
 \chapter{Resultados}
 
-Como resultado de este trabajo se obtiene un DEM que se espera que sea más adecuado para usos hidrológicos, luego de todos los procesamientos realizados y descriptos anteriormente.
+Como resultado de este trabajo se obtiene un DEM que es más adecuado para usos hidrológicos, es decir, que represente mucho mejor el comportamiento del agua sobre él, luego de todos los procesamientos realizados y descriptos anteriormente.
 
 
-Ambos DEMs fueron utilizados de manera independiente como dato de entrada en el simulador hidrológico (Guerrero Cordova 2013) con el resto de las variables de entradas iguales. A las salidas del simulador hidrológico se las comparará con datos reales de índices de agua (NDWI) existentes en el área de estudio. Las simulaciones se realizaron con proyecciones de hasta 58 días, de esta manera tener un amplio espectro temporal del comportamiento del agua a través de los DEMs.
+Ambos DEMs, HydroSHEDS y el DEM resultado de este trabajo, fueron utilizados de manera independiente como dato de entrada en el simulador hidrológico (Guerrero Cordova 2013) con el resto de las variables de entradas iguales. Las salidas del simulador hidrológico fueron comparadas con datos reales de índices de agua (NDWI) existentes en el área de estudio. Las simulaciones se realizaron con proyecciones de hasta 58 días, de esta manera tener un amplio espectro temporal del comportamiento del agua a través de los DEMs.
 
 
 \section{Análisis visual comparativo de los Resultados}
 \label{analisisVisual}
 
-Se realizó un análisis comparativo visual de los resultados del simulador para el día de simulación que se estima se aproxima más a la realidad con respecto a la imagen NDWI obtenida de la imagen Landsat. Es decir, se analizaron los resultados de la simulación para el DEM de Resultado y para el DEM HydroSHEDS a los cuales de aquí en adelante se denominarán R\_sim y H\_sim respectivamente. La imagen NDWI obtenida de Landsat será llamada IM\_L. Se analizaron diferentes puntos a tener en cuenta, sobretodo orientado a las mejoras realizadas en el procesamiento de este trabajo.
+Se realizó un análisis comparativo visual de los resultados del simulador para el día de simulación que se estima se aproxima más a la realidad con respecto a la imagen NDWI obtenida de la imagen Landsat. Es decir, se analizaron los resultados de la simulación utilizando el DEM de Resultado y el DEM HydroSHEDS a los cuales de aquí en adelante serán denominados R\_sim y H\_sim respectivamente. La imagen NDWI obtenida de Landsat será llamada IM\_L. Se analizaron diferentes puntos a tener en cuenta, sobretodo orientado a las mejoras realizadas en el procesamiento de este trabajo.
 
-El objetivo de este análisis fue observar cualitativamente los comportamientos del agua obtenido en base a los propuestos inicialmente.
+El objetivo de este análisis fue observar cualitativamente los comportamientos obtenidos del agua en base a los propuestos inicialmente.
 
 \subsection{Imagen Global}
 
@@ -1668,7 +1666,7 @@ En cambio R\_sim muestra acumulaciones de agua claramente diferenciables y algun
  \label{DEMCRGlobal}
 \end{figure}
 
-Haciendo un zoom sobre las imágenes se aprecian estas diferencias con más detalle, como se puede ver en las figuras \ref{HSHEDSGlobalZoom} y \ref{DEMCRGlobalZoom}.
+Haciendo un zoom sobre las imágenes se aprecian estas diferencias con más detalle, como se puede observar en las figuras \ref{HSHEDSGlobalZoom} y \ref{DEMCRGlobalZoom}.
 
 \begin{figure}[!htb]
    \begin{minipage}{0.48\textwidth}
@@ -1712,7 +1710,7 @@ Se puede observar de manera rápida las regiones donde coincide la presencia de 
 Observando la imagen completa (figura \ref{RGBDia10}) se puede distinguir:
 
 \begin{itemize}
-	\item Numerosas "`manchas"' en azul, esto indica lugares en donde hay lagunas reales pero que no se presenta evidencia en ninguna de las imágenes correspondientes a R\_sim y H\_sim. Es decir, no fueron "`predichas"' correctamente en ninguno de los dos casos.
+	\item Numerosas "`manchas"' en azul, esto indica lugares en donde hay lagunas reales pero que no se presenta evidencia en ninguna de las imágenes correspondientes a R\_sim y H\_sim. Es decir, no fueron "`predichas"' correctamente con ninguna de las dos simulaciones.
 	\item Salpicado verde por toda la imagen. Correspondiente a H\_sim y sin presencia de agua real. 
 	\item El salpicado mencionado se torna celeste dentro de las lagunas azules, pero no es identificado como una laguna.
 	\item Apenas se registra la presencia de uno o dos cuerpos de agua de color celeste, pero casi indistinguible.
@@ -1736,7 +1734,7 @@ Haciendo referencia a la figura \ref{RGBDia10} se puede ver claramente el compor
 \label{obscorreccionlagunas}
 Como se mencionó anteriormente, no todas las lagunas son predichas de manera correcta como se puede ver en diferentes casos, estas se corresponden con el color rojo, ya que es una laguna predicha por R\_sim y que no está presente en IM\_L. Por otro lado las que son solo de color azul se da el efecto inverso: existente en la realidad y no predicha por R\_sim:
 
-A partir de esto se puede observar que estas lagunas pueden estar conectadas por una cañada con dirección de desembocadura hacia la laguna predicha por R\_sim. Figura \ref{LagunaProblema1}: 
+A partir de esto se puede observar que estas lagunas pueden estar conectadas por una cañada con dirección de desembocadura hacia la laguna predicha por R\_sim, como se muestra en la figura \ref{LagunaProblema1}: 
 
 \begin{figure}[!htb]
    \centering      
@@ -1976,7 +1974,7 @@ Si bien en este caso se alcanza un máximo de 25 \% de 0 a 100, es un valor bast
 
 \newpage
 $\ $
-\thispagestyle{empty} % para que no se numere esta pagina
+\thispagestyle{empty}
 
 \chapter{Conclusiones}
 \label{chap:conclusiones}
@@ -1989,7 +1987,7 @@ Luego de todo el trabajo realizado y el análisis de los resultados obtenidos ta
 
 \begin{itemize}
 
-		\item Del relevamiento de los distintos DEMs globales (para casi la totalidad de la parte terrestre del planeta) y disponibles de manera libre sobretodo, el DEM HydroSHEDS es de la mejores opciones disponibles, por lo tanto disponer de una herramienta que lo mejore notablemente para usos hidrológicos se considera un avance importante. Es de notar que los datos base que son del DEM SRTM tienen ya más de 15 años de antigüedad lo que limita la ponderación.
+		\item Del relevamiento de los distintos DEMs globales (para casi la totalidad de la parte terrestre del planeta) y disponibles de manera libre, el DEM HydroSHEDS es de la mejores opciones disponibles, por lo tanto disponer de una herramienta que lo mejore notablemente para usos hidrológicos se considera un avance importante. Es de notar que los datos base que son del DEM SRTM tienen ya más de 15 años de antigüedad lo que limita la ponderación.
 
 	\item Se determinó que el mejor DEM que se obtiene resulta de una combinación entre datos y procesos de a los DEMs SRTM e HydroSHEDS.
 
