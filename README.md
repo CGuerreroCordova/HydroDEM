@@ -1,4 +1,4 @@
-# HYDRODREM
+# HydroDEM
 
 This project correspond with the thesis work to get the title of Master's 
 Degree in "Applications with satellite images".
@@ -14,9 +14,9 @@ This include several tasks related to processing rasterized images: operations
 between rasters, masks, Fourier transforms, reprojections, resampling, new and existing 
 filter, etc. All of these was developed using mainly python GDAL and NumPy libraries.
 
-To see a detailed explanation (spanish) of this work, the pdf report "on work"
+To see a detailed explanation of this work, the pdf report "on work"
  can be found at: 
-[Thesis Report](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/template_tesis_mearte.pdf)
+[Thesis Report (spanish)](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/template_tesis_mearte.pdf)
 
 ### The flow to process a DEM corresponds to the following diagram:
 
