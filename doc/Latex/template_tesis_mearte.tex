@@ -1,4 +1,5 @@
 
+
 \documentclass[10pt,a4paper, twoside]{report}
 
 \usepackage[top=3cm, bottom=3cm, left=2.5cm, right=2.5cm]{geometry}
@@ -199,10 +200,11 @@ Si el medio poroso tiene contacto con la atmósfera a través de la superficie d
 
 Se define como evaporación al proceso físico por el cual el agua pasa del estado líquido al gaseoso y representa la tasa neta de transporte de vapor hacia la atmósfera. El cambio de estado de líquido a vapor se debe a la radiación solar que brinda la energía necesaria para que las moléculas del agua cambien de estado. Además de la radiación solar, las variables meteorológicas que intervienen en la evaporación, particularmente de las superficies libre de agua, son la temperatura del aire, velocidad de viento, tensión de vapor o humedad relativa del ambiente, determinando el poder evaporante de la atmósfera, que es la capacidad del aire que rodea a la superficie evaporante para admitir vapor de agua. La evaporación total es la suma de la evaporación de agua libre y la evapotranspiración. La evaporación puede ser de distintas procedencias: evaporación de superficie de agua libre, como ser lagos, tanques, cursos de agua, etc.; evaporación del agua del suelo y transpiración de plantas, que también toman agua del suelo por medio de sus raíces. Estas dos últimas son muy difíciles de cuantificar o estimar en forma separada, por lo tanto se engloban en una sola variable denominada evapotranspiración.
 
-\subsection{Descripción del área de estudio en función de los procesos hidrológicos}
+%\subsection{Descripción del área de estudio en función de los procesos hidrológicos}
+\subsection{Descripción del área de estudio}
 \label{subsec:introModelo}
 
-En la figura \ref{SRTMAndShape} se muestra el área geográfica de interés del presente trabajo. Esta área está ubicada en el sudeste de la provincia de Córdoba, se trata de un rectángulo oblicuo con 57 grados de inclinación.
+En la figura \ref{SRTMAndShape} se muestra el área geográfica de interés del presente trabajo. Esta área está ubicada en el sudeste de la provincia de Córdoba limitante con la provincia de Santa Fe, se trata de un rectángulo oblicuo con 57 grados de inclinación.
 
 \begin{figure}[!htb]
    \centering      
@@ -211,24 +213,27 @@ En la figura \ref{SRTMAndShape} se muestra el área geográfica de interés del 
  \label{SRTMAndShape}
 \end{figure}
 
-Existe una gran cantidad de modelos hidrodinámicos que estudian las inundaciones de llanuras pertenecientes a cuencas hídricas. Estos modelos generalmente tienen centrado su interés en predecir el hidrograma del río en distintos puntos para eventos seleccionados, considerando a la llanura circundante más bien como una zona de alimentación de agua al río. De esta forma la inundación está considerada a través del desborde del río y el proceso que se simula es esencialmente escurrimiento superficial en la llanura y en el canal propio del río. Como ejemplo de estos modelos se puede citar entre otros: Mike-11, ONDA, HEC-RAS y LISFLOOD-FP (Bates \textit{et al.} 2011). Estos modelos tienen distintos grados de sofisticación en lo referente a los esquemas de ecuaciones que resuelven, pero como señalan Bates \textit{et al.} (2011), dado que la topografía tiene un peso determinante en la simulación, el uso de esquemas complejos no aseguran un mayor grado de predicción. En tal sentido, es preferible usar esquemas simples que se ajusten al requerimiento de predicción deseado por el usuario y que integren adecuadamente los datos de entrada. Estas características son reunidas por el modelo LISFLOOD-FP, el cual ha sido tomado como base para nuestro modelado.
 
-La zona de estudio, tal como se mencionó, es el sur de la provincia de Córdoba limitante con la provincia de Santa Fe, Carignano \textit{et al.} (2014) describen detalladamente el área de estudio desde una visión geomorfológica la cual contiene los siguientes ambientes:
+Carignano \textit{et al.} (2014) describen detalladamente el área de estudio desde una visión geomorfológica la cual contiene los siguientes ambientes:
 
-\textbf{Planicie sudoriental con campos de dunas:} El paisaje de la subunidad está dominado por las megadunas parabólicas y longitudinales, cubriendo en forma discontinua una superficie general sumamente horizontal. Éstas alternan con depresiones  pertenecientes a una paleored fluvial muy probablemente desarrollada por el río Popopis. Actualmente dichas depresiones están transformadas en cañadas y lagunas encadenadas con orientación SO-NE. Un segmento preservado de una de las fajas fluviales aparece al noreste de Arias; tiene 11 km de longitud y de 2 a 3,5 km de ancho y está limitado por un campo de dunas disipado, con diferencias altimétricas máximas de 4 m. Respecto al origen de la cañadas del área, Ferpozzi (1988) interpreta que se trata de bajos o depresiones longitudinales heredadas de paleorrelieves eólicos y que en las condiciones morfogenéticas actuales funcionan concentrando el escurrimiento. Iriondo \textit{et al.} (2007), en cambio, deducen un primer origen fluvial para las mencionadas cañadas.
-En el resto del área, los interfluvios en general corresponden a extensas áreas planas y prácticamente horizontales o con pendientes poco perceptibles debido a la disipación casi total de las megadunas. Su superficie fue cementada por procesos pedogénicos y epigenéticos (calcreta), dificultando la infiltración del agua de lluvia y favoreciendo la formación de bañados. Dicha superficie se detectó por debajo de las megadunas parabólicas a una profundidad entre 5,5 y 8 m en el área de Canals a partir de datos de resistividad eléctrica (Iriondo \textit{et al.} 2008). Esta superficie poligénica aparece en superficie o muy cerca de ella (cubierta por dunas disipadas o un manto policíclico de arena eólica) en el área ubicada inmediatamente al sur de La Cesira y al este de Laboulaye (sector Leguizamón-Rosales), extendiéndose en el área ocupada por la laguna La Picasa, en el sudoeste de Santa Fe. Las depresiones tienen forma generalmente circular o elíptica con clara orientación SO-NE. Bajo el clima actual se encuentran en general anegadas y afectadas por procesos limnológicos. Algunas hoyas presentan lunetas a sotavento de la depresión. Un área típica del borde del Mar de Arena Pampeano en la provincia aparece entre las localidades de Cavanagh y Arias. En una distancia de 18 km, el extremo sur de esa transecta está caracterizado por megadunas sobre las que se diferencian pequeñas lomas de 2 a 4 m de altura y depresiones en un patrón irregular, el extremo norte está expresado por un plano dominante, con lomas arenosas y depresiones aisladas (Iriondo \textit{et al.} 2011).
+La región que comprende el área de estudio es denominada "`Planicie sudoriental con campos de dunas"'. El paisaje de esta región está dominado por las megadunas parabólicas (irregularesque se distribuyen en forma agrupada en un paisaje domi-nantemente plano (Iriondo 2011)) y longitudinales, cubriendo en forma discontinua una superficie general sumamente horizontal. Éstas alternan con depresiones  pertenecientes a una paleored fluvial, probablemente desarrollada por el río Popopis. Actualmente dichas depresiones están transformadas en cañadas y lagunas encadenadas con orientación SO-NE. Un segmento preservado de una de las fajas fluviales aparece al noreste de Arias; tiene 11 km de longitud y de 2 a 3,5 km de ancho y está limitado por un campo de dunas disipado, con diferencias altimétricas máximas de 4 m. Respecto al origen de la cañadas del área, Ferpozzi (1988) interpreta que se trata de bajos o depresiones longitudinales heredadas de paleorrelieves eólicos y que en las condiciones morfogenéticas actuales funcionan concentrando el escurrimiento. Iriondo \textit{et al.} (2007), en cambio, deducen un primer origen fluvial para las mencionadas cañadas.
+En el resto del área, los interfluvios en general corresponden a extensas áreas planas y prácticamente horizontales o con pendientes poco perceptibles debido a la disipación casi total de las megadunas. Su superficie fue cementada por procesos pedogénicos y epigenéticos (calcreta), dificultando la infiltración del agua de lluvia y favoreciendo la formación de bañados. Dicha superficie se detectó por debajo de las megadunas parabólicas a una profundidad entre 5,5 y 8 metros en el área de Canals a partir de datos de resistividad eléctrica (Iriondo \textit{et al.} 2008). Esta superficie poligénica aparece en superficie o muy cerca de ella (cubierta por dunas disipadas o un manto policíclico de arena eólica) en el área ubicada inmediatamente al sur de La Cesira y al este de Laboulaye (sector Leguizamón-Rosales), extendiéndose en el área ocupada por la laguna La Picasa, en el sudoeste de Santa Fe. Las depresiones tienen forma generalmente circular o elíptica con clara orientación SO-NE. Bajo el clima actual se encuentran en general anegadas y afectadas por procesos limnológicos. Algunas hoyas presentan lunetas a sotavento de la depresión. Un área típica del borde del Mar de Arena Pampeano en la provincia aparece entre las localidades de Cavanagh y Arias. En una distancia de 18 km, el extremo sur de esa transecta está caracterizado por megadunas sobre las que se diferencian pequeñas lomas de 2 a 4 m de altura y depresiones en un patrón irregular, el extremo norte está expresado por un plano dominante, con lomas arenosas y depresiones aisladas (Iriondo \textit{et al.} 2011).
 
-Desde el punto de vista hidrológico, la escasa pendiente de la zona elegida hace que no existan canales importantes que permitan conducir el escurrimiento superficial sino que éste se realiza en mantos sobre grandes áreas y en escalas de tiempo relativamente largas. En el balance hidrológico general predominan los procesos verticales (evapotranspiración e infiltración) por sobre el escurrimiento. Sin embargo, el escurrimiento superficial es importante para determinar la zona anegada que estará sujeta a los flujos verticales de pérdida. Por otra parte, cada laguna funciona como un reservorio limitado de una microcuenca, pero al superarse su capacidad de almacenamiento se produce escurrimiento superficial encadenando unas con otras y generando un área anegada que las contiene (Masuelli \textit{et al.} 2009).
+\textbf{Desde el punto de vista hidrológico:} La escasa pendiente de la zona elegida hace que no existan canales importantes que permitan conducir el escurrimiento superficial sino que éste se realiza en mantos sobre grandes áreas y en escalas de tiempo relativamente largas. En el balance hidrológico general predominan los procesos verticales (evapotranspiración e infiltración) por sobre el escurrimiento. Sin embargo, el escurrimiento superficial es importante para determinar la zona anegada que estará sujeta a los flujos verticales de pérdida. Por otra parte, cada laguna funciona como un reservorio limitado de una microcuenca, pero al superarse su capacidad de almacenamiento se produce escurrimiento superficial encadenando unas con otras y generando un área anegada que las contiene (Masuelli \textit{et al.} 2009).
 
-Dadas las características de la zona estudiada, el modelado tiene en cuenta varios detalles. El hecho de que el terreno sea tan plano hace que el DEM que se usa deba estar muy pulido, reduciendo el nivel de ruido de los metros a los centímetros para que el agua no encuentre obstáculo espurios para drenar (Masuelli \textit{et al.} 2009). El hecho de no poseer canales importantes hace que el escurrimiento sobre la planicie y la existencia de pequeños bajos conduzca a que éstos se conviertan en zonas anegadas. En otros modelos este proceso de interacción entre la planicie y los canales era funcional para obtener la carga del río, el cual con su eventual desborde puede determinar también zonas anegadas. La importancia de los procesos verticales hace que se los deba incluir en el modelo, con la complicación de que estos procesos tienen escalas espaciales y temporales muy distintas.
+Dadas las características de la zona estudiada, el modelado tiene en cuenta varios detalles. El hecho de que el terreno sea tan plano hace que el DEM que se usa deba estar muy pulido, reduciendo el nivel de ruido de los metros a los centímetros para que el agua no encuentre obstáculo espurios para drenar (Masuelli \textit{et al.} 2009). El hecho de no poseer canales importantes hace que el escurrimiento sobre la planicie y la existencia de pequeños bajos conduzca a que éstos se conviertan en zonas anegadas. En otros modelos este proceso de interacción entre la planicie y los canales era funcional para obtener la carga del río, el cual con su eventual desborde puede determinar también zonas anegadas. La importancia de los procesos verticales hace que se los deba tener en cuenta en el modelado, con la complicación de que estos procesos tienen escalas espaciales y temporales muy distintas.
 
 
+
+\subsection{Modelado hidrológico en función del área de estudio}
+
+Existe una gran cantidad de modelos hidrodinámicos que estudian las inundaciones de llanuras pertenecientes a cuencas hídricas. Estos modelos generalmente tienen centrado su interés en predecir el hidrograma del río en distintos puntos para eventos seleccionados, considerando a la llanura circundante más bien como una zona de alimentación de agua al río. De esta forma la inundación está considerada a través del desborde del río y el proceso que se simula es esencialmente escurrimiento superficial en la llanura y en el canal propio del río. Como ejemplo de estos modelos se puede citar entre otros: Mike-11, ONDA, HEC-RAS y LISFLOOD-FP (Bates \textit{et al.} 2011). Estos modelos tienen distintos grados de sofisticación en lo referente a los esquemas de ecuaciones que resuelven, pero como señalan Bates \textit{et al.} (2011), dado que la topografía tiene un peso determinante en la simulación, el uso de esquemas complejos no aseguran un mayor grado de predicción. En tal sentido, es preferible usar esquemas simples que se ajusten al requerimiento de predicción deseado por el usuario y que integren adecuadamente los datos de entrada. Estas características son reunidas por el modelo LISFLOOD-FP, el cual es el que se ha tomado como base para el desarrollo del Simulador Hidrológico (Guerrero Cordova 2013) que se utiliza en este trabajo para la evaluación del DEM que se obtiene de resultado desde el punto de vista hidrológico.
 
 
 \section{Relevamiento de DEMs para usos hidrológicos}
 
 
-Entre los sistemas satelitales que ofrecen datos topográficos, se encuentran plataformas cuya información está disponible de manera gratuita, de fácil acceso y con una disponibilidad a nivel global. Entre estos, está el sistema radar SRTM, y el sistema ASTER GDEM (Advanced Spaceborne Thermal Emission and Reflection Radiometer, Global Digital Elevation Model), se destacan por su alta resolución espacial y disponibilidad global. Si bien, ambos sistemas presentan rangos de precisiones conocidas, son muchos los autores que señalan que ésta dependerá finalmente de las condiciones locales presentes en el área de estudio (Kiamehr \textit{et al.} 2005; Schumann \textit{et al.} 2008; Li \textit{et al.} 2009).
+Entre los sistemas satelitales que ofrecen datos topográficos, se encuentran plataformas cuya información está disponible de manera gratuita, de fácil acceso y con una disponibilidad a nivel global. El sistema radar SRTM y el sistema ASTER GDEM (Advanced Spaceborne Thermal Emission and Reflection Radiometer, Global Digital Elevation Model) se destacan por su alta resolución espacial y disponibilidad global. Si bien, ambos sistemas presentan rangos de precisiones conocidas, son muchos los autores que señalan que ésta dependerá finalmente de las condiciones locales presentes en el área de estudio (Kiamehr \textit{et al.} 2005; Schumann \textit{et al.} 2008; Li \textit{et al.} 2009).
 
 \subsection{Misión SRTM}
 
@@ -243,13 +248,13 @@ La misión de radar topográfico de NASA a bordo del Shuttle ha provisto datos d
 
 La primera versión del ASTER Global Digital Elevation Map (GDEM), publicado en junio de 2009, se ha generado utilizando pares de imágenes estéreo recogidas por el instrumento ASTER a bordo del satélite Terra. La cobertura de ASTER GDEM se extiende desde los 83 grados de latitud norte hasta 83 grados de latitud sur, que abarca el 99 por ciento de la superficie de la Tierra.
 
-GDEM V2 es una versión mejorada de la primera versión, añade 260.000 pares estéreo adicionales, mejorando la cobertura y reduciendo la ocurrencia de artefactos. El algoritmo de producción refinada proporciona una mejor resolución espacial, una mayor precisión horizontal y vertical, y una mejor cobertura y detección de cuerpos de agua que su versión anterior. El ASTER GDEM V2 mantiene el formato GeoTIFF y la misma estructura de grilla y mosaico que la versión V1, con resolución de 1 x 1 grado (lo que equivale a 30 x 30 metros en el ecuador).
+GDEM V2 es una versión mejorada de la primera versión, añade 260.000 pares estéreo adicionales, mejorando la cobertura y reduciendo la ocurrencia de huecos. El algoritmo de producción refinada proporciona una mejor resolución espacial, una mayor precisión horizontal y vertical, y una mejor cobertura y detección de cuerpos de agua que su versión anterior. El ASTER GDEM V2 mantiene el formato GeoTIFF y la misma estructura de grilla y mosaico que la versión V1, con resolución de 1 x 1 grado (lo que equivale a 30 x 30 metros en el ecuador).
 
-La versión 2 muestra mejoras significativas respecto a la versión anterior (como por ejemplo reducción de ruido y resolución vertical). Sin embargo, se aconseja a los usuarios que los datos contienen anomalías y artefactos que impedirán la eficacia para su uso en ciertas aplicaciones (Tachikawa \textit{et al.} 2011).
+La versión 2 muestra mejoras significativas respecto a la versión anterior (como por ejemplo reducción de ruido y resolución vertical). Sin embargo, se aconseja a los usuarios que los datos contienen anomalías y huecos que impedirán la eficacia para su uso en ciertas aplicaciones (Tachikawa \textit{et al.} 2011).
 
 \subsection{Comparación con SRTM}
 
-Moreno de las Heras \textit{et al.} (2012) realizaron un estudio comparando SRTM V4 con ASTER GDEM1 para la determinación de descriptores hidrogeológicos y geomorfológicos y concluyeron que SRTM V4 es más confiable que ASTER GDEM1, particularmente en áreas donde ASTER GDEM1 muestra artefactos de elevación (no correspondientes a la superficie terrestre).
+Moreno de las Heras \textit{et al.} (2012) realizaron un estudio comparando SRTM V4 con ASTER GDEM1 para la determinación de descriptores hidrogeológicos y geomorfológicos y concluyeron que SRTM V4 es más confiable que ASTER GDEM1, particularmente en áreas donde ASTER GDEM1 muestra huecos de elevación (no correspondientes a la superficie terrestre).
 
 Muchos de estos estudios fueron orientados específicamente al uso hidrológico, obteniendo buenos resultados de SRTM en comparación con ASTER GDEM (Forkuor \textit{et al.} 2012).
 
@@ -283,7 +288,7 @@ Los datos se encuentran en proyección geográfica (Lat/Long), con datum horizon
 
 \subsection{Evolución y versiones de SRTM}
 
-El DEM SRTM es el resultado de una serie de procesamientos para corrección de agujeros en la imagen. Se siguió el método descripto por Reuter \textit{et al.} (2007). La primera etapa de procesamiento incluye la importación y la fusión de imágenes de un grado de largo en superficies continuas en formato ArcGRID. El segundo proceso llena agujeros pequeños de forma iterativa y limpia la superficie para reducir huecos y picos. La tercera etapa interpola a través de los huecos utilizando una variedad de métodos. El método utilizado se basa en el tamaño del hueco, y en la forma del relieve que la rodea.
+El DEM SRTM es el resultado de una serie de procesamientos para corrección de agujeros en la imagen. Se siguió el método descripto por Reuter \textit{et al.} (2007). La primera etapa de procesamiento incluye la importación y la fusión de imágenes de un grado de largo en superficies continuas en formato ArcGRID. El segundo proceso llena agujeros pequeños de forma iterativa y limpia la superficie para reducir huecos y picos. La tercera etapa interpola a través de los huecos utilizando un método que se basa en el tamaño del hueco, y en la forma del relieve que la rodea.
 
 \subsubsection{Datos de elevación SRTM - Versión 1 (Datos sin terminar SRTM-1 y SRTM-3)}
 
@@ -380,7 +385,7 @@ Los siguientes procedimientos de acondicionamiento hidrológicos se han aplicado
 	En un proceso estándar, todos los piletones espurios en la superficie fueron llenados. Piletones naturales fueron removidos con el fin de excluirlos de la eliminación	
 	\item \textbf{Escarbado a través de barreras:} Después de llenar las depresiones, un mapa del río fue generado a partir de los datos de elevación ya procesados. Los principales cursos de ríos, definidos como ríos con un área de cuenca aguas arriba de más de 1000 celdas (aproximadamente 8 km\textsuperscript{2} en el ecuador), fueron plasmados. Los principales ríos, fueron proyectados en el modelo de elevación HydroSHEDS inicial, y todas los ascensos en elevaciones río abajo fueron identificadas. Estos aumentos en la elevación de la superficie original, los cuales obviamente han sido removidos a través de la aplicación de filtros o llenado de depresiones en el proceso de adecuación, pueden representar presas, puentes, muros de contención de cualquier tipo, o gargantas estrechas que bloquean la vía de flujo. En muchos de estos casos, el efecto de llenado de depresiones (es decir, la elevación y el aplanamiento implícito de la zona embalsada) puede no ser deseable la corrección. Para minimizar este efecto, se realizó una segunda iteración del proceso de adecuación: primero, todas las elevaciones crecientes a lo largo de los principales cursos de agua fueron nivelados en los datos iniciales de elevación mediante la reducción adecuada de sus alturas respectivas, luego cavando a través de las barreras. Después de este proceso, todos los demás procesamientos de adecuación fueron repetidos.
 	
-	\item \textbf{Correcciones Manuales:} La red de ríos derivada fue comparada visualmente con los ríos que se pueden encontrar en otras fuentes de datos como DCW (sección \ref{DCWLabel}) o ArcWorld (sección \ref{ArcWorldLabel}). 
+	\item \textbf{Correcciones Manuales:} La red de ríos derivada fue comparada visualmente con los ríos que se pueden encontrar en otras fuentes de datos como DCW (sección \ref{DCWLabel}) y ArcWorld (sección \ref{ArcWorldLabel}). 
 	
 \end{itemize}
 
@@ -397,7 +402,7 @@ Lehner \textit{et al.} (2006) también exhiben algunas comparaciones con conjunt
 
 
 
-\subsection{Adecuación de DEM para aplicación a la llanura Bonaerense}
+\subsection{Adecuación de DEM SRTM para aplicación a la llanura Bonaerense}
 \label{trabajoSergioAntecedente}
 
 En esta sección se describe el trabajo realizado por Masuelli \textit{et al.} (2009) para adecuación de un DEM para usos hidrológicos, la descripción detallada de este antecedente es importante debido a que gran parte de su desarrollo sirvió como base para la realización del presente trabajo.
@@ -461,21 +466,23 @@ Por lo tanto, para que el agua fluya, la discretización en altura debe ser del 
 \chapter{Procesamiento del DEM}
 \label{chap:procDEM}
 
-En este capítulo se describe el desarrollo de los procesamientos aplicados para obtención de un DEM adecuado hidrológicamente y la metodología para la evaluación de los resultados.
+En este capítulo se describe el desarrollo de los procesamientos aplicados para obtención de un DEM adecuado hidrológicamente y la metodología para la evaluación de los resultados. Por lo analizado en el capítulo anterior el DEM candidato a usarse en modelado hidrológico sobre el área de interés (Este de la provincia de Córdoba) tendría que ser el HydroSHEDS.
 
+En la figura \ref{HSHEDSPaleta} pueden observarse claramente 2 defectos importantes: 
 
-Por lo analizado en el capítulo anterior el DEM candidato a usarse en modelado hidrológico sobre el área de interés (Este de la provincia de Córdoba) tendría que ser el HydroSHEDS.
-
-En la figura \ref{HSHEDSPaleta} pueden observarse claramente 2 defectos importantes: bandeado de baja amplitud y cortinas de árboles. Ambos defectos son corregidos por Masuelli \textit{et al.} (2009), tal como ha sido presentado en la sección \ref{trabajoSergioAntecedente}, y cuyo impacto negativo para realizar simulaciones sobre llanuras ha sido demostrado en dicho trabajo.
-
+\begin{itemize} 
+	\item Bandeado de baja amplitud: Se puede apreciar oblicuo con dirección NO-SE. Fueron trazadas líneas en azul en la figura a modo de guía para poder apreciarlo mejor.
+	\item Cortinas de árboles: Se diferencian del entorno como puntos rojos grueso. En la figura se pueden observar encerrados en elipses para su mejor apreciación.
+\end{itemize}
 
 \begin{figure}[!htb]
    \centering      
-   \includegraphics[width=0.85\textwidth]{imagenes/HSHEDSPaleta.jpg}
- \caption{DEM HydroSHEDS en paleta de colores en donde se puede observar el bandeado y las cortinas de árboles localizadas con elipses.}
+   \includegraphics[width=0.85\textwidth]{imagenes/HSHEDSPaleta_2.jpg}
+ \caption{DEM HydroSHEDS en paleta de colores en donde se puede observar el bandeado paralelo a las líneas azules trazadas a modo de guía; y las cortinas de árboles como puntos rojos gruesos encerrados con elipses.}
  \label{HSHEDSPaleta}
 \end{figure}
 
+Ambos defectos fueron corregidos por Masuelli \textit{et al.} (2009), tal como ha sido presentado en la sección \ref{trabajoSergioAntecedente}, y cuyo impacto negativo para realizar simulaciones sobre llanuras ha sido demostrado en dicho trabajo.
 
 En vista de este problema el presente trabajo consiste en obtener un DEM corregido a partir de la información de SRTM e HydroSHEDS, aplicando las distintas correcciones sobre uno u otro DEM según se considere más conveniente.
 
@@ -486,7 +493,7 @@ Inicialmente se abordaron los problemas de bandeado y cortinas de árboles al DE
 \subsection{Aplicación de corrección de bandeado a HydroSHEDS}
 \label{aplicacionBandeado}
 
-Como se ve en la figura \ref{HSHEDSPaleta} HydroSHEDS presenta el problema de bandedado, por lo que se aplicó la corrección utilizando el método de transformada de Fourier descripta en la seccion \ref{filtroBandeadoSergio} (Masuelli \textit{et al.} 2009). El resultado no fue satisfactorio como se puede observar en las siguientes figuras:
+Como se ve en la figura \ref{HSHEDSPaleta} HydroSHEDS presenta el problema de bandeado, por lo que se aplicó la corrección utilizando el método de transformada de Fourier descripta en la seccion \ref{filtroBandeadoSergio} (Masuelli \textit{et al.} 2009). El resultado no fue satisfactorio como se puede observar en las siguientes figuras:
 
 \begin{figure}[!htb]
    \begin{minipage}{0.48\textwidth}
@@ -507,7 +514,7 @@ En la figura \ref{HydroSHEDSBandeadoZoom}, un zoom de la \ref{HSHEDSPaleta}, pue
 
 \subsection{Aplicación de corrección de cortinas de árboles a HydroSHEDS}
 
-De igual manera se aplicó la corrección de cortinas de árboles al DEM HydroSHEDS siguiendo el procedimiento de Masuelli \textit{et al.} (2009) proveyendo también resultados no satisfactorios (Figuras \ref{HydroSHEDSTreesZoom} y \ref{HydroSHEDSTreesZoomCorrected}).
+De igual manera se aplicó la corrección de cortinas de árboles al DEM HydroSHEDS siguiendo el procedimiento de Masuelli \textit{et al.} (2009) proveyendo también resultados no satisfactorios como se puede observar en las figuras \ref{HydroSHEDSTreesZoom} y \ref{HydroSHEDSTreesZoomCorrected} y se describe más abajo.
 
 
 \begin{figure}[!htb]
@@ -562,7 +569,7 @@ El proyecto de software desarrollado puede ser encontrado de manera libre en Git
 
 \subsection{Automatización del procesamiento:} Además de describir detalladamente los procesamientos aplicados al DEM para la correcta ejecución del simulador hidrológico, se provee la aplicación desarrollada en Python, que permite fácilmente procesar un DEM de llanura para cualquier área de estudio elegida.
 
-Asimismo, para llegar a obtener tal combinación de ambos DEMs se realizó una secuencia de operaciones entre raster las cuales son descriptas a continuación. Este procesamiento respeta el siguiente diagrama de flujo (Figura. \ref{FlowCompleto}):
+Asimismo, para llegar a obtener tal combinación de ambos DEMs se realizó una secuencia de operaciones entre raster las cuales son descriptas a continuación. Este procesamiento respeta el diagrama de flujo de la figura\ref{FlowCompleto}:
 
 \begin{figure}[!htb]
    \centering      
@@ -582,7 +589,7 @@ A continuación se listan los procesamientos realizados siguiendo la numeración
 
 \begin{enumerate}
 	\item El DEM HydroSHEDS viene en formato adf (Application Definition File). Se convierte a formato tiff como primer paso de su procesamiento.
-	\item A partir del archivo en formato "`shape"' del área de estudio se determina el área sobre la cual se trabajará en este trabajo. Para evitar tener que hacer interpolaciones el área de trabajo enmarca al área de estudio mediante un rectángulo con lados paralelos al ecuador.	
+	\item A partir del archivo en formato "`shape"' del área de estudio se determina el área sobre la cual se trabajó en este trabajo. Para evitar tener que hacer interpolaciones el área de trabajo enmarca al área de estudio mediante un rectángulo con lados paralelos al ecuador.	
 	\item El DEM HydroSHEDS ya en formato tiff, el DEM SRTM, y la clasificación de arboledas son reproyectadas, recortadas y remuestradas utilizando el archivo en formato shape del área de interés procesado previamente. Esto se hace para tener una correspondencia entre los píxeles a procesar.
 	\item Los píxeles con valores NaN (Not a Number) son corregidos utilizando los valores de píxeles vecinos..
 	\item El DEM SRTM es procesado por separado del DEM HydroSHEDS.
@@ -590,7 +597,7 @@ A continuación se listan los procesamientos realizados siguiendo la numeración
 	\item Luego de aplicada la corrección usando la transformada de Fourier se aplica al resultado la corrección de cortinas de árboles.
 	\item El DEM HydroSHEDS es procesado por separado del DEM SRTM.
 	\item Se aplica a HydroSHEDS el algoritmo de detección de lagunas.
-	\item Se rasteriza el vector de ríos y cañadas y teniendo como base HydroSHEDS se aplica el algoritmo de enrutamiento de ríos y cañadas.
+	\item Se rasteriza el vector de ríos y cañadas y teniendo como base HydroSHEDS se aplica el algoritmo de enrutamiento de ríos y cañadas (descripto más adelante).
 	\item DEM SRTM corregido
 	\item Se extraen de HydroSHEDS los valores de los píxeles que corresponden a lagunas detectadas
 	\item Se extraen de HydroSHEDS los valores de los píxeles que corresponden a ríos y cañadas luego de procesados.
@@ -630,7 +637,7 @@ Se buscaron imágenes de diferentes épocas del año, para que la clasificación
 
 \textbf{Datos de Referencia}
 
-Se cuenta con datos de verdad disponibles correspondientes a cultivos de la zona (Figura \ref{DatosDeVerdadCultivos}). Estos datos son polígonos en formato shape cuyos atributos contienen a que tipo de cultivo pertenece cada polígono.
+Se cuenta con datos de verdad disponibles correspondientes a cultivos de la zona (ver figura \ref{DatosDeVerdadCultivos}). Estos datos son polígonos en formato shape cuyos atributos contienen a que tipo de cultivo pertenece cada polígono.
 
 \begin{figure}[!htb]
    \centering      
@@ -1010,7 +1017,7 @@ Comparando esta imagen con la original sin corregir (ver Figura \ref{SinFourier}
 \subsubsection{Corrección de Cortinas de Árboles}
 \label{correccionACortinasDeArboles}
 
-El DEM SRTM presenta la particularidad que en lugares donde existen árboles, registra los valores de altura de estos árboles como si fuera la superficie. Este es un efecto no deseado, dado que para uso hidrológico, esto presentaría comportamientos no deseados, ya que el agua debe fluir entre los árboles y no debe representar una barrera como ocurriría en zonas donde no es corregido. En la figura \ref{BingArboledas} puede verse una cortina de árboles de una imagen descargada de Google Earth y como aparece la misma en el DEM SRTM (figura \ref{DEMConArboledas}).
+El DEM SRTM presenta la particularidad que en lugares donde existen árboles, registra los valores de altura de estos árboles como si fuera la superficie. Este es un efecto no deseado, dado que para uso hidrológico, esto presentaría comportamientos no deseados, ya que el agua debe fluir entre los árboles y no debe representar una barrera como ocurriría en zonas donde no es corregido. En la figura \ref{BingArboledas} puede verse una cortina de árboles de una imagen descargada de Google Earth (en valores en verde oscuro) y como aparece representada la misma en el DEM SRTM en la figura \ref{DEMConArboledas} en píxeles más claros que el resto de la figura.
 
 \begin{figure}[!htb]
    \begin{minipage}{0.48\textwidth}
@@ -1026,7 +1033,6 @@ El DEM SRTM presenta la particularidad que en lugares donde existen árboles, re
 			\label{DEMConArboledas}
    \end{minipage}
 \end{figure}
-
 
 De una comparación entre estas figuras se puede advertir que es necesario poder identificar estos valores no deseados y ajustarlos a los valores reales de altura del suelo. Para poder llevar a cabo esto se debe contar como dato de entrada, ademas del DEM SRTM del área de estudio, una clasificación de vegetación obtenida a partir de los datos de verdad correspondientes a estos conjuntos de árboles.
 
@@ -1134,13 +1140,14 @@ Se obtiene de esta manera, el DEM SRTM con corrección de cortinas de árboles, 
 
 Durante el procesamiento se observó que en determinados casos la presencia de arboledas no era corregida de la manera esperada. Analizando visualmente algunos casos se determinó que se debe tener en cuenta que el DEM SRTM fue desarrollado a partir de imágenes de radar tomadas en el año 2000.
 
-Para realizar la corrección de arboledas se utilizaron imágenes Landsat 8 del año 2017 que ya proveen algunas correcciones que simplifican el procesamiento. Esta diferencia en tiempo puede provocar que algunas arboledas no sean corregidas por variaciones en la presencia de árboles desde el año 2000 al año 2017. Esto puede ser observado en la siguiente figura \ref{fig:observacionArboledas}:
+Para realizar la corrección de arboledas se utilizaron imágenes Landsat 8 del año 2017 que ya proveen algunas correcciones que simplifican el procesamiento. Esta diferencia en tiempo puede provocar que algunas arboledas no sean corregidas por variaciones en la presencia de árboles desde el año 2000 al año 2017. Esto se puede observar en la figura \ref{fig:observacionArboledas}. Del lado derecho se aprecia como el DEM representa una arboleda en forma de arco, la cual en la imagen óptica más reciente se puede observar que solo persistió una parte de tal arboleda:
 
 \begin{figure}[H]
 	\centering
-	\subfigure[DEM SRTM con presencia de arboledas]{\includegraphics[width=0.49\linewidth]{imagenes/ObservacionDEM}}
 	\subfigure[Imagen Bing actual dónde se ve presencia de árboles sólo en una parte]{\includegraphics[width=0.49\linewidth]{imagenes/ObservacionBing}}
-	\caption{Correspondencia de DEM SRTM con imagen actual de Bing. Se esperaría que en los píxeles más claros existan arboledas, los cuales deberían ser capturados por la clasificación de arboledas.} \label{fig:observacionArboledas}
+	\subfigure[DEM SRTM con presencia de arboledas]{\includegraphics[width=0.49\linewidth]{imagenes/ObservacionDEM}}
+	\caption{Correspondencia de DEM SRTM con imagen actual de Bing. Se esperaría que en los píxeles más claros existan arboledas, los cuales deberían ser capturados por la clasificación de arboledas.} 
+	\label{fig:observacionArboledas}
 \end{figure}
 
 
@@ -1149,7 +1156,7 @@ Para realizar la corrección de arboledas se utilizaron imágenes Landsat 8 del 
 
 El DEM HydroSHEDS ofrece interesantes características para uso hidrológico ya que provee una mejor definición de las cañadas y de pequeñas lagunas del terreno. Asimismo, viene con la desventaja del bandeado inherente al DEM, excepto en los cuerpos de agua que provee. La existencia de estos cuerpos de agua en donde no existe el bandeado dificulta la corrección por transformada de Fourier debido a que cuando se intenta corregir introduce errores en estos cuerpos de agua, como se ve en la sección \ref{aplicacionBandeado}. Debido a esto, solo se extraen los datos correspondientes a lagunas, ríos y cañadas.
 
-Las operaciones realizadas a partir de HydroSHEDS son descriptas a continuación (Figura \ref{DiagramaLagunas}):
+Las procesamientos realizados al DEM HydroSHEDS son descriptos a continuación y siguen el flujo que se observa en la figura \ref{DiagramaLagunas}:
 
 \begin{figure}[H]
    \centering      
@@ -1304,7 +1311,7 @@ Para esto se aplicaron varios procesos, entre ellos la creación e implementaci�
 Se desarrolló un filtro para la detección de canales, ríos y cañadas el cual se denominó: $enrouteRivers$. El funcionamiento del filtro se describe a continuación:
 
 \begin{itemize}
-	\item Este filtro consta de una ventana de 5x5 píxeles. 
+	\item El filtro fue definido con una dimensión de ventana de 5x5 píxeles. 
 	\item A diferencia de la mayoría de los filtros que se usan en imágenes, los cuales son aplicados al total de la imagen, en este caso es sólo aplicado a los píxeles con valor 1, es decir a los píxeles que indican presencia de río o cañada. 
 	\item Se debe recordar que la imagen es representada por una grilla con índices de ubicación, según la posición en la imagen. Primero los índices correspondientes a presencia de ríos o cañadas son obtenidos.
 	\item Estos índices de la imagen, a los cuales les será aplicado el filtro de enrutamiento, son tomados de la imagen de máscara mencionada en la sección \ref{expansionRios}. A partir de estos índices, los píxeles que caen dentro del filtro serán evaluados en el DEM de HydroSHEDS.
@@ -1629,7 +1636,7 @@ Se recuerda que el área de interés tiene una forma rectangular con una inclina
 
 \chapter{Resultados}
 
-Como resultado de este trabajo se obtiene un DEM que es más adecuado para usos hidrológicos, es decir, que represente mucho mejor el comportamiento del agua sobre él, luego de todos los procesamientos realizados y descriptos anteriormente.
+Como resultado de este trabajo se obtiene un DEM que es más adecuado para usos hidrológicos que el DEM HydroSHEDS, es decir, que represente mucho mejor el comportamiento del agua sobre él, luego de todos los procesamientos realizados y descriptos anteriormente.
 
 
 Ambos DEMs, HydroSHEDS y el DEM resultado de este trabajo, fueron utilizados de manera independiente como dato de entrada en el simulador hidrológico (Guerrero Cordova 2013) con el resto de las variables de entradas iguales. Las salidas del simulador hidrológico fueron comparadas con datos reales de índices de agua (NDWI) existentes en el área de estudio. Las simulaciones se realizaron con proyecciones de hasta 58 días, de esta manera tener un amplio espectro temporal del comportamiento del agua a través de los DEMs.
@@ -1644,20 +1651,17 @@ El objetivo de este análisis fue observar cualitativamente los comportamientos 
 
 \subsection{Imagen Global}
 
-Realizar una vista global de las imágenes nos indicó rápidamente las diferencias entre el uso de los diferentes DEM.
-
-
-H\_sim presenta puntos dispersos por toda el área, apenas se pueden identificar algunas lagunas (figura \ref{HSHEDSGlobal}).
+Se realizó una vista global de las imágenes y se detectó rápidamente las diferencias entre el uso de los diferentes DEM. En la figura \ref{HSHEDSGlobal} se puede observar que H\_sim presenta puntos dispersos por toda el área y que apenas se pueden identificar algunas lagunas.
 
 \begin{figure}[!htb]
-   \centering      
+   \centering       
    \includegraphics[width=0.95\textwidth]{imagenes/HSHEDSGlobal.jpg}
  \caption{Imagen global de H\_sim}
  \label{HSHEDSGlobal}
 \end{figure}
 
 
-En cambio R\_sim muestra acumulaciones de agua claramente diferenciables y algunas áreas completamente secas, además los cursos de agua se ven mucho mejor definidos. (figura \ref{DEMCRGlobal}).
+En cambio en la figura \ref{DEMCRGlobal} se puede apreciar que R\_sim muestra acumulaciones de agua claramente diferenciables y algunas áreas completamente secas, además los cursos de agua se ven mucho mejor definidos.
 
 \begin{figure}[!htb]
    \centering      
@@ -1666,8 +1670,9 @@ En cambio R\_sim muestra acumulaciones de agua claramente diferenciables y algun
  \label{DEMCRGlobal}
 \end{figure}
 
-Haciendo un zoom sobre las imágenes se aprecian estas diferencias con más detalle, como se puede observar en las figuras \ref{HSHEDSGlobalZoom} y \ref{DEMCRGlobalZoom}.
+Haciendo un zoom sobre las imágenes se aprecian estas diferencias con más detalle. En la figura \ref{HSHEDSGlobalZoom} se pueden apreciar puntos aislados y dispersos por toda el área. Además puede observarse, aunque con dificultad, un rayado bastante vertical que corresponde a la corrección por bandeado. Mientras que en la figura \ref{DEMCRGlobalZoom} se distinguen agrupaciones de puntos indicando lagunas y observan áreas más amplias donde el agua ya se ha secado.
 
+ 
 \begin{figure}[!htb]
    \begin{minipage}{0.48\textwidth}
 			\centering
@@ -1732,9 +1737,15 @@ Haciendo referencia a la figura \ref{RGBDia10} se puede ver claramente el compor
 
 \subsection{Análisis Visual de lagunas no predichas correctamente}
 \label{obscorreccionlagunas}
-Como se mencionó anteriormente, no todas las lagunas son predichas de manera correcta como se puede ver en diferentes casos, estas se corresponden con el color rojo, ya que es una laguna predicha por R\_sim y que no está presente en IM\_L. Por otro lado las que son solo de color azul se da el efecto inverso: existente en la realidad y no predicha por R\_sim:
 
-A partir de esto se puede observar que estas lagunas pueden estar conectadas por una cañada con dirección de desembocadura hacia la laguna predicha por R\_sim, como se muestra en la figura \ref{LagunaProblema1}: 
+Como se mencionó anteriormente, no todas las lagunas son predichas de manera correcta como se puede ver en diferentes casos:
+
+\begin{itemize}
+	\item Primer caso: laguna predicha por R\_sim y que no está presente en IM\_L (representadas con el color rojo).
+	\item Segundo caso: laguna existente en IM\_L y no es predicha por R\_sim (representadas con el color azul). 
+\end{itemize}
+
+Se puede observar que algunas lagunas del segundo caso pueden estar conectadas por una cañada con dirección de desembocadura hacia la laguna del primer caso (predicha por R\_sim), como se muestra en la figura \ref{LagunaProblema1}: 
 
 \begin{figure}[!htb]
    \centering      
@@ -1743,9 +1754,12 @@ A partir de esto se puede observar que estas lagunas pueden estar conectadas por
  \label{LagunaProblema1}
 \end{figure}
 
-Este efecto puede presentarse a partir de la información de cañadas obtenidas del DEM HydroSHEDS, en el algoritmo de modelado de cañadas se fuerza a que el agua fluya a través de las cañadas, lo que probablemente puede no coincidir exactamente con la realidad. En esta figura se pueden observar dos lagunas en rojo, se realizó un análisis temporal para la que se encuentra en la parte superior de la figura y se observó que con el paso del tiempo dicha laguna fue secada. Esto pudo deberse a que entre estas dos lagunas se encuentran edificaciones (la ciudad de Monte Maíz). Es por eso que para obtener mejores resultados seguramente se requerirá un análisis más fino y detallado de cada caso en particular.
+Esta diferencia de la predicción con la realidad puede presentarse a partir de la información de cañadas obtenidas del DEM HydroSHEDS, en el algoritmo de modelado de cañadas se fuerza a que el agua fluya a través de las cañadas, lo que probablemente puede no coincidir exactamente con la realidad.
 
-Además se observa conexión entre todas las lagunas (las reales y las predichas) por medio de cañadas. Figura \ref{LagunaProblema2}
+Además se observan dos lagunas del primer caso sin canales que las conecten, se pueden observar en la figura \ref{LagunaProblema1}. Para abordar este efecto se realizó un análisis temporal de imágenes opticas (Google Earth) sobre área que abarca ambas lagunas y se observó que con el paso del tiempo dicha laguna se fue secando. Esto pudo deberse a que entre estas dos lagunas se encuentran edificaciones (la ciudad de Monte Maíz). Para obtener mejores resultados se podría requerir un análisis más fino y detallado de cada caso en particular.
+
+
+Además se observa conexión entre todas las lagunas (las reales y las predichas) por medio de cañadas, como se puede distinguir en la figura \ref{LagunaProblema2}:
 
 \begin{figure}[!htb]
    \centering      
