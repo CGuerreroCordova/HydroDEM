@@ -1152,7 +1152,6 @@ Para realizar la corrección de arboledas se utilizaron imágenes Landsat 8 del 
 
 
 \subsection{Procesamiento a HydroSHEDS para extracción de lagunas, ríos y cañadas}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 El DEM HydroSHEDS ofrece interesantes características para uso hidrológico ya que provee una mejor definición de las cañadas y de pequeñas lagunas del terreno. Asimismo, viene con la desventaja del bandeado inherente al DEM, excepto en los cuerpos de agua que provee. La existencia de estos cuerpos de agua en donde no existe el bandeado dificulta la corrección por transformada de Fourier debido a que cuando se intenta corregir introduce errores en estos cuerpos de agua, como se ve en la sección \ref{aplicacionBandeado}. Debido a esto, solo se extraen los datos correspondientes a lagunas, ríos y cañadas.
 
@@ -1177,64 +1176,71 @@ Para poder realizar de manera correcta la conversión se debe pasar como argumen
 
 \textbf{Filtro de Mayoría}
 
-Para detección de las cavidades mencionadas eso se definió un filtro de Mayoría con una ventana de 11 x 11, el cual opera de la siguiente manera: si el píxel central pertenece a una laguna si la mayoría de sus vecinos dentro de la ventana de 11 x 11 tienen el mismo valor. En caso de ser así, el píxel del núcleo conserva su valor original, (el que trae del DEM HydroSHEDS), caso contrario, toma el valor 0. En la figura \ref{filtroMayoria} se puede observar en colores distintos de negro las lagunas detectadas:
+Para detección de las cavidades mencionadas eso se definió un filtro de Mayoría con una ventana de 11 x 11, el cual opera de la siguiente manera: si el píxel central pertenece a una laguna si la mayoría de sus vecinos dentro de la ventana de 11 x 11 tienen el mismo valor. En caso de ser así, el píxel del núcleo conserva su valor original, (el que trae del DEM HydroSHEDS), caso contrario, toma el valor 0. En la figura \ref{filtroMayoria} se puede observar un zoom a una parte del área de estudio en donde se observan las lagunas detectadas:
 
 \begin{figure}[H]
    \centering      
-   \includegraphics[width=0.5\textwidth]{imagenes/filtroMayoria.jpg}
- \caption{Lagunas detectadas aplicando filtro de mayoría. Se pueden ver las lagunas en escala de grises}
+   \includegraphics[width=0.5\textwidth]{imagenes/majorityFilterZoom.jpg}
+ \caption{Zoom a área de estudio en donde se observan algunas lagunas detectadas aplicando filtro de mayoría.}
  \label{filtroMayoria}
 \end{figure}
 
 \textbf{Eliminación de píxeles aislados}
 
-Luego de la máscara obtenida en el paso anterior, se observó la presencia de numerosos píxeles aislados, o agrupados solo en conjuntos de dos o tres píxeles. Estos valores no son deseados, ya que no representan algún cuerpo de agua, es solo un caso aislado, es por eso que no deben formar parte de las lagunas a detectar. Para la eliminación de estos casos se procedió de la siguiente manera:
-		
-		\textbf{Erosión:} Se aplicó un filtro de erosión con 2 iteraciones a la máscara obtenida en el paso anterior. Este filtro desgasta los bordes de las lagunas sometidas a la erosión. De este modo varias lagunas reducen su tamaño y las más pequeñas o píxeles aislados desaparecen. Figura \ref{puntosAislados}
-		
-\begin{figure}[H]
-   \centering      
-   \includegraphics[width=0.5\textwidth]{imagenes/puntosAislados.jpg}
- \caption{Luego del filtro de erosión se eliminan puntos aislados.}
- \label{puntosAislados}
-\end{figure}		
+Luego de la máscara obtenida en el paso anterior, se observó la presencia de numerosos píxeles aislados, o agrupados solo en conjuntos de dos o tres píxeles. Estos valores son no deseados, ya que no representan algún cuerpo de agua, son sólo puntos aislados, es por eso que no deben formar parte de las lagunas detectafsd. Para la eliminación de estos casos se procedió a aplicar de manera secuencial:
 
-		\textbf{Expansión:} Luego de la erosión, se aplica un filtro de expansión, con el objetivo de recuperar las lagunas originales. Se expandirán los píxeles pertenecientes a la máscara de lagunas, muchos píxeles aislados desaparecieron en el paso anterior y no producirán nada para expandir. Figura \ref{lagunasExpandidas}
 		
+		\textbf{Erosión:} Se aplicó un filtro de erosión con 2 iteraciones a la máscara obtenida en el paso anterior. Este filtro desgasta los bordes de las agrupaciones de píxeles con valor 1, los cuales son considerados potenciales lagunas detectadas. De este modo varias lagunas reducen su tamaño y las más pequeñas o píxeles aislados desaparecen. Se puede ver un ejemplo de la aplicación del filtro de erosión en la figura \ref{erosionZoom}, se puede observar como los grandes grupos de píxeles con valor 1 (en blanco) reducen su tamaño y los píxeles aislados con valor 1 desaparecen.
+		
+
 \begin{figure}[H]
-   \centering      
-   \includegraphics[width=0.5\textwidth]{imagenes/lagunasExpandidas.jpg}
- \caption{Las lagunas fueron expandidas con una ventana de 7x7.}
- \label{lagunasExpandidas}
+	\centering
+	\subfigure[Lagunas detectadas con el filtro de mayoría]{\includegraphics[width=0.49\linewidth]{imagenes/majorityFilterZoom}}
+	\subfigure[Luego del filtro de erosión se puede observar como desaparecen pequeños grupos de puntos o puntos aislados. Y persisten agrupaciones grandes de puntos aunque con tamaño reducido]{\includegraphics[width=0.49\linewidth]{imagenes/erosionZoom}}
+	\caption{Efecto de aplicar filtro de erosión sobre detección de lagunas con el filtro de mayoría} 
+	\label{erosionZoom}
 \end{figure}
-		
-		\textbf{Producto:} Con la expansión realizada, se amplió el margen de las lagunas detectadas, pero de manera abrupta. Es por eso que para la recuperación final de lagunas se aplica un producto entre la detección original de lagunas y la última máscara expandida, esto nos devuelve la máscara de píxeles que pertenecen a ambas máscaras, provocando:
+
+
+		\textbf{Expansión:} A la máscara resultado de la aplicación del filtro de erosión se le aplica un filtro de expansión. De esta manera serán expandidas las lagunas detectadas por el filtro de mayoría (y posteriormente erosionadas) pero que no desaparecieron con el filtro de erosión, de esta manera se consigue eliminar de la máscara píxeles con valores 1 aislados ya que al estar ausentes (luego del filtro de erosión), con la aplicación del filtro de expansión no producen nada para expandir. Esto se puede observar en la figura \ref{expansionZoom}:	
+	
+\begin{figure}[H]
+	\centering
+	\subfigure[Imagen resultante luego de la aplicación del filtro de erosión.]{\includegraphics[width=0.49\linewidth]{imagenes/erosionZoom}}
+	\subfigure[Luego de la aplicación del filtro de expansión se puede observar como las lagunas que persistieron a la erosión amplían su tamaño.]{\includegraphics[width=0.49\linewidth]{imagenes/firstExpansionZoom}}
+	\caption{Efecto de aplicar filtro de expansión a máscara binaria.} 
+	\label{expansionZoom}
+\end{figure}
+	
+	
+		\textbf{Producto:} Con la expansión realizada se amplió el margen de las lagunas detectadas que existen luego del filtro de erosión, pero de manera abrupta, es decir, no respetando su forma original. Es por eso que para la recuperación final de lagunas se aplica un producto entre la detección original de lagunas (la que ocurre con el filtro de mayoría) y la última máscara expandida. De esta manera se recuperan las lagunas (que no son píxeles aislados) con su forma detectada original y se logran los objetivos planteados con este proceso de eliminar puntos aislados. Este resultado puede ser observado en la figura \ref{lagunasDetectadas}:
 		
 		\begin{itemize}
 			\item Desaparición de píxeles sueltos o pequeños grupos de píxeles.
 			\item Conservación de demarcación de lagunas originalmente detectadas.
-		\end{itemize}		
+		\end{itemize}				
 		
-		Se puede ver el resultado en la figura \ref{lagunasDetectadas}
 
 \begin{figure}[H]
-   \centering      
-   \includegraphics[width=0.5\textwidth]{imagenes/lagunasDetectadas.jpg}
- \caption{Lagunas obtenidas luego de eliminación de puntos aislados.}
- \label{lagunasDetectadas}
-\end{figure}		
-		
+	\centering
+	\subfigure[Lagunas detectadas con el filtro de mayoría.]{\includegraphics[width=0.49\linewidth]{imagenes/majorityFilterZoom}}
+	\subfigure[Luego de la aplicación del producto entre la imagen resultante del filtro de mayoría y la expansión se observa como se recuperan las grande agrupaciones de píxeles y fueron eliminados los grupos pequeños de píxeles]{\includegraphics[width=0.49\linewidth]{imagenes/productoZoom}}
+	\caption{Efecto de aplicar filtro de expansión a máscara binaria.} 
+	\label{lagunasDetectadas}
+\end{figure}
+
+	
 \textbf{Expansión de lagunas detectadas}
 
 Las lagunas detectadas tienen bordes muy definidos, una expansión a esta detección de lagunas puede lograr abarcar un poco más del borde la laguna, lo que lograría una poco más de uniformidad sobre el cuerpo de agua, como se puede observar en la figura \ref{dilationLagoons}.
 
 \begin{figure}[H]
-   \centering      
-   \includegraphics[width=0.5\textwidth]{imagenes/dilationLagoons.jpg}
- \caption{Lagunas expandidas.}
- \label{dilationLagoons}
-\end{figure}		
-
+	\centering
+	\subfigure[Lagunas detectadas con el filtro de mayoría y con grupos pequeños de puntos eliminados.]{\includegraphics[width=0.49\linewidth]{imagenes/productoZoom}}
+	\subfigure[Resultado final de lagunas luego de aplicación de filtro de expansión]{\includegraphics[width=0.49\linewidth]{imagenes/lastExpansionZoom}}
+	\caption{Efecto de aplicar filtro de expansión a máscara binaria.} 
+	\label{dilationLagoons}
+\end{figure}
 
 \subsubsection{Procesamiento de Ríos y Cañadas.}
 
@@ -1261,25 +1267,10 @@ El objetivo del uso de este dato de entrada es poder determinar los ríos y cañ
 
 Como primer paso se procedió a rasterizar el archivo vectorial. Esto significa convertir a imagen de píxeles los datos vectoriales según los valores de cada línea y dejando en cero donde no existen vectores. Esto se realizó con una herramienta de la librería $gdal$ llamada $gdal\_rasterize$ indicando filas y columnas del raster de destino.
 
-%Como resultado se obtiene la siguiente imagen. Figura \ref{RiosRasterizados}
-
-%\begin{figure}[H]
-   %\centering      
-   %\includegraphics[width=0.85\textwidth]{imagenes/RiosRasterizados.jpg}
- %\caption{Raster de ríos y cañadas. No se aprecian todos los ríos y cañadas debido a la escala de grises y al zoom de la imagen.}
- %\label{RiosRasterizados}
-%\end{figure}
-
 \textbf{Crear Máscara de Ríos}
 
-El raster de ríos y cañadas generados posee los valores que traen los vectores, para poder extraer los valores correspondientes a estos elementos (ríos y cañadas) es necesario disponer de una máscara binaria de ríos, por lo que se crea la misma a partir de una condición sobre los píxeles de la imagen de ríos. %Figura \ref{MascaraRios}
+Los píxeles distintos de 0 del raster de ríos y cañadas generado posee los valores contenido en cada vector de ríos, estos no tienen necesariamente el valor 1. Para poder extraer los valores correspondientes a estos elementos (ríos y cañadas) es necesario disponer de una máscara binaria de ríos, por lo que se crea la misma a partir de una condición sobre los píxeles de la imagen de ríos. Es decir, cada píxel tendrá el valor 1 (indicando existencia de río o cañada) sólo si tal píxel tiene un valor mayor que cero, de esta manera se obtiene la máscara de ríos y cañadas necesaria.
 
-%\begin{figure}[H]
-   %\centering      
-   %\includegraphics[width=0.85\textwidth]{imagenes/MascaraRios.jpg}
- %\caption{Máscara de ríos y cañadas. Muchos de los ríos y cañadas se los ve interrumpidos pero se debe al zoom de la imagen y al ancho de las líneas que denotan los ríos y cañadas}
- %\label{MascaraRios}
-%\end{figure}
 
 \textbf{Expandir máscara de Ríos}
 \label{expansionRios}
@@ -1768,7 +1759,7 @@ Además se observa conexión entre todas las lagunas (las reales y las predichas
  \label{LagunaProblema2}
 \end{figure}
 
-El hecho de que todas las lagunas se encuentren conectadas por cañadas podría indicarnos que el problema se podría encontrar en la definición de las cañadas.
+El hecho de que todas las lagunas se encuentren conectadas por cañadas podría indicarnos que el problema se podría encontrar en la definición de las cañadas provista por HydroSHEDS.
 
 Se debe tener en cuenta también la escala a la cual se está trabajando, la resolución de los píxeles (90 metros) puede acarrear errores de precisión en cuanto a la definición de estas cañadas. Además, se debe recordar que el DEM HydroSHEDS (de donde se obtienen los valores de altura de tales cañadas) tiene una antigüedad de más de 15 años, lo que podría no tener información actualizada respecto a los valores de altura en áreas tan específicas y claves para el mejor modelamiento del flujo del agua.
 

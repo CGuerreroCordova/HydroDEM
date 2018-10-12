@@ -534,12 +534,13 @@ def get_lagoons_hsheds(hsheds_input):
     hsheds_maj_filter11 = majority_filter(dem_hsheds, 11)
     hsheds_maj_filter11_ero2 = ndimage.binary_erosion(hsheds_maj_filter11,
                                                       iterations=2)
-    hsheds_maj_filter11_ero2_expand7 = expand_filter(
-        hsheds_maj_filter11_ero2, 7)
+    hsheds_maj_filter11_ero2_expand7 = expand_filter(hsheds_maj_filter11_ero2,
+                                                     7)
     hsheds_maj11_ero2_expand7_prod_maj11 = \
         hsheds_maj_filter11_ero2_expand7 * hsheds_maj_filter11
     hsheds_mask_lagoons_values = ndimage.grey_dilation(
         hsheds_maj11_ero2_expand7_prod_maj11, size=(7, 7))
+
     return hsheds_mask_lagoons_values
 
 
