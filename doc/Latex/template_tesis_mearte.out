@@ -59,7 +59,7 @@
 \BOOKMARK [4][-]{subsubsubsection.3.3.5.2}{Obtenci\363n de los cuartos 3 y 4, y armado de la imagen completa}{subsubsection.3.3.5.1}% 59
 \BOOKMARK [4][-]{subsubsubsection.3.3.5.3}{Asignar ceros a transformada de Fourier en los p\355xeles de blancos detectados.}{subsubsection.3.3.5.1}% 60
 \BOOKMARK [4][-]{subsubsubsection.3.3.5.4}{Retornar las frecuencias cero a su posici\363n original}{subsubsection.3.3.5.1}% 61
-\BOOKMARK [4][-]{subsubsubsection.3.3.5.5}{Aplicaci\363n de la Antitransformada}{subsubsection.3.3.5.1}% 62
+\BOOKMARK [4][-]{subsubsubsection.3.3.5.5}{Aplicaci\363n de la Transformada Inversa}{subsubsection.3.3.5.1}% 62
 \BOOKMARK [3][-]{subsubsection.3.3.5.2}{Correcci\363n de Cortinas de \301rboles}{subsection.3.3.5}% 63
 \BOOKMARK [2][-]{subsection.3.3.6}{Procesamiento a HydroSHEDS para extracci\363n de lagunas, r\355os y ca\361adas}{section.3.3}% 64
 \BOOKMARK [3][-]{subsubsection.3.3.6.1}{Conversi\363n de formato adf a tif \(HydroSHEDS\)}{subsection.3.3.6}% 65

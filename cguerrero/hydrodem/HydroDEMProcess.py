@@ -47,9 +47,9 @@ class HydroDEMProcess(object):
         utDEM.resample_and_cut(HSHEDS_FILE_TIFF, SHAPE_AREA_INTEREST_OVER,
                                HSHEDS_AREA_INTEREST_OVER)
         print "Detecting and applying Fourier"
-        # srtm_fourier = utDEM.detect_apply_fourier(srtm_area_interest_over)
-        srtm_fourier = gdal.Open(
-            "../resources/images/05CorrectedFourierSRTM.tif").ReadAsArray()
+        srtm_fourier = utDEM.detect_apply_fourier(SRTM_AREA_INTEREST_OVER)
+        # srtm_fourier = gdal.Open(
+        #     "../resources/images/05CorrectedFourierSRTM.tif").ReadAsArray()
         print "Processing SRTM."
         print "Processing SRTM: First Iteration."
         srtm_proc1 = utDEM.process_srtm(srtm_fourier, TREE_CLASS_AREA)
