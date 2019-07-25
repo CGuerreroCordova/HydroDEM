@@ -9,6 +9,7 @@ import os
 import subprocess
 from collections import Counter
 from multiprocessing import Pool
+import glob
 
 import datetime
 import numpy as np
@@ -525,6 +526,15 @@ def get_shape_over_area(srtm_file, shape_area_interest, shape_over_area):
     parallel to the equator.
     """
     resample_and_cut(srtm_file, shape_area_interest, "dem_temp.tif")
+
+    shape_over_without_extension = os.path.splitext(shape_over_area)[0]
+    fileList = glob.glob(shape_over_without_extension + ".*")
+    for filePath in fileList:
+        try:
+            os.remove(filePath)
+        except:
+            print("Error while deleting file : ", filePath)
+
     command = 'gdaltindex ' + shape_over_area + ' dem_temp.tif'
     calling_system_call(command)
 

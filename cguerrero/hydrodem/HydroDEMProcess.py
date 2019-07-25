@@ -3,7 +3,7 @@ __copyright__ = "Copyright 2018"
 __credits__ = ["Cristian Guerrero Cordova"]
 __version__ = "0.1"
 __email__ = "cguerrerocordova@gmail.com"
-__status__ = "Production"
+__status__ = "Developing"
 
 import numpy as np
 from osgeo import gdal
@@ -27,7 +27,7 @@ class HydroDEMProcess(object):
         """
 
         print "Converting HSHEDS ADF to TIF file."
-        utDEM.uncompress_zip_file(HSHEDS_FILE_INPUT_ZIP)
+        # utDEM.uncompress_zip_file(HSHEDS_FILE_INPUT_ZIP)
         adf_to_tif_command = \
             GDAL_TRANSLATE + " " + HSHEDS_FILE_INPUT + " -of GTIFF " + \
             HSHEDS_FILE_TIFF
@@ -82,13 +82,13 @@ class HydroDEMProcess(object):
         dem_ready_smooth = dem_ready_convolve / kernel.size
         utDEM.array2raster(SRTM_AREA_INTEREST_OVER, DEM_READY_SMOOTH_PATH,
                            dem_ready_smooth)
-        print "Resampling and cutting with final interest area."
-        utDEM.resample_and_cut(DEM_READY_SMOOTH_PATH,
-                               SHAPE_AREA_INTEREST_INPUT,
-                               DEM_READY_AREA_INTEREST)
-        print "Rotating final DEM."
-        final_dem = utDEM.rotate_and_trim(DEM_READY_AREA_INTEREST, ANGLE)
+        # print "Resampling and cutting with final interest area."
+        # utDEM.resample_and_cut(DEM_READY_SMOOTH_PATH,
+        #                        SHAPE_AREA_INTEREST_INPUT,
+        #                        DEM_READY_AREA_INTEREST)
+        # print "Rotating final DEM."
+        # final_dem = utDEM.rotate_and_trim(DEM_READY_AREA_INTEREST, ANGLE)
         print "Around values."
-        final_dem = np.around(final_dem)
+        final_dem = np.around(dem_ready_smooth)
         print "DEM Hydrologicaly conditioned ready."
-        utDEM.array2raster_simple(FINAL_DEM, final_dem)
+        utDEM.array2raster(SRTM_AREA_INTEREST_OVER, FINAL_DEM, final_dem)
