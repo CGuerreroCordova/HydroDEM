@@ -1,8 +1,10 @@
+import os
 import configparser as conf
 
 config = conf.ConfigParser()
 config.optionxform = str
-config.read("config.ini")
+config_ini = os.path.join(os.path.dirname(__file__), 'config.ini')
+config.read(config_ini)
 INPUTS_FOLDER = config['GENERAL']['INPUTS_FOLDER']
 IMAGES_FOLDER = config['GENERAL']['IMAGES_FOLDER']
 GDAL_TRANSLATE = config['GENERAL']['GDAL_TRANSLATE']
@@ -22,6 +24,7 @@ SHAPE_AREA_INTEREST_OVER = INPUTS_FOLDER \
                            + config['SHAPES']['SHAPE_AREA_INTEREST_OVER']
 RIVERS_SHAPE = INPUTS_FOLDER + config['SHAPES']['RIVERS_SHAPE']
 RIVERS_FULL = INPUTS_FOLDER + config['SHAPES']['RIVERS_FULL']
+RIVERS_TIF = INPUTS_FOLDER + config['RIVERS']['RIVERS_RASTER']
 TREE_CLASS_INPUT_ZIP = INPUTS_FOLDER + config['TREES']['TREE_CLASS_INPUT_ZIP']
 TREE_CLASS_INPUT = INPUTS_FOLDER + config['TREES']['TREE_CLASS_INPUT']
 TREE_CLASS_AREA = INPUTS_FOLDER + config['TREES']['TREE_CLASS_AREA']
@@ -29,5 +32,8 @@ DEM_READY_SMOOTH_PATH = IMAGES_FOLDER \
                         + config['FINAL']['DEM_READY_SMOOTH_PATH']
 DEM_READY_AREA_INTEREST = IMAGES_FOLDER + \
                           config['FINAL']['DEM_READY_AREA_INTEREST']
+DEM_TEMP = IMAGES_FOLDER + config['TEMP']['DEM_TEMP_OVER_AREA']
+TEMP_REPROJECTED_TO_CUT = IMAGES_FOLDER + \
+                          config['TEMP']['TEMP_REPROJECTED_TO_CUT']
 FINAL_DEM = IMAGES_FOLDER + config['FINAL']['DEM_READY']
 ANGLE = config['GENERAL']['ANGLE']

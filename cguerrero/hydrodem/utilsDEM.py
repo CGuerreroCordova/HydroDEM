@@ -21,7 +21,8 @@ import copy
 from scipy.ndimage.morphology import binary_closing
 import zipfile
 
-from settings import RIVERS_FULL, RIVERS_SHAPE, SHAPE_AREA_INTEREST_OVER
+from settings import (RIVERS_FULL, RIVERS_SHAPE, SHAPE_AREA_INTEREST_OVER,
+                      RIVERS_TIF, DEM_TEMP, TEMP_REPROJECTED_TO_CUT)
 
 def array2raster(rasterfn, new_rasterfn, array):
     """
@@ -38,9 +39,7 @@ def array2raster(rasterfn, new_rasterfn, array):
     pixel_height = geo_transform[5]
     cols = raster.RasterXSize
     rows = raster.RasterYSize
-    a = 0
-    if a == 1:
-        b = a
+
     driver = gdal.GetDriverByName('GTiff')
     out_raster = driver.Create(new_rasterfn, cols, rows, 1, gdal.GDT_Float32)
     out_raster.SetGeoTransform((origin_x, pixel_width, 0, origin_y, 0,
@@ -226,6 +225,8 @@ def correct_nan_values(dem):
     ny = dem.shape[0]
     nx = dem.shape[1]
     indices = np.nonzero(dem < 0.0)
+    # indices_higer = np.nonzero(dem < 500.0)
+    # indices = indices_lower + indices_higer
     dem_corrected_nan = dem.copy()
     for x in range(len(indices[0])):
         j = indices[0][x]
@@ -475,11 +476,15 @@ def process_srtm(srtm_fourier, tree_class_file):
     """
     Perform the processing corresponding to SRTM file.
     """
+    array2raster_simple("../resources/images/hsheds_rivers_routing_input.tif",
+                        hsheds_area_interest)
     srtm_fourier_sua = quadratic_filter(srtm_fourier)
+    array2raster_simple("../resources/images/mask_rivers_routing_input.tif",
+                        mask_canyons_expanded3)
     dem_highlighted = srtm_fourier - srtm_fourier_sua
     mask_height_greater_than_15_mt = (dem_highlighted > 1.5) * 1.0
-    tree_classRaw = gdal.Open(tree_class_file).ReadAsArray()
-    tree_class = ndimage.binary_closing(tree_classRaw, np.ones((3, 3)))
+    tree_class_raw = gdal.Open(tree_class_file).ReadAsArray()
+    tree_class = ndimage.binary_closing(tree_class_raw, np.ones((3, 3)))
     tree_class_height_15_mt = tree_class * mask_height_greater_than_15_mt
     tree_class_height_15_mt_compl = 1 - tree_class_height_15_mt
     trees_removed = dem_highlighted * tree_class_height_15_mt_compl
@@ -495,19 +500,22 @@ def resample_and_cut(orig_image, shape_file, target_path):
     gdal_warp = "gdalwarp.exe"
     proj = '"+proj=tmerc +lat_0=-90 +lon_0=-63 +k=1 +x_0=4500000 +y_0=0 ' \
            '+ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"'
-    reprojected_temp = "../resources/images/origDEMReprojected.tif"
     pixel_size = 90
     try:
         os.remove(target_path)
     except OSError:
         pass
     command_line = gdal_warp + ' -t_srs ' + proj + ' ' + orig_image + ' ' \
-                   + reprojected_temp
+                   + TEMP_REPROJECTED_TO_CUT
     os.system(command_line)
     command_line = gdal_warp + " -cutline " + shape_file + " -crop_to_cutline " + \
-                   reprojected_temp + " " + target_path + " -tr " + \
+                   TEMP_REPROJECTED_TO_CUT + " " + target_path + " -tr " + \
                    str(pixel_size) + " " + str(pixel_size) + " -ot Float32"
     os.system(command_line)
+    try:
+        os.remove(TEMP_REPROJECTED_TO_CUT)
+    except OSError:
+        pass
 
 
 def calling_system_call(command_line):
@@ -526,7 +534,7 @@ def get_shape_over_area(srtm_file, shape_area_interest, shape_over_area):
     Return a rectangular shape file covering all area of interest and
     parallel to the equator.
     """
-    resample_and_cut(srtm_file, shape_area_interest, "dem_temp.tif")
+    resample_and_cut(srtm_file, shape_area_interest, DEM_TEMP)
 
     shape_over_without_extension = os.path.splitext(shape_over_area)[0]
     fileList = glob.glob(shape_over_without_extension + ".*")
@@ -536,13 +544,17 @@ def get_shape_over_area(srtm_file, shape_area_interest, shape_over_area):
         except:
             print("Error while deleting file : ", filePath)
 
-    command = 'gdaltindex ' + shape_over_area + ' dem_temp.tif'
+    command = 'gdaltindex ' + shape_over_area + ' ' + DEM_TEMP
     calling_system_call(command)
+    try:
+        os.remove(DEM_TEMP)
+    except OSError:
+        pass
 
 
 def get_lagoons_hsheds(hsheds_input):
-    dem_hsheds = correct_nan_values(hsheds_input)
-    hsheds_maj_filter11 = majority_filter(dem_hsheds, 11)
+    hsheds_maj_filter11 = majority_filter(hsheds_input, 11)
+
     hsheds_maj_filter11_ero2 = ndimage.binary_erosion(hsheds_maj_filter11,
                                                       iterations=2)
     hsheds_maj_filter11_ero2_expand7 = expand_filter(hsheds_maj_filter11_ero2,
@@ -551,9 +563,7 @@ def get_lagoons_hsheds(hsheds_input):
         hsheds_maj_filter11_ero2_expand7 * hsheds_maj_filter11
     hsheds_mask_lagoons_values = ndimage.grey_dilation(
         hsheds_maj11_ero2_expand7_prod_maj11, size=(7, 7))
-
     return hsheds_mask_lagoons_values
-
 
 # def get_delta_time(text, current_time):
 #     last_time = current_time
@@ -562,15 +572,7 @@ def get_lagoons_hsheds(hsheds_input):
 #     return text + "\t" + str(delta_time) + "\n", current_time
 
 
-def process_rivers(rivers_shape, hsheds_area_interest, hsheds_mask_lagoons):
-    rivers_raster = '../resources/images/inputs/rivers/raster_rivers.tif'
-
-    # rivers_full = gpd.read_file(RIVERS_FULL)
-    # area_interest = gpd.read_file(SHAPE_AREA_INTEREST_OVER)
-    # area_interest_sim = area_interest.simplify(.2, preserve_topology=True)
-    # rivers_clipped = clp.clip_shp(rivers_full, area_interest_sim)
-    # rivers_clipped.to_file("../resources/images/inputs/rivers/rivers_clipped.shp")
-
+def process_rivers(hsheds_area_interest, hsheds_mask_lagoons):
     clip_lines_vector(RIVERS_FULL, SHAPE_AREA_INTEREST_OVER, RIVERS_SHAPE)
 
     cols = hsheds_mask_lagoons.shape[1]
@@ -578,14 +580,14 @@ def process_rivers(rivers_shape, hsheds_area_interest, hsheds_mask_lagoons):
     # Convert to Raster Rivers
     command_line = 'gdal_rasterize -a UP_CELLS -ts ' + str(cols) + ' ' + \
                    str(rows) + ' -l rivers_area_interest ' + RIVERS_SHAPE + \
-                   ' ' + rivers_raster
+                   ' ' + RIVERS_TIF
     calling_system_call(command_line)
 
-    river_array = gdal.Open(rivers_raster).ReadAsArray()
+    river_array = gdal.Open(RIVERS_TIF).ReadAsArray()
     mask_canyons_array = (river_array > 0) * 1
     mask_canyons_expanded3 = expand_filter(mask_canyons_array, 3)
-    hydro_sheds = gdal.Open(hsheds_area_interest).ReadAsArray()
-    rivers_routed = route_rivers(hydro_sheds, mask_canyons_expanded3, 3)
+    rivers_routed = route_rivers(hsheds_area_interest, mask_canyons_expanded3,
+                                 3)
     rivers_routed_closing = binary_closing(rivers_routed)
     intersection_lag_can = rivers_routed_closing * hsheds_mask_lagoons
     intersection_lag_can_mask = (intersection_lag_can > 0)

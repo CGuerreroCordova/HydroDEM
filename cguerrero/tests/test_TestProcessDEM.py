@@ -1,21 +1,19 @@
 from osgeo import gdal
 from unittest import TestCase
-from cguerrero.hydrodem.utilsDEM import *
+from cguerrero.hydrodem.utilsDEM import (array2raster, array2raster_simple)
 import filecmp
 from numpy import testing
+from settings_tests import GEO_IMAGE, OUTPUT_GEO_IMAGE
 
 
-class TestProcessDEM(TestCase):
+class TestUtilsDEM(TestCase):
 
     def test_array2raster(self):
-        path_image = "cguerrero/resources/tests/geoTest.tif"
-        path_new_image = "cguerrero/resources/tests/newGeoTest.tif"
-
-        raster = gdal.Open(path_image)
+        raster = gdal.Open(GEO_IMAGE)
         array = raster.ReadAsArray()
-        array2raster(path_image, path_new_image, array)
+        array2raster(GEO_IMAGE, OUTPUT_GEO_IMAGE, array)
 
-        raster_new = gdal.Open(path_new_image)
+        raster_new = gdal.Open(OUTPUT_GEO_IMAGE)
         array_new = raster_new.ReadAsArray()
 
         testing.assert_array_equal(array, array_new)
@@ -23,34 +21,13 @@ class TestProcessDEM(TestCase):
                          raster_new.GetGeoTransform())
 
     def test_array2raster_simple(self):
-        path_image = "cguerrero/resources/tests/geoTest.tif"
-        path_new_image = "cguerrero/resources/tests/newGeoTest.tif"
-
-        raster = gdal.Open(path_image)
+        raster = gdal.Open(GEO_IMAGE)
         array = raster.ReadAsArray()
-        array2raster_simple(path_new_image, array)
+        array2raster_simple(OUTPUT_GEO_IMAGE, array)
 
-        raster_new = gdal.Open(path_new_image)
+        raster_new = gdal.Open(OUTPUT_GEO_IMAGE)
         array_new = raster_new.ReadAsArray()
 
         testing.assert_array_equal(array, array_new)
 
-    def test_get_lagoons_hsheds(self):
-        path_image = "cguerrero/resources/tests/hsheds_test.tif"
-        path_lagoons_test = "cguerrero/resources/tests/lagoons_test.tif"
-        path_new_image = "cguerrero/resources/tests/new_lagoons_test.tif"
 
-        raster = gdal.Open(path_image)
-        array = raster.ReadAsArray()
-
-        lagoons = get_lagoons_hsheds(array)
-
-        array2raster_simple(path_new_image, lagoons)
-
-        raster_new = gdal.Open(path_new_image)
-        array_new = raster_new.ReadAsArray()
-
-        raster_test = gdal.Open(path_lagoons_test)
-        array_test = raster_test.ReadAsArray()
-
-        testing.assert_array_equal(array_new, array_test)

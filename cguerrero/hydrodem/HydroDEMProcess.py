@@ -75,6 +75,7 @@ class HydroDEMProcess(object):
                            srtm_proc)
         print "Processing HSHEDS."
         hydro_sheds = gdal.Open(HSHEDS_AREA_INTEREST_OVER).ReadAsArray()
+        hydro_sheds_corrected_nan = utDEM.correct_nan_values(hydro_sheds)
         print "Processing HSHEDS: Getting Lagoons."
         hsheds_mask_lagoons_values = utDEM.get_lagoons_hsheds(hydro_sheds)
         utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
@@ -85,18 +86,32 @@ class HydroDEMProcess(object):
                            "../resources/images/06_Mask_Lagoon.tif",
                            hsheds_mask_lagoons)
         print "Processing Rivers."
-        rivers_routed_closing = utDEM.process_rivers(RIVERS_SHAPE,
-                                                     HSHEDS_AREA_INTEREST_OVER,
+        rivers_routed_closing = utDEM.process_rivers(hydro_sheds_corrected_nan,
                                                      hsheds_mask_lagoons)
         utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
                            "../resources/images/07_Rivers_Routed.tif",
                            rivers_routed_closing)
         print "Getting terms for final merging."
-        first_term_hsheds_canyons = hydro_sheds * rivers_routed_closing
+        first_term_hsheds_canyons = hydro_sheds_corrected_nan * rivers_routed_closing
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/08_first_term_hsheds_canyons.tif",
+                           first_term_hsheds_canyons)
         snd_term_hsheds_lagoons = hsheds_mask_lagoons_values
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/09_snd_term_hsheds_lagoons.tif",
+                           snd_term_hsheds_lagoons)
         mask_canyons_lagoons = rivers_routed_closing + hsheds_mask_lagoons
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/10_mask_canyons_lagoons.tif",
+                           mask_canyons_lagoons)
         not_mask_canyons_lagoons = 1 - mask_canyons_lagoons
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/11_not_mask_canyons_lagoons.tif",
+                           not_mask_canyons_lagoons)
         trd_term_srtm_fourier_tree = srtm_proc * not_mask_canyons_lagoons
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/12_trd_term_srtm_fourier_tree.tif",
+                           trd_term_srtm_fourier_tree)
         print "Combining parts."
         dem_ready = first_term_hsheds_canyons + snd_term_hsheds_lagoons + \
                     trd_term_srtm_fourier_tree
