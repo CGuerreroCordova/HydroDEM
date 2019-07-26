@@ -32,12 +32,13 @@ class HydroDEMProcess(object):
             GDAL_TRANSLATE + " " + HSHEDS_FILE_INPUT + " -of GTIFF " + \
             HSHEDS_FILE_TIFF
         utDEM.calling_system_call(adf_to_tif_command)
+
         print "Getting shape file covering area of interest."
-        utDEM.uncompress_zip_file(SRTM_FILE_INPUT_ZIP)
+        # utDEM.uncompress_zip_file(SRTM_FILE_INPUT_ZIP)
         utDEM.get_shape_over_area(SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT,
                                   SHAPE_AREA_INTEREST_OVER)
         print "Resampling and cutting TREE file."
-        utDEM.uncompress_zip_file(TREE_CLASS_INPUT_ZIP)
+        # utDEM.uncompress_zip_file(TREE_CLASS_INPUT_ZIP)
         utDEM.resample_and_cut(TREE_CLASS_INPUT, SHAPE_AREA_INTEREST_OVER,
                                TREE_CLASS_AREA)
         print "Resampling and cutting SRTM file."
@@ -46,26 +47,50 @@ class HydroDEMProcess(object):
         print "Resampling and cutting HSHEDS file."
         utDEM.resample_and_cut(HSHEDS_FILE_TIFF, SHAPE_AREA_INTEREST_OVER,
                                HSHEDS_AREA_INTEREST_OVER)
+
         print "Detecting and applying Fourier"
         srtm_fourier = utDEM.detect_apply_fourier(SRTM_AREA_INTEREST_OVER)
+
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/01_STRM_Fourier.tif",
+                           srtm_fourier)
+
         # srtm_fourier = gdal.Open(
         #     "../resources/images/05CorrectedFourierSRTM.tif").ReadAsArray()
         print "Processing SRTM."
         print "Processing SRTM: First Iteration."
         srtm_proc1 = utDEM.process_srtm(srtm_fourier, TREE_CLASS_AREA)
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/02_STRM_Trees_First_Iteration.tif",
+                           srtm_proc1)
         print "Processing SRTM: Second Iteration."
         srtm_proc2 = utDEM.process_srtm(srtm_proc1, TREE_CLASS_AREA)
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/03_STRM_Trees_Second_Iteration.tif",
+                           srtm_proc2)
         print "Processing SRTM: Third Iteration."
         srtm_proc = utDEM.process_srtm(srtm_proc2, TREE_CLASS_AREA)
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/04_STRM_Trees_Third_Iteration.tif",
+                           srtm_proc)
         print "Processing HSHEDS."
         hydro_sheds = gdal.Open(HSHEDS_AREA_INTEREST_OVER).ReadAsArray()
         print "Processing HSHEDS: Getting Lagoons."
         hsheds_mask_lagoons_values = utDEM.get_lagoons_hsheds(hydro_sheds)
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/05_Mask_Lagoon_Values.tif",
+                           hsheds_mask_lagoons_values)
         hsheds_mask_lagoons = (hsheds_mask_lagoons_values > 0.0) * 1
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/06_Mask_Lagoon.tif",
+                           hsheds_mask_lagoons)
         print "Processing Rivers."
         rivers_routed_closing = utDEM.process_rivers(RIVERS_SHAPE,
                                                      HSHEDS_AREA_INTEREST_OVER,
                                                      hsheds_mask_lagoons)
+        utDEM.array2raster(HSHEDS_AREA_INTEREST_OVER,
+                           "../resources/images/07_Rivers_Routed.tif",
+                           rivers_routed_closing)
         print "Getting terms for final merging."
         first_term_hsheds_canyons = hydro_sheds * rivers_routed_closing
         snd_term_hsheds_lagoons = hsheds_mask_lagoons_values

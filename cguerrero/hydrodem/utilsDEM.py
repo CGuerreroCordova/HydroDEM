@@ -13,7 +13,7 @@ import glob
 
 import datetime
 import numpy as np
-import osr
+import ogr, osr
 from osgeo import gdal
 from scipy import fftpack
 from scipy import ndimage
@@ -21,6 +21,7 @@ import copy
 from scipy.ndimage.morphology import binary_closing
 import zipfile
 
+from settings import RIVERS_FULL, RIVERS_SHAPE, SHAPE_AREA_INTEREST_OVER
 
 def array2raster(rasterfn, new_rasterfn, array):
     """
@@ -563,11 +564,20 @@ def get_lagoons_hsheds(hsheds_input):
 
 def process_rivers(rivers_shape, hsheds_area_interest, hsheds_mask_lagoons):
     rivers_raster = '../resources/images/inputs/rivers/raster_rivers.tif'
+
+    # rivers_full = gpd.read_file(RIVERS_FULL)
+    # area_interest = gpd.read_file(SHAPE_AREA_INTEREST_OVER)
+    # area_interest_sim = area_interest.simplify(.2, preserve_topology=True)
+    # rivers_clipped = clp.clip_shp(rivers_full, area_interest_sim)
+    # rivers_clipped.to_file("../resources/images/inputs/rivers/rivers_clipped.shp")
+
+    clip_lines_vector(RIVERS_FULL, SHAPE_AREA_INTEREST_OVER, RIVERS_SHAPE)
+
     cols = hsheds_mask_lagoons.shape[1]
     rows = hsheds_mask_lagoons.shape[0]
     # Convert to Raster Rivers
     command_line = 'gdal_rasterize -a UP_CELLS -ts ' + str(cols) + ' ' + \
-                   str(rows) + ' -l rivers_area_interest ' + rivers_shape + \
+                   str(rows) + ' -l rivers_area_interest ' + RIVERS_SHAPE + \
                    ' ' + rivers_raster
     calling_system_call(command_line)
 
@@ -583,6 +593,38 @@ def process_rivers(rivers_shape, hsheds_area_interest, hsheds_mask_lagoons):
 
     return rivers_routed_closing
 
+
+def clip_lines_vector(lines_vector, polygon_vector, lines_output):
+    rivers_driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource_rivers = rivers_driver.Open(lines_vector, 0)
+    rivers_layer = dataSource_rivers.GetLayer()
+
+    area_driver = ogr.GetDriverByName("ESRI Shapefile")
+    dataSource_area = area_driver.Open(polygon_vector, 0)
+    area_layer = dataSource_area.GetLayer()
+
+    # Create the output Layer
+    outDriver = ogr.GetDriverByName("ESRI Shapefile")
+
+    srs = osr.SpatialReference()
+    srs.ImportFromWkt(rivers_layer.GetSpatialRef().ExportToWkt())
+
+    # Remove output shapefile if it already exists
+    if os.path.exists(lines_output):
+        outDriver.DeleteDataSource(lines_output)
+
+    # Create the output shapefile
+    outDataSource = outDriver.CreateDataSource(lines_output)
+    outLayer = outDataSource.CreateLayer("rivers_clipped", srs,
+                                         geom_type=ogr.wkbLineString)
+
+    # Clip
+    rivers_layer.Clip(area_layer, outLayer)
+
+    # Close DataSources
+    dataSource_rivers.Destroy()
+    dataSource_area.Destroy()
+    outDataSource.Destroy()
 
 # def insert_smaller_image(big_image, small_image):
 #     """
