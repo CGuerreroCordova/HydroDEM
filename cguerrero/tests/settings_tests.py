@@ -1,57 +1,53 @@
+import os
 import configparser as conf
+
+BASEDIR = os.path.dirname(__file__)
 
 config = conf.ConfigParser()
 config.optionxform = str
-config.read("config_tests.ini")
-RESOURCES_FOLDER = config['GENERAL']['RESOURCES_FOLDER']
-EXPECTED_FOLDER = config['GENERAL']['EXPECTED_FOLDER']
-OUTPUT_FOLDER = config['GENERAL']['OUTPUT_FOLDER']
+config_ini = os.path.join(BASEDIR, "config_tests.ini")
+config.read(config_ini)
+RESOURCES_FOLDER = os.path.join(BASEDIR, config['COMMON']['RESOURCES_FOLDER'])
+EXPECTED_FOLDER = os.path.join(BASEDIR, config['COMMON']['EXPECTED_FOLDER'])
+OUTPUT_FOLDER = os.path.join(BASEDIR, config['COMMON']['OUTPUT_FOLDER'])
 
-GEO_IMAGE = RESOURCES_FOLDER + config['GENERAL']['GEO_IMAGE']
-OUTPUT_GEO_IMAGE = RESOURCES_FOLDER + config['GENERAL']['OUTPUT_GEO_IMAGE']
+GEO_IMAGE = os.path.join(BASEDIR, RESOURCES_FOLDER,
+                         config['COMMON']['GEO_IMAGE'])
+OUTPUT_GEO_IMAGE = os.path.join(RESOURCES_FOLDER,
+                                config['COMMON']['OUTPUT_GEO_IMAGE'])
 
 # Test Majority Filter
-HSHEDS_INPUT_MAJORITY = RESOURCES_FOLDER + config['INPUTS']['HSHEDS_MAJORITY']
-MAJORITY_OUTPUT = EXPECTED_FOLDER + config['EXPECTED']['MAJORITY_FILTER']
+HSHEDS_INPUT_MAJORITY = os.path.join(RESOURCES_FOLDER,
+                                     config['INPUTS']['HSHEDS_MAJORITY'])
+MAJORITY_OUTPUT = os.path.join(EXPECTED_FOLDER,
+                               config['EXPECTED']['MAJORITY_FILTER'])
 
 # Test Expand Filter
-INPUT_EXPAND = RESOURCES_FOLDER + config['INPUTS']['EXPAND_INPUT']
-EXPAND_OUTPUT = EXPECTED_FOLDER + config['EXPECTED']['EXPAND_FILTER']
-
+INPUT_EXPAND = os.path.join(RESOURCES_FOLDER,
+                            config['INPUTS']['EXPAND_INPUT'])
+EXPAND_OUTPUT = os.path.join(EXPECTED_FOLDER,
+                             config['EXPECTED']['EXPAND_FILTER'])
 # Test River Routing
-HSHEDS_INPUT_RIVER_ROUTING = RESOURCES_FOLDER + \
-                             config['INPUTS']['HSHEDS_RIVER_ROUTING']
-MASK_INPUT_RIVER_ROUTING = RESOURCES_FOLDER + \
-                           config['INPUTS']['MASK_RIVERS_ROUTING']
-RIVER_ROUTING_EXPECTED = EXPECTED_FOLDER + config['EXPECTED']['RIVERS_ROUTED']
 
-# GDAL_TRANSLATE = config['GENERAL']['GDAL_TRANSLATE']
-# SRTM_FILE_INPUT_ZIP = RESOURCES_FOLDER + config['SRTM']['SRTM_FILE_INPUT_ZIP']
-# SRTM_FILE_INPUT = RESOURCES_FOLDER + config['SRTM']['SRTM_FILE_INPUT']
-# SRTM_AREA_INTEREST_OVER = RESOURCES_FOLDER \
-#                           + config['SRTM']['SRTM_AREA_INTEREST_OVER']
-# HSHEDS_FILE_INPUT_ZIP = RESOURCES_FOLDER \
-#                         + config['HSHEDS']['HSHEDS_FILE_INPUT_ZIP']
-# HSHEDS_FILE_INPUT = RESOURCES_FOLDER + config['HSHEDS']['HSHEDS_FILE_INPUT']
-# HSHEDS_FILE_TIFF = RESOURCES_FOLDER + config['HSHEDS']['HSHEDS_FILE_TIFF']
-# HSHEDS_AREA_INTEREST_OVER = RESOURCES_FOLDER \
-#                             + config['HSHEDS']['HSHEDS_AREA_INTEREST_OVER']
-# SHAPE_AREA_INTEREST_INPUT = RESOURCES_FOLDER \
-#                             + config['SHAPES']['SHAPE_AREA_INTEREST_INPUT']
-# SHAPE_AREA_INTEREST_OVER = RESOURCES_FOLDER \
-#                            + config['SHAPES']['SHAPE_AREA_INTEREST_OVER']
-# RIVERS_SHAPE = RESOURCES_FOLDER + config['SHAPES']['RIVERS_SHAPE']
-# RIVERS_FULL = RESOURCES_FOLDER + config['SHAPES']['RIVERS_FULL']
-# RIVERS_TIF = RESOURCES_FOLDER + config['RIVERS']['RIVERS_RASTER']
-# TREE_CLASS_INPUT_ZIP = RESOURCES_FOLDER + config['TREES']['TREE_CLASS_INPUT_ZIP']
-# TREE_CLASS_INPUT = RESOURCES_FOLDER + config['TREES']['TREE_CLASS_INPUT']
-# TREE_CLASS_AREA = RESOURCES_FOLDER + config['TREES']['TREE_CLASS_AREA']
-# # DEM_READY_SMOOTH_PATH = IMAGES_FOLDER \
-# #                         + config['FINAL']['DEM_READY_SMOOTH_PATH']
-# # DEM_READY_AREA_INTEREST = IMAGES_FOLDER + \
-# #                           config['FINAL']['DEM_READY_AREA_INTEREST']
-# # DEM_TEMP = IMAGES_FOLDER + config['TEMP']['DEM_TEMP_OVER_AREA']
-# # TEMP_REPROJECTED_TO_CUT = IMAGES_FOLDER + \
-# #                           config['TEMP']['TEMP_REPROJECTED_TO_CUT']
-# # FINAL_DEM = IMAGES_FOLDER + config['FINAL']['DEM_READY']
-# ANGLE = config['GENERAL']['ANGLE']
+HSHEDS_INPUT_RIVER_ROUTING = os.path.join(RESOURCES_FOLDER,
+                                          config['INPUTS'][
+                                              'HSHEDS_RIVER_ROUTING'])
+MASK_INPUT_RIVER_ROUTING = os.path.join(RESOURCES_FOLDER,
+                                        config['INPUTS'][
+                                            'MASK_RIVERS_ROUTING'])
+RIVER_ROUTING_EXPECTED = os.path.join(EXPECTED_FOLDER,
+                                      config['EXPECTED']['RIVERS_ROUTED'])
+
+# Test Quadratic Filter
+SRTM_INPUT_QUADRATIC = os.path.join(RESOURCES_FOLDER,
+                                    config['INPUTS']['SRTM_FOURIER_QUADRATIC'])
+
+QUADRATIC_FILTER_EXPECTED = os.path.join(EXPECTED_FOLDER,
+                                         config['EXPECTED'][
+                                             'QUADRATIC_FILTER'])
+
+# Test Nan Values Correction
+HSHEDS_INPUT_NAN = os.path.join(RESOURCES_FOLDER,
+                                config['INPUTS']['HSHEDS_INPUT_NAN'])
+HSHEDS_NAN_CORRECTED = os.path.join(EXPECTED_FOLDER,
+                                    config['EXPECTED']['HSHEDS_NAN_CORRECTED'])
