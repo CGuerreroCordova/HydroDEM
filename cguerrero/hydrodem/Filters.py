@@ -1,2 +1,0 @@
-class Filters:
-    pass

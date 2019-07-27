@@ -3,7 +3,7 @@ __copyright__ = "Copyright 2017"
 __credits__ = ["Cristian Guerrero Cordova"]
 __version__ = "0.1"
 __email__ = "cguerrerocordova@gmail.com"
-__status__ = "Production"
+__status__ = "Developing"
 
 import os
 import subprocess
@@ -21,8 +21,7 @@ import copy
 from scipy.ndimage.morphology import binary_closing
 import zipfile
 
-from settings import (RIVERS_FULL, RIVERS_SHAPE, SHAPE_AREA_INTEREST_OVER,
-                      RIVERS_TIF, DEM_TEMP, TEMP_REPROJECTED_TO_CUT)
+from settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT)
 
 def array2raster(rasterfn, new_rasterfn, array):
     """
@@ -66,38 +65,6 @@ def array2raster_simple(new_rasterfn, array):
     outband = out_raster.GetRasterBand(1)
     outband.WriteArray(array)
     outband.FlushCache()
-
-
-# def homo_regions(image_array, window_size):
-#     """
-#     Get a mask of windowSize x windowSize Homogeneous Regions.
-#     :param image_array: raw image
-#     :param window_size: kernelSize
-#     :return: Image with the same size of input matrix containing homogeneous
-#     mask
-#     """
-#     ny = image_array.shape[0]
-#     nx = image_array.shape[1]
-#     mask_homogeneous = np.zeros((ny, nx))
-#     right_up_side = window_size / 2
-#     left_down_side = window_size / 2 + 1
-#     for j in range(2, ny - 2):
-#         for i in range(2, nx - 2):
-#             vertical_kernel = image_array[
-#                               j - right_up_side: j + left_down_side,
-#                               i - (right_up_side - 1): i + (left_down_side - 1)
-#                               ]
-#             horizontal_kernel = image_array[
-#                                 j - (right_up_side - 1):j + (
-#                                         left_down_side - 1),
-#                                 i - right_up_side: i + left_down_side]
-#             v = set(vertical_kernel.flatten())
-#             h = set(horizontal_kernel.flatten())
-#             t = v | h
-#             if len(t) == 1:
-#                 mask_homogeneous[j, i] = 1
-#     return mask_homogeneous
-
 
 def majority_filter(image_to_filter, window_size):
     """
@@ -216,8 +183,6 @@ def quadratic_filter(z):
     dem_quadratic = zp
     return dem_quadratic
 
-
-# dem: Image to correct.
 def correct_nan_values(dem):
     """
     Correct values lower than zero, generally with extremely lowest values.
@@ -225,8 +190,6 @@ def correct_nan_values(dem):
     ny = dem.shape[0]
     nx = dem.shape[1]
     indices = np.nonzero(dem < 0.0)
-    # indices_higer = np.nonzero(dem < 500.0)
-    # indices = indices_lower + indices_higer
     dem_corrected_nan = dem.copy()
     for x in range(len(indices[0])):
         j = indices[0][x]
@@ -347,6 +310,7 @@ def get_mask_fourier(quarter_fourier):
     quarter_ny = quarter_fourier.shape[0]
     quarter_nx = quarter_fourier.shape[1]
     final_mask_image = np.zeros((quarter_ny, quarter_nx))
+    # TODO: Eliminar variables innecesarias
     image_modified = np.zeros((quarter_ny, quarter_nx))
     for i in range(0, 2):
         (filtered_blank_image, image_modified) = \
@@ -382,9 +346,8 @@ def detect_apply_fourier(image_to_correct):
                           middle_x + margin + x_odd:nx
                           ]
     p = Pool(2)
-    masks_fourier = p.map(get_mask_fourier,
-                          [fst_quarter_fourier, snd_quarter_fourier]
-                          )
+    masks_fourier = p.map(get_mask_fourier, [fst_quarter_fourier,
+                                             snd_quarter_fourier])
     first_quarter_mask = masks_fourier[0]
     second_quarter_mask = masks_fourier[1]
     fst_complete_quarter = np.zeros((middle_y, middle_x))
@@ -412,77 +375,14 @@ def detect_apply_fourier(image_to_correct):
     corrected_image = fftpack.ifft2(shifted)
     return corrected_image
 
-
-def indices_to_cut(image):
-    """
-    Get indices where it is needed to cut the image. Indices where starts
-    the images, before ones are nan values.
-    Return a 4-tuple with indices to cut image.
-    """
-    different = 2
-    ny = image.shape[0]
-    nx = image.shape[1]
-    right = left = up = down = 0
-    for j in range(0, ny - 1):
-        grouping = set(image[j, :])
-        if len(grouping) > different:
-            up = j
-            break
-    for j in range(0, nx - 1):
-        grouping = set(image[:, j])
-        if len(grouping) > different:
-            left = j
-            break
-    for j in range(ny - 1, 0, -1):
-        grouping = set(image[j, :])
-        if len(grouping) > different:
-            down = j
-            break
-    for j in range(nx - 1, 0, -1):
-        grouping = set(image[:, j])
-        if len(grouping) > different:
-            right = j
-            break
-    return right, left, up, down
-
-
-def rotate_and_trim(skew_image_path, angle, restore=False):
-    """
-    Rotate a rectangular image angle degrees in clockwise sense and cut the
-    remaining files with nan values.
-    In case of indices_arg is not None, return indices where was needed to
-    cut.
-    """
-    image_to_restore = gdal.Open(skew_image_path).ReadAsArray()
-    array_dem = correct_nan_values(image_to_restore)
-    # rotate_face = ndimage.rotate(array_dem, -angle, mode='constant',
-    #                              cval=np.NAN)
-
-    rotate_face = ndimage.rotate(array_dem, -float(angle))
-
-    if not restore:
-        margin = 22
-    else:
-        margin = 0
-    indices = indices_to_cut(rotate_face)
-    cut_image = rotate_face[
-                indices[2] + margin:indices[3] - margin,
-                indices[1] + margin:indices[0] - margin
-                ]
-    return cut_image
-
-
 def process_srtm(srtm_fourier, tree_class_file):
     """
     Perform the processing corresponding to SRTM file.
     """
-    array2raster_simple("../resources/images/hsheds_rivers_routing_input.tif",
-                        hsheds_area_interest)
     srtm_fourier_sua = quadratic_filter(srtm_fourier)
-    array2raster_simple("../resources/images/mask_rivers_routing_input.tif",
-                        mask_canyons_expanded3)
     dem_highlighted = srtm_fourier - srtm_fourier_sua
     mask_height_greater_than_15_mt = (dem_highlighted > 1.5) * 1.0
+    # TODO: Uniformizar, input, uno entrada otro path
     tree_class_raw = gdal.Open(tree_class_file).ReadAsArray()
     tree_class = ndimage.binary_closing(tree_class_raw, np.ones((3, 3)))
     tree_class_height_15_mt = tree_class * mask_height_greater_than_15_mt
@@ -501,10 +401,6 @@ def resample_and_cut(orig_image, shape_file, target_path):
     proj = '"+proj=tmerc +lat_0=-90 +lon_0=-63 +k=1 +x_0=4500000 +y_0=0 ' \
            '+ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"'
     pixel_size = 90
-    try:
-        os.remove(target_path)
-    except OSError:
-        pass
     command_line = gdal_warp + ' -t_srs ' + proj + ' ' + orig_image + ' ' \
                    + TEMP_REPROJECTED_TO_CUT
     os.system(command_line)
@@ -529,32 +425,24 @@ def calling_system_call(command_line):
     subprocess.call(command_line_list)
 
 
-def get_shape_over_area(srtm_file, shape_area_interest, shape_over_area):
+def get_shape_over_area(image_temp, shape_over_area):
     """
     Return a rectangular shape file covering all area of interest and
     parallel to the equator.
     """
-    resample_and_cut(srtm_file, shape_area_interest, DEM_TEMP)
-
     shape_over_without_extension = os.path.splitext(shape_over_area)[0]
-    fileList = glob.glob(shape_over_without_extension + ".*")
-    for filePath in fileList:
+    file_list = glob.glob(shape_over_without_extension + ".*")
+    for file_path in file_list:
         try:
-            os.remove(filePath)
+            os.remove(file_path)
         except:
-            print("Error while deleting file : ", filePath)
+            print("Error while deleting file : ", file_path)
 
-    command = 'gdaltindex ' + shape_over_area + ' ' + DEM_TEMP
+    command = 'gdaltindex ' + shape_over_area + ' ' + image_temp
     calling_system_call(command)
-    try:
-        os.remove(DEM_TEMP)
-    except OSError:
-        pass
-
 
 def get_lagoons_hsheds(hsheds_input):
     hsheds_maj_filter11 = majority_filter(hsheds_input, 11)
-
     hsheds_maj_filter11_ero2 = ndimage.binary_erosion(hsheds_maj_filter11,
                                                       iterations=2)
     hsheds_maj_filter11_ero2_expand7 = expand_filter(hsheds_maj_filter11_ero2,
@@ -565,38 +453,14 @@ def get_lagoons_hsheds(hsheds_input):
         hsheds_maj11_ero2_expand7_prod_maj11, size=(7, 7))
     return hsheds_mask_lagoons_values
 
-# def get_delta_time(text, current_time):
-#     last_time = current_time
-#     current_time = datetime.datetime.now()
-#     delta_time = current_time - last_time
-#     return text + "\t" + str(delta_time) + "\n", current_time
-
-
-def process_rivers(hsheds_area_interest, hsheds_mask_lagoons):
-    clip_lines_vector(RIVERS_FULL, SHAPE_AREA_INTEREST_OVER, RIVERS_SHAPE)
-
-    cols = hsheds_mask_lagoons.shape[1]
-    rows = hsheds_mask_lagoons.shape[0]
-    # Convert to Raster Rivers
-    command_line = 'gdal_rasterize -a UP_CELLS -ts ' + str(cols) + ' ' + \
-                   str(rows) + ' -l rivers_area_interest ' + RIVERS_SHAPE + \
-                   ' ' + RIVERS_TIF
-    calling_system_call(command_line)
-
-    river_array = gdal.Open(RIVERS_TIF).ReadAsArray()
-    mask_canyons_array = (river_array > 0) * 1
-    mask_canyons_expanded3 = expand_filter(mask_canyons_array, 3)
-    rivers_routed = route_rivers(hsheds_area_interest, mask_canyons_expanded3,
-                                 3)
-    rivers_routed_closing = binary_closing(rivers_routed)
-    intersection_lag_can = rivers_routed_closing * hsheds_mask_lagoons
-    intersection_lag_can_mask = (intersection_lag_can > 0)
-    rivers_routed_closing -= intersection_lag_can_mask
-
-    return rivers_routed_closing
-
 
 def clip_lines_vector(lines_vector, polygon_vector, lines_output):
+    """
+    Clip a lines vector file using polygon vector file
+    :param lines_vector: lines vector file to clip
+    :param polygon_vector: polygon to use as a clipper
+    :param lines_output: line vector file clipped
+    """
     rivers_driver = ogr.GetDriverByName("ESRI Shapefile")
     dataSource_rivers = rivers_driver.Open(lines_vector, 0)
     rivers_layer = dataSource_rivers.GetLayer()
@@ -614,12 +478,10 @@ def clip_lines_vector(lines_vector, polygon_vector, lines_output):
     # Remove output shapefile if it already exists
     if os.path.exists(lines_output):
         outDriver.DeleteDataSource(lines_output)
-
     # Create the output shapefile
     outDataSource = outDriver.CreateDataSource(lines_output)
     outLayer = outDataSource.CreateLayer("rivers_clipped", srs,
                                          geom_type=ogr.wkbLineString)
-
     # Clip
     rivers_layer.Clip(area_layer, outLayer)
 
@@ -628,37 +490,33 @@ def clip_lines_vector(lines_vector, polygon_vector, lines_output):
     dataSource_area.Destroy()
     outDataSource.Destroy()
 
-# def insert_smaller_image(big_image, small_image):
-#     """
-#     Inserts an small image within the centre of a big image
-#     :param big_image: image where small image will be inserted
-#     :param small_image: image to insert
-#     :return: big image with the small image inserted
-#     """
-#     nby, nbx = big_image.shape
-#     nsy, nsx = small_image.shape
-#     result = big_image
-#     image = small_image
-#     if nby % 2 != 0:
-#         nby -= 1
-#         result = big_image[:-1, :]
-#     if nbx % 2 != 0:
-#         nbx -= 1
-#         result = big_image[:, :-1]
-#     if nsy % 2 != 0:
-#         nsy -= 1
-#         image = small_image[:-1, :]
-#     if nsx % 2 != 0:
-#         nsx -= 1
-#         image = small_image[:, :-1]
-#     lowery = (nby) // 2 - (nsy // 2)
-#     uppery = (nby // 2) + (nsy // 2)
-#     lowerx = (nbx) // 2 - (nsx // 2)
-#     upperx = (nbx // 2) + (nsx // 2)
-#     result[lowery:uppery, lowerx:upperx] = image
-#
-#     return result
 
+def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
+    """
+    Get rivers from hsheds DEM
+    :param hsheds_area_interest: DEM HSHEDS to get rivers
+    :param hsheds_mask_lagoons: Mask Lagoons to exclude from rivers
+    :return: Rivers detected
+    """
+    cols = hsheds_mask_lagoons.shape[1]
+    rows = hsheds_mask_lagoons.shape[0]
+    # Convert to Raster Rivers
+    command_line = 'gdal_rasterize -a UP_CELLS -ts ' + str(cols) + ' ' + \
+                   str(rows) + ' -l rivers_area_interest ' + rivers_shape + \
+                   ' ' + RIVERS_TIF
+    calling_system_call(command_line)
+
+    river_array = gdal.Open(RIVERS_TIF).ReadAsArray()
+    mask_canyons_array = (river_array > 0) * 1
+    mask_canyons_expanded3 = expand_filter(mask_canyons_array, 3)
+    rivers_routed = route_rivers(hsheds_area_interest, mask_canyons_expanded3,
+                                 3)
+    rivers_routed_closing = binary_closing(rivers_routed)
+    intersection_lag_can = rivers_routed_closing * hsheds_mask_lagoons
+    intersection_lag_can_mask = (intersection_lag_can > 0)
+    rivers_routed_closing -= intersection_lag_can_mask
+
+    return rivers_routed_closing
 
 def uncompress_zip_file(zip_file):
     """
