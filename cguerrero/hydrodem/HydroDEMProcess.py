@@ -5,11 +5,18 @@ __version__ = "0.1"
 __email__ = "cguerrerocordova@gmail.com"
 __status__ = "Developing"
 
+import os
 import numpy as np
 from osgeo import gdal
 from scipy import ndimage
 import utilsDEM as utDEM
-from settings import *
+from settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP, GDAL_TRANSLATE,
+                      HSHEDS_FILE_INPUT, HSHEDS_FILE_TIFF, SRTM_FILE_INPUT_ZIP,
+                      SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT, DEM_TEMP,
+                      SHAPE_AREA_INTEREST_OVER, TREE_CLASS_INPUT_ZIP,
+                      TREE_CLASS_INPUT, TREE_CLASS_AREA,
+                      SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
+                      RIVERS_FULL, RIVERS_SHAPE, FINAL_DEM)
 
 
 class HydroDEMProcess(object):
@@ -18,6 +25,7 @@ class HydroDEMProcess(object):
         """
         class constructor
         """
+        pass
 
     def start(self):
         """
@@ -25,6 +33,8 @@ class HydroDEMProcess(object):
         :param cmd_line: unix command line
         :type cmd_line: list[str]
         """
+        print "Cleaning Workspace"
+        utDEM.clean_workspace()
         print "Converting HSHEDS ADF to TIF file."
         utDEM.uncompress_zip_file(HSHEDS_FILE_INPUT_ZIP)
         adf_to_tif_command = \
@@ -66,6 +76,7 @@ class HydroDEMProcess(object):
         hsheds_mask_lagoons_values = utDEM.get_lagoons_hsheds(hydro_sheds)
         hsheds_mask_lagoons = (hsheds_mask_lagoons_values > 0.0) * 1
         print "Processing Rivers."
+        utDEM.uncompress_zip_file(RIVERS_ZIP)
         utDEM.clip_lines_vector(RIVERS_FULL, SHAPE_AREA_INTEREST_OVER,
                                 RIVERS_SHAPE)
         rivers_routed_closing = utDEM.process_rivers(hydro_sheds_corrected_nan,
@@ -86,11 +97,12 @@ class HydroDEMProcess(object):
         dem_ready_convolve = ndimage.convolve(np.abs(dem_ready),
                                               weights=kernel)
         dem_ready_smooth = dem_ready_convolve / kernel.size
-        utDEM.array2raster(SRTM_AREA_INTEREST_OVER, DEM_READY_SMOOTH_PATH,
-                           dem_ready_smooth)
         print "Around values."
         final_dem = np.around(dem_ready_smooth)
         print "DEM Hydrologicaly conditioned ready."
         print "DEM Ready to use can be found at {}.".format(FINAL_DEM)
-
         utDEM.array2raster(SRTM_AREA_INTEREST_OVER, FINAL_DEM, final_dem)
+        print "Cleaning Workspace"
+        utDEM.clean_workspace()
+
+        return final_dem

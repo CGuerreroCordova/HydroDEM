@@ -144,3 +144,6 @@ SRTM_UNCOMPRESSED = os.path.join(INPUTS_FOLDER,
                                  config['EXPECTED']['SRTM_UNCOMPRESS'])
 SRTM_UNCOMPRESS_EXPECTED = os.path.join(EXPECTED_FOLDER,
                                         config['EXPECTED']['SRTM_UNCOMPRESS'])
+
+# Test Complete Process - Weak
+FINAL_DEM_TEST = os.path.join(EXPECTED_FOLDER, config['EXPECTED']['FINAL_DEM'])

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+
+
+    <meta content="IE=emulateIE7" http-equiv="X-UA-Compatible"/>
+    <title>Coverage for test_TestProcessDEM.py: 100%</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+
+    <script src="jquery.min.js" type="text/javascript"></script>
+    <script src="jquery.hotkeys.js" type="text/javascript"></script>
+    <script src="jquery.isonscreen.js" type="text/javascript"></script>
+    <script src="coverage_html.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(coverage.pyfile_ready);
+
+    </script>
+</head>
+<body class="pyfile">
+
+<div id="header">
+    <div class="content">
+        <h1>Coverage for <b>test_TestProcessDEM.py</b> :
+            <span class="pc_cov">100%</span>
+        </h1>
+
+        <img alt="Show keyboard shortcuts" id="keyboard_icon"
+             src="keybd_closed.png"/>
+
+        <h2 class="stats">
+            22 statements &nbsp;
+            <span class="run hide_run shortkey_r button_toggle_run">22 run</span>
+            <span class="mis shortkey_m button_toggle_mis">0 missing</span>
+            <span class="exc shortkey_x button_toggle_exc">0 excluded</span>
+
+
+        </h2>
+    </div>
+</div>
+
+<div class="help_panel">
+    <img alt="Hide keyboard shortcuts" id="panel_icon" src="keybd_open.png"/>
+    <p class="legend">Hot-keys on this page</p>
+    <div>
+        <p class="keyhelp">
+            <span class="key">r</span>
+            <span class="key">m</span>
+            <span class="key">x</span>
+            <span class="key">p</span> &nbsp; toggle line displays
+        </p>
+        <p class="keyhelp">
+            <span class="key">j</span>
+            <span class="key">k</span> &nbsp; next/prev highlighted chunk
+        </p>
+        <p class="keyhelp">
+            <span class="key">0</span> &nbsp; (zero) top of page
+        </p>
+        <p class="keyhelp">
+            <span class="key">1</span> &nbsp; (one) first highlighted chunk
+        </p>
+    </div>
+</div>
+
+<div id="source">
+    <table>
+        <tr>
+            <td class="linenos">
+                <p class="stm run hide_run" id="n1"><a href="#n1">1</a></p>
+                <p class="stm run hide_run" id="n2"><a href="#n2">2</a></p>
+                <p class="stm run hide_run" id="n3"><a href="#n3">3</a></p>
+                <p class="stm run hide_run" id="n4"><a href="#n4">4</a></p>
+                <p class="stm run hide_run" id="n5"><a href="#n5">5</a></p>
+                <p class="stm run hide_run" id="n6"><a href="#n6">6</a></p>
+                <p class="pln" id="n7"><a href="#n7">7</a></p>
+                <p class="pln" id="n8"><a href="#n8">8</a></p>
+                <p class="stm run hide_run" id="n9"><a href="#n9">9</a></p>
+                <p class="pln" id="n10"><a href="#n10">10</a></p>
+                <p class="stm run hide_run" id="n11"><a href="#n11">11</a></p>
+                <p class="stm run hide_run" id="n12"><a href="#n12">12</a></p>
+                <p class="stm run hide_run" id="n13"><a href="#n13">13</a></p>
+                <p class="stm run hide_run" id="n14"><a href="#n14">14</a></p>
+                <p class="stm run hide_run" id="n15"><a href="#n15">15</a></p>
+                <p class="stm run hide_run" id="n16"><a href="#n16">16</a></p>
+                <p class="stm run hide_run" id="n17"><a href="#n17">17</a></p>
+                <p class="stm run hide_run" id="n18"><a href="#n18">18</a></p>
+                <p class="pln" id="n19"><a href="#n19">19</a></p>
+                <p class="pln" id="n20"><a href="#n20">20</a></p>
+                <p class="stm run hide_run" id="n21"><a href="#n21">21</a></p>
+                <p class="stm run hide_run" id="n22"><a href="#n22">22</a></p>
+                <p class="stm run hide_run" id="n23"><a href="#n23">23</a></p>
+                <p class="stm run hide_run" id="n24"><a href="#n24">24</a></p>
+                <p class="stm run hide_run" id="n25"><a href="#n25">25</a></p>
+                <p class="stm run hide_run" id="n26"><a href="#n26">26</a></p>
+                <p class="stm run hide_run" id="n27"><a href="#n27">27</a></p>
+                <p class="pln" id="n28"><a href="#n28">28</a></p>
+                <p class="pln" id="n29"><a href="#n29">29</a></p>
+
+            </td>
+            <td class="text">
+                <p class="stm run hide_run" id="t1"><span
+                        class="key">from</span> <span class="nam">osgeo</span>
+                    <span class="key">import</span> <span
+                            class="nam">gdal</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t2"><span
+                        class="key">from</span> <span
+                        class="nam">unittest</span> <span
+                        class="key">import</span> <span
+                        class="nam">TestCase</span><span
+                        class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t3"><span
+                        class="key">from</span> <span
+                        class="nam">cguerrero</span><span
+                        class="op">.</span><span
+                        class="nam">hydrodem</span><span
+                        class="op">.</span><span class="nam">utilsDEM</span>
+                    <span class="key">import</span> <span
+                            class="op">(</span><span
+                            class="nam">array2raster</span><span
+                            class="op">,</span> <span class="nam">array2raster_simple</span><span
+                            class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t4"><span
+                        class="key">import</span> <span
+                        class="nam">filecmp</span><span
+                        class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t5"><span
+                        class="key">from</span> <span class="nam">numpy</span>
+                    <span class="key">import</span> <span
+                            class="nam">testing</span><span class="strut">&nbsp;</span>
+                </p>
+                <p class="stm run hide_run" id="t6"><span
+                        class="key">from</span> <span class="nam">settings_tests</span>
+                    <span class="key">import</span> <span
+                            class="nam">GEO_IMAGE</span><span
+                            class="op">,</span> <span class="nam">OUTPUT_GEO_IMAGE</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="pln" id="t7"><span class="strut">&nbsp;</span></p>
+                <p class="pln" id="t8"><span class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t9"><span
+                        class="key">class</span> <span
+                        class="nam">TestUtilsDEM</span><span
+                        class="op">(</span><span
+                        class="nam">TestCase</span><span
+                        class="op">)</span><span class="op">:</span><span
+                        class="strut">&nbsp;</span></p>
+                <p class="pln" id="t10"><span class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t11"><span
+                        class="key">def</span> <span class="nam">test_array2raster</span><span
+                        class="op">(</span><span class="nam">self</span><span
+                        class="op">)</span><span class="op">:</span><span
+                        class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t12"><span
+                        class="nam">raster</span> <span class="op">=</span>
+                    <span class="nam">gdal</span><span class="op">.</span><span
+                            class="nam">Open</span><span
+                            class="op">(</span><span
+                            class="nam">GEO_IMAGE</span><span
+                            class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t13"><span
+                        class="nam">array</span> <span class="op">=</span>
+                    <span class="nam">raster</span><span
+                            class="op">.</span><span
+                            class="nam">ReadAsArray</span><span
+                            class="op">(</span><span class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t14"><span class="nam">array2raster</span><span
+                        class="op">(</span><span
+                        class="nam">GEO_IMAGE</span><span class="op">,</span>
+                    <span class="nam">OUTPUT_GEO_IMAGE</span><span
+                            class="op">,</span> <span
+                            class="nam">array</span><span
+                            class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t15"><span class="nam">raster_new</span>
+                    <span class="op">=</span> <span
+                            class="nam">gdal</span><span
+                            class="op">.</span><span
+                            class="nam">Open</span><span
+                            class="op">(</span><span class="nam">OUTPUT_GEO_IMAGE</span><span
+                            class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t16"><span class="nam">array_new</span>
+                    <span class="op">=</span> <span
+                            class="nam">raster_new</span><span
+                            class="op">.</span><span
+                            class="nam">ReadAsArray</span><span
+                            class="op">(</span><span class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t17"><span
+                        class="nam">testing</span><span
+                        class="op">.</span><span
+                        class="nam">assert_array_equal</span><span
+                        class="op">(</span><span class="nam">array</span><span
+                        class="op">,</span> <span
+                        class="nam">array_new</span><span
+                        class="op">)</span><span class="strut">&nbsp;</span>
+                </p>
+                <p class="stm run hide_run" id="t18"><span
+                        class="nam">self</span><span class="op">.</span><span
+                        class="nam">assertEqual</span><span class="op">(</span><span
+                        class="nam">raster</span><span class="op">.</span><span
+                        class="nam">GetGeoTransform</span><span
+                        class="op">(</span><span class="op">)</span><span
+                        class="op">,</span><span class="strut">&nbsp;</span>
+                </p>
+                <p class="pln" id="t19"><span
+                        class="nam">raster_new</span><span
+                        class="op">.</span><span
+                        class="nam">GetGeoTransform</span><span
+                        class="op">(</span><span class="op">)</span><span
+                        class="op">)</span><span class="strut">&nbsp;</span>
+                </p>
+                <p class="pln" id="t20"><span class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t21"><span
+                        class="key">def</span> <span class="nam">test_array2raster_simple</span><span
+                        class="op">(</span><span class="nam">self</span><span
+                        class="op">)</span><span class="op">:</span><span
+                        class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t22"><span
+                        class="nam">raster</span> <span class="op">=</span>
+                    <span class="nam">gdal</span><span class="op">.</span><span
+                            class="nam">Open</span><span
+                            class="op">(</span><span
+                            class="nam">GEO_IMAGE</span><span
+                            class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t23"><span
+                        class="nam">array</span> <span class="op">=</span>
+                    <span class="nam">raster</span><span
+                            class="op">.</span><span
+                            class="nam">ReadAsArray</span><span
+                            class="op">(</span><span class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t24"><span class="nam">array2raster_simple</span><span
+                        class="op">(</span><span
+                        class="nam">OUTPUT_GEO_IMAGE</span><span
+                        class="op">,</span> <span class="nam">array</span><span
+                        class="op">)</span><span class="strut">&nbsp;</span>
+                </p>
+                <p class="stm run hide_run" id="t25"><span class="nam">raster_new</span>
+                    <span class="op">=</span> <span
+                            class="nam">gdal</span><span
+                            class="op">.</span><span
+                            class="nam">Open</span><span
+                            class="op">(</span><span class="nam">OUTPUT_GEO_IMAGE</span><span
+                            class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t26"><span class="nam">array_new</span>
+                    <span class="op">=</span> <span
+                            class="nam">raster_new</span><span
+                            class="op">.</span><span
+                            class="nam">ReadAsArray</span><span
+                            class="op">(</span><span class="op">)</span><span
+                            class="strut">&nbsp;</span></p>
+                <p class="stm run hide_run" id="t27"><span
+                        class="nam">testing</span><span
+                        class="op">.</span><span
+                        class="nam">assert_array_equal</span><span
+                        class="op">(</span><span class="nam">array</span><span
+                        class="op">,</span> <span
+                        class="nam">array_new</span><span
+                        class="op">)</span><span class="strut">&nbsp;</span>
+                </p>
+                <p class="pln" id="t28"><span class="strut">&nbsp;</span></p>
+                <p class="pln" id="t29"><span class="strut">&nbsp;</span></p>
+
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="footer">
+    <div class="content">
+        <p>
+            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a
+                class="nav" href="https://coverage.readthedocs.io">coverage.py
+            v4.5.1</a>,
+            created at 2019-07-28 12:43
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -21,7 +21,8 @@ import copy
 from scipy.ndimage.morphology import binary_closing
 import zipfile
 
-from settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT)
+from settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
+                      SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER)
 
 def array2raster(rasterfn, new_rasterfn, array):
     """
@@ -527,3 +528,13 @@ def uncompress_zip_file(zip_file):
     zip_ref = zipfile.ZipFile(zip_file, 'r')
     zip_ref.extractall(dir_name)
     zip_ref.close()
+
+
+def clean_workspace():
+    to_clean = [TREE_CLASS_AREA, SRTM_AREA_INTEREST_OVER,
+                HSHEDS_AREA_INTEREST_OVER]
+    for file in to_clean:
+        try:
+            os.remove(file)
+        except OSError:
+            pass

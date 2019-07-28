@@ -3,6 +3,7 @@ from osgeo import gdal
 import os, glob, filecmp
 from unittest import TestCase
 from numpy import testing
+from cguerrero.hydrodem.HydroDEMProcess import HydroDEMProcess
 from cguerrero.hydrodem.utilsDEM import (majority_filter, expand_filter,
                                          route_rivers, quadratic_filter,
                                          correct_nan_values,
@@ -33,7 +34,7 @@ from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             HYDRO_SHEDS, ZIP_FILE, SRTM_UNCOMPRESSED,
                             LAGOONS_DETECTED, RIVERS_VECTOR, RIVERS_CLIPPED,
                             RIVERS_AREA, MASK_LAGOONS, RIVERS_ROUTED_CLOSING,
-                            INPUTS_FOLDER, EXPECTED_FOLDER)
+                            INPUTS_FOLDER, EXPECTED_FOLDER, FINAL_DEM_TEST)
 
 class Test_filter(TestCase):
 
@@ -187,4 +188,7 @@ class Test_filter(TestCase):
                                     SRTM_UNCOMPRESS_EXPECTED))
 
     def test_complete_process(self):
-        pass
+        hydrodem_instance = HydroDEMProcess()
+        final_dem_array = hydrodem_instance.start()
+        final_dem_expected = gdal.Open(FINAL_DEM_TEST).ReadAsArray()
+        testing.assert_array_equal(final_dem_array, final_dem_expected)
