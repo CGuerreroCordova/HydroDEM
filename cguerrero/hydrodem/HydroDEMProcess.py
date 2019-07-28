@@ -26,22 +26,22 @@ class HydroDEMProcess(object):
         :type cmd_line: list[str]
         """
         print "Converting HSHEDS ADF to TIF file."
-        # utDEM.uncompress_zip_file(HSHEDS_FILE_INPUT_ZIP)
+        utDEM.uncompress_zip_file(HSHEDS_FILE_INPUT_ZIP)
         adf_to_tif_command = \
             GDAL_TRANSLATE + " " + HSHEDS_FILE_INPUT + " -of GTIFF " + \
             HSHEDS_FILE_TIFF
-        # utDEM.calling_system_call(adf_to_tif_command)
+        utDEM.calling_system_call(adf_to_tif_command)
         print "Getting shape file covering area of interest."
-        # utDEM.uncompress_zip_file(SRTM_FILE_INPUT_ZIP)
+        utDEM.uncompress_zip_file(SRTM_FILE_INPUT_ZIP)
         utDEM.resample_and_cut(SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT,
                                DEM_TEMP)
         utDEM.get_shape_over_area(DEM_TEMP, SHAPE_AREA_INTEREST_OVER)
         try:
             os.remove(DEM_TEMP)
-        except OSError as e:
+        except OSError:
             pass
         print "Resampling and cutting TREE file."
-        # utDEM.uncompress_zip_file(TREE_CLASS_INPUT_ZIP)
+        utDEM.uncompress_zip_file(TREE_CLASS_INPUT_ZIP)
         utDEM.resample_and_cut(TREE_CLASS_INPUT, SHAPE_AREA_INTEREST_OVER,
                                TREE_CLASS_AREA)
         print "Resampling and cutting SRTM file."
