@@ -30,7 +30,7 @@ class HydroDEMProcess(object):
         adf_to_tif_command = \
             GDAL_TRANSLATE + " " + HSHEDS_FILE_INPUT + " -of GTIFF " + \
             HSHEDS_FILE_TIFF
-        utDEM.calling_system_call(adf_to_tif_command)
+        # utDEM.calling_system_call(adf_to_tif_command)
         print "Getting shape file covering area of interest."
         # utDEM.uncompress_zip_file(SRTM_FILE_INPUT_ZIP)
         utDEM.resample_and_cut(SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT,
@@ -91,4 +91,6 @@ class HydroDEMProcess(object):
         print "Around values."
         final_dem = np.around(dem_ready_smooth)
         print "DEM Hydrologicaly conditioned ready."
+        print "DEM Ready to use can be found at {}.".format(FINAL_DEM)
+
         utDEM.array2raster(SRTM_AREA_INTEREST_OVER, FINAL_DEM, final_dem)

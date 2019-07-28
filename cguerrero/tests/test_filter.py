@@ -7,15 +7,16 @@ from cguerrero.hydrodem.utilsDEM import (majority_filter, expand_filter,
                                          route_rivers, quadratic_filter,
                                          correct_nan_values,
                                          filter_isolated_pixels, filter_blanks,
-                                         get_mask_fourier,
+                                         get_mask_fourier, array2raster,
                                          detect_apply_fourier,
                                          array2raster_simple, process_srtm,
                                          resample_and_cut, get_shape_over_area,
                                          get_lagoons_hsheds, clip_lines_vector,
-                                         process_rivers)
-from settings_tests import (HSHEDS_INPUT_MAJORITY, MAJORITY_OUTPUT,
-                            INPUT_EXPAND, EXPAND_OUTPUT,
-                            HSHEDS_INPUT_RIVER_ROUTING,
+                                         process_rivers, uncompress_zip_file)
+from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
+                            MAJORITY_OUTPUT, OUTPUT_FOLDER,
+                            INPUT_EXPAND, EXPAND_OUTPUT, GEO_IMAGE,
+                            HSHEDS_INPUT_RIVER_ROUTING, OUTPUT_GEO_IMAGE,
                             MASK_INPUT_RIVER_ROUTING, RIVER_ROUTING_EXPECTED,
                             SRTM_INPUT_QUADRATIC, QUADRATIC_FILTER_EXPECTED,
                             HSHEDS_INPUT_NAN, HSHEDS_NAN_CORRECTED,
@@ -27,22 +28,53 @@ from settings_tests import (HSHEDS_INPUT_MAJORITY, MAJORITY_OUTPUT,
                             SRTM_PROCESSED, HSHEDS_FILE_TIFF,
                             SHAPE_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST,
                             HSHEDS_AREA_INTEREST_OUTPUT, IMAGE_TEMP,
-                            SHAPE_AREA_OVER,
+                            SHAPE_AREA_OVER, SRTM_UNCOMPRESS_EXPECTED,
                             SHAPE_AREA_OVER_CREATED, OUTPUT_FOLDER,
-                            HYDRO_SHEDS,
+                            HYDRO_SHEDS, ZIP_FILE, SRTM_UNCOMPRESSED,
                             LAGOONS_DETECTED, RIVERS_VECTOR, RIVERS_CLIPPED,
-                            RIVERS_AREA, MASK_LAGOONS, RIVERS_ROUTED_CLOSING)
+                            RIVERS_AREA, MASK_LAGOONS, RIVERS_ROUTED_CLOSING,
+                            INPUTS_FOLDER, EXPECTED_FOLDER)
 
 class Test_filter(TestCase):
 
-    def tearDown(self):
-        file_list = glob.glob(OUTPUT_FOLDER + "*")
-        for file_path in file_list:
-            try:
-                os.remove(file_path)
-            except OSError:
-                print("Error while deleting file : ", file_path)
-        # pass
+    @classmethod
+    def setUpClass(cls):
+        uncompress_zip_file(INPUTS_ZIP)
+        uncompress_zip_file(EXPECTED_ZIP)
+        if not os.path.exists(OUTPUT_FOLDER):
+            os.makedirs(OUTPUT_FOLDER)
+
+    @classmethod
+    def tearDownClass(cls):
+        input_files = INPUTS_FOLDER + "*"
+        expected_files = EXPECTED_FOLDER + "*"
+        output_files = OUTPUT_FOLDER + "*"
+        files_to_delete = glob.glob(input_files)
+        files_to_delete += glob.glob(expected_files)
+        files_to_delete += glob.glob(output_files)
+        for file in files_to_delete:
+            os.remove(file)
+        os.removedirs(INPUTS_FOLDER)
+        os.removedirs(EXPECTED_FOLDER)
+        os.removedirs(OUTPUT_FOLDER)
+
+    def test_array2raster(self):
+        raster = gdal.Open(GEO_IMAGE)
+        array = raster.ReadAsArray()
+        array2raster(GEO_IMAGE, OUTPUT_GEO_IMAGE, array)
+        raster_new = gdal.Open(OUTPUT_GEO_IMAGE)
+        array_new = raster_new.ReadAsArray()
+        testing.assert_array_equal(array, array_new)
+        self.assertEqual(raster.GetGeoTransform(),
+                         raster_new.GetGeoTransform())
+
+    def test_array2raster_simple(self):
+        raster = gdal.Open(GEO_IMAGE)
+        array = raster.ReadAsArray()
+        array2raster_simple(OUTPUT_GEO_IMAGE, array)
+        raster_new = gdal.Open(OUTPUT_GEO_IMAGE)
+        array_new = raster_new.ReadAsArray()
+        testing.assert_array_equal(array, array_new)
 
     def test_majority_filter(self):
         hsheds_input = gdal.Open(HSHEDS_INPUT_MAJORITY).ReadAsArray()
@@ -116,11 +148,12 @@ class Test_filter(TestCase):
         testing.assert_array_equal(srtm_processed, srtm_expected)
 
     def test_resample_and_cut(self):
-        # TODO: Give an smaller image of input
         resample_and_cut(HSHEDS_FILE_TIFF, SHAPE_AREA_INTEREST_OVER,
                          HSHEDS_AREA_INTEREST_OUTPUT)
-        output_resampled = gdal.Open(HSHEDS_AREA_INTEREST_OUTPUT).ReadAsArray()
-        expected_resampled = gdal.Open(HSHEDS_AREA_INTEREST).ReadAsArray()
+        output_resampled = np.around(
+            gdal.Open(HSHEDS_AREA_INTEREST_OUTPUT).ReadAsArray())
+        expected_resampled = np.around(
+            gdal.Open(HSHEDS_AREA_INTEREST).ReadAsArray())
         testing.assert_array_equal(output_resampled, expected_resampled)
 
     def test_get_shape_over_area(self):
@@ -147,3 +180,11 @@ class Test_filter(TestCase):
             gdal.Open(RIVERS_ROUTED_CLOSING).ReadAsArray()
         testing.assert_array_equal(rivers_routed_closing,
                                    rivers_routed_closing_expected)
+
+    def test_uncompress_zip_file(self):
+        uncompress_zip_file(ZIP_FILE)
+        self.assertTrue(filecmp.cmp(SRTM_UNCOMPRESSED,
+                                    SRTM_UNCOMPRESS_EXPECTED))
+
+    def test_complete_process(self):
+        pass
