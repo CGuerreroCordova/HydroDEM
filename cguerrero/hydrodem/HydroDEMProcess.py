@@ -6,6 +6,9 @@ __email__ = "cguerrerocordova@gmail.com"
 __status__ = "Developing"
 
 import os
+from io import StringIO
+import cProfile, pstats
+from datetime import datetime
 import numpy as np
 from osgeo import gdal
 from scipy import ndimage
@@ -16,7 +19,7 @@ from settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP, GDAL_TRANSLATE,
                       SHAPE_AREA_INTEREST_OVER, TREE_CLASS_INPUT_ZIP,
                       TREE_CLASS_INPUT, TREE_CLASS_AREA,
                       SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
-                      RIVERS_FULL, RIVERS_SHAPE, FINAL_DEM)
+                      RIVERS_FULL, RIVERS_SHAPE, FINAL_DEM, PROFILE_FILE)
 
 
 class HydroDEMProcess(object):
@@ -33,6 +36,9 @@ class HydroDEMProcess(object):
         :param cmd_line: unix command line
         :type cmd_line: list[str]
         """
+        # Profile tool
+        pr = cProfile.Profile()
+        pr.enable()
         print("Cleaning Workspace")
         utDEM.clean_workspace()
         print("Converting HSHEDS ADF to TIF file.")
@@ -105,4 +111,11 @@ class HydroDEMProcess(object):
         print("Cleaning Workspace")
         utDEM.clean_workspace()
 
+        # Profile tool
+        pr.disable()
+        s = StringIO()
+        sortby = 'cumulative'
+        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+        now = datetime.now().strftime('%Y%m%d_%H%M%S')
+        ps.dump_stats(PROFILE_FILE.format(now))
         return final_dem

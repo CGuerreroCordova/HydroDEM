@@ -75,8 +75,8 @@ def majority_filter(image_to_filter, window_size):
     ny = image_to_filter.shape[0]
     nx = image_to_filter.shape[1]
     filtered_image = np.zeros((ny, nx))
-    right_up_side = window_size / 2
-    left_down_side = window_size / 2 + 1
+    right_up_side = window_size // 2
+    left_down_side = window_size // 2 + 1
     for j in range(right_up_side, ny - left_down_side):
         for i in range(left_down_side, nx - right_up_side):
             vertical_kernel = image_to_filter[
@@ -104,8 +104,8 @@ def expand_filter(image_to_expand, window_size):
     ny = image_to_expand.shape[0]
     nx = image_to_expand.shape[1]
     expanded_image = np.zeros((ny, nx))
-    right_up_side = window_size / 2
-    left_down_side = window_size / 2 + 1
+    right_up_side = window_size // 2
+    left_down_side = window_size // 2 + 1
     s = {0}
     for j in range(right_up_side, ny - left_down_side):
         for i in range(left_down_side, nx - right_up_side):
@@ -135,12 +135,10 @@ def route_rivers(dem_in, maskRivers, window_size):
     nx = dem.shape[1]
     indices = np.nonzero(maskRivers > 0.0)
     rivers_enrouted = np.zeros((ny, nx))
-    right_up_side = window_size / 2
-    left_down_side = window_size / 2 + 1
+    right_up_side = window_size // 2
+    left_down_side = window_size // 2 + 1
     neighbors = np.zeros((window_size, window_size))
-    for x in range(len(indices[0])):
-        j = indices[0][x]
-        i = indices[1][x]
+    for j, i in zip(indices[0], indices[1]):
         if (left_down_side < i < nx - (right_up_side - 1) and
                 left_down_side < j < ny - (right_up_side - 1)):
             neighbors = dem[j - (window_size - 2): j + (window_size - 1),
@@ -148,9 +146,7 @@ def route_rivers(dem_in, maskRivers, window_size):
             neighbors_flat = neighbors.flatten()
             neighbor_min = np.amin(neighbors_flat)
             indices_min = np.nonzero(neighbors == neighbor_min)
-            for z in range(len(indices_min[0])):
-                min_j = indices_min[0][z]
-                min_i = indices_min[1][z]
+            for min_j, min_i in zip(indices_min[0], indices_min[1]):
                 min_j_index = j - (window_size - 2) + min_j
                 min_i_index = i - (window_size - 2) + min_i
                 rivers_enrouted[min_j_index, min_i_index] = 1
@@ -173,9 +169,9 @@ def quadratic_filter(z):
     ny = z.shape[0]
     nx = z.shape[1]
     zp = z.copy()
-    for i in range(n / 2, nx - n / 2):
-        for j in range(n / 2, ny - n / 2):
-            z_aux = z[j - n / 2:j + n / 2 + 1, i - n / 2:i + n / 2 + 1]
+    for i in range(n // 2, nx - n // 2):
+        for j in range(n // 2, ny - n // 2):
+            z_aux = z[j - n // 2:j + n // 2 + 1, i - n // 2:i + n // 2 + 1]
             s1 = z_aux.sum()
             s2 = (z_aux * xx * xx).sum()
             s3 = (z_aux * yy * yy).sum()
@@ -192,9 +188,7 @@ def correct_nan_values(dem):
     nx = dem.shape[1]
     indices = np.nonzero(dem < 0.0)
     dem_corrected_nan = dem.copy()
-    for x in range(len(indices[0])):
-        j = indices[0][x]
-        i = indices[1][x]
+    for j, i in zip(indices[0], indices[1]):
         if i != 0 and j != 0 and i != nx - 1 and j != ny - 1:
             neighbors = dem[j - 1, i - 1: i + 2].flatten().tolist() \
                         + dem[j + 1, i - 1: i + 2].flatten().tolist() \
@@ -217,8 +211,8 @@ def filter_isolated_pixels(image_to_filter, window_size):
     ny = image_to_filter.shape[0]
     nx = image_to_filter.shape[1]
     filtered_image = np.zeros((ny, nx))
-    right_up_side = window_size / 2
-    left_down_side = window_size / 2 + 1
+    right_up_side = window_size // 2
+    left_down_side = window_size // 2 + 1
     margin = 0
     for j in range(right_up_side, ny - left_down_side):
         for i in range(left_down_side, nx - right_up_side):
@@ -251,8 +245,8 @@ def filter_blanks(image_to_filter, window_size):
     ny = image_to_filter.shape[0]
     nx = image_to_filter.shape[1]
     filtered_image = np.zeros((ny, nx))
-    right_up_side = window_size / 2
-    left_down_side = window_size / 2 + 1
+    right_up_side = window_size // 2
+    left_down_side = window_size // 2 + 1
     margin = 5
     for j in range(0, ny):
         for i in range(0, nx):
@@ -335,8 +329,8 @@ def detect_apply_fourier(image_to_correct):
     ny = fft_transform_abs.shape[0]
     x_odd = nx & 1
     y_odd = ny & 1
-    middle_x = nx / 2
-    middle_y = ny / 2
+    middle_x = int(nx // 2)
+    middle_y = int(ny // 2)
     margin = 10
     fst_quarter_fourier = fft_transform_abs[
                           0:middle_y - margin,
@@ -346,11 +340,13 @@ def detect_apply_fourier(image_to_correct):
                           0:middle_y - margin,
                           middle_x + margin + x_odd:nx
                           ]
-    p = Pool(2)
-    masks_fourier = p.map(get_mask_fourier, [fst_quarter_fourier,
-                                             snd_quarter_fourier])
-    first_quarter_mask = masks_fourier[0]
-    second_quarter_mask = masks_fourier[1]
+    # p = Pool(2)
+    # masks_fourier = p.map(get_mask_fourier, [fst_quarter_fourier,
+    #                                          snd_quarter_fourier])
+    # first_quarter_mask = masks_fourier[0]
+    # second_quarter_mask = masks_fourier[1]
+    first_quarter_mask = get_mask_fourier(fst_quarter_fourier)
+    second_quarter_mask = get_mask_fourier(snd_quarter_fourier)
     fst_complete_quarter = np.zeros((middle_y, middle_x))
     snd_complete_quarter = np.zeros((middle_y, middle_x))
     fst_complete_quarter[0:middle_y - margin, 0:middle_x - margin] = \
@@ -515,8 +511,8 @@ def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
     rivers_routed_closing = binary_closing(rivers_routed)
     intersection_lag_can = rivers_routed_closing * hsheds_mask_lagoons
     intersection_lag_can_mask = (intersection_lag_can > 0)
-    rivers_routed_closing -= intersection_lag_can_mask
-
+    rivers_routed_closing = np.bitwise_xor(rivers_routed_closing,
+                                           intersection_lag_can_mask)
     return rivers_routed_closing
 
 def uncompress_zip_file(zip_file):

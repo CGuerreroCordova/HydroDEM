@@ -9,6 +9,7 @@ config_ini = os.path.join(BASEDIR, 'config.ini')
 config.read(config_ini)
 INPUTS_FOLDER = os.path.join(BASEDIR, config['GENERAL']['INPUTS_FOLDER'])
 IMAGES_FOLDER = os.path.join(BASEDIR, config['GENERAL']['IMAGES_FOLDER'])
+PROFILES_FOLDER = os.path.join(BASEDIR, config['GENERAL']['PROFILES_FOLDER'])
 GDAL_TRANSLATE = config['GENERAL']['GDAL_TRANSLATE']
 SRTM_FILE_INPUT_ZIP = os.path.join(INPUTS_FOLDER,
                                    config['SRTM']['SRTM_FILE_INPUT_ZIP'])
@@ -52,3 +53,5 @@ TEMP_REPROJECTED_TO_CUT = os.path.join(IMAGES_FOLDER,
                                        config['TEMP'][
                                            'TEMP_REPROJECTED_TO_CUT'])
 FINAL_DEM = os.path.join(IMAGES_FOLDER, config['FINAL']['DEM_READY'])
+PROFILE_FILE = os.path.join(PROFILES_FOLDER,
+                            config['PROFILES']['PROFILE_FILE'])
