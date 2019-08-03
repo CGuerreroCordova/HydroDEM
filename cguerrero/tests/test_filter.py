@@ -1,20 +1,22 @@
 import numpy as np
 from osgeo import gdal
 import os, glob, filecmp
-from unittest import TestCase
+from unittest import TestCase, skip
 from numpy import testing
-from cguerrero.hydrodem.HydroDEMProcess import HydroDEMProcess
-from cguerrero.hydrodem.utilsDEM import (majority_filter, expand_filter,
-                                         route_rivers, quadratic_filter,
-                                         correct_nan_values,
-                                         filter_isolated_pixels, filter_blanks,
-                                         get_mask_fourier, array2raster,
-                                         detect_apply_fourier,
-                                         array2raster_simple, process_srtm,
-                                         resample_and_cut, get_shape_over_area,
-                                         get_lagoons_hsheds, clip_lines_vector,
-                                         process_rivers, uncompress_zip_file)
-from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
+from cguerrero.hydrodem.utils_dem import (majority_filter, expand_filter,
+                                          route_rivers, quadratic_filter,
+                                          correct_nan_values,
+                                          filter_isolated_pixels,
+                                          filter_blanks,
+                                          get_mask_fourier, array2raster,
+                                          detect_apply_fourier,
+                                          array2raster_simple, process_srtm,
+                                          resample_and_cut,
+                                          get_shape_over_area,
+                                          get_lagoons_hsheds,
+                                          clip_lines_vector,
+                                          process_rivers, uncompress_zip_file)
+from .settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             MAJORITY_OUTPUT, OUTPUT_FOLDER,
                             INPUT_EXPAND, EXPAND_OUTPUT, GEO_IMAGE,
                             HSHEDS_INPUT_RIVER_ROUTING, OUTPUT_GEO_IMAGE,
@@ -187,8 +189,3 @@ class Test_filter(TestCase):
         self.assertTrue(filecmp.cmp(SRTM_UNCOMPRESSED,
                                     SRTM_UNCOMPRESS_EXPECTED))
 
-    def test_complete_process(self):
-        hydrodem_instance = HydroDEMProcess()
-        final_dem_array = hydrodem_instance.start()
-        final_dem_expected = gdal.Open(FINAL_DEM_TEST).ReadAsArray()
-        testing.assert_array_equal(final_dem_array, final_dem_expected)

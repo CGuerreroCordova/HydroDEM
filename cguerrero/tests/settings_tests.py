@@ -146,4 +146,7 @@ SRTM_UNCOMPRESS_EXPECTED = os.path.join(EXPECTED_FOLDER,
                                         config['EXPECTED']['SRTM_UNCOMPRESS'])
 
 # Test Complete Process - Weak
-FINAL_DEM_TEST = os.path.join(EXPECTED_FOLDER, config['EXPECTED']['FINAL_DEM'])
+FINAL_DEM_ZIP = os.path.join(RESOURCES_FOLDER,
+                             config['RESOURCES']['EXPECTED_FINAL'])
+FINAL_DEM_TEST = os.path.join(RESOURCES_FOLDER,
+                              config['EXPECTED']['FINAL_DEM'])

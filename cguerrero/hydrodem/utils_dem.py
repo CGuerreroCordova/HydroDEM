@@ -3,26 +3,26 @@ __copyright__ = "Copyright 2017"
 __credits__ = ["Cristian Guerrero Cordova"]
 __version__ = "0.1"
 __email__ = "cguerrerocordova@gmail.com"
-__status__ = "Developing"
+__status__ = "Production"
 
+import copy
+import glob
 import os
 import subprocess
+import zipfile
 from collections import Counter
-from multiprocessing import Pool
-import glob
 
-import datetime
 import numpy as np
-import ogr, osr
+import ogr
+import osr
 from osgeo import gdal
 from scipy import fftpack
 from scipy import ndimage
-import copy
 from scipy.ndimage.morphology import binary_closing
-import zipfile
 
-from settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
-                      SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER)
+from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
+                       SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER)
+
 
 def array2raster(rasterfn, new_rasterfn, array):
     """
@@ -33,10 +33,8 @@ def array2raster(rasterfn, new_rasterfn, array):
     """
     raster = gdal.Open(rasterfn)
     geo_transform = raster.GetGeoTransform()
-    origin_x = geo_transform[0]
-    origin_y = geo_transform[3]
-    pixel_width = geo_transform[1]
-    pixel_height = geo_transform[5]
+    origin_x, pixel_width, _, origin_y, _, pixel_height = geo_transform
+
     cols = raster.RasterXSize
     rows = raster.RasterYSize
 
@@ -59,8 +57,7 @@ def array2raster_simple(new_rasterfn, array):
     :param array: 2-D array
     :return: void
     """
-    cols = array.shape[1]
-    rows = array.shape[0]
+    rows, cols = array.shape
     driver = gdal.GetDriverByName('GTiff')
     out_raster = driver.Create(new_rasterfn, cols, rows, 1, gdal.GDT_Float32)
     outband = out_raster.GetRasterBand(1)
@@ -72,8 +69,7 @@ def majority_filter(image_to_filter, window_size):
     The value assigned to the center will be the most frequent value,
     contained in a windows of window_size x window_size
     """
-    ny = image_to_filter.shape[0]
-    nx = image_to_filter.shape[1]
+    ny, nx = image_to_filter.shape
     filtered_image = np.zeros((ny, nx))
     right_up_side = window_size // 2
     left_down_side = window_size // 2 + 1
@@ -93,6 +89,7 @@ def majority_filter(image_to_filter, window_size):
             value, count = c.most_common()[0]
             if count >= (((window_size * window_size) - 1) / 2):
                 filtered_image[j, i] = value / 2
+
     return filtered_image
 
 
@@ -101,8 +98,7 @@ def expand_filter(image_to_expand, window_size):
     The value assigned to the center will be 1 if at least one pixel
     inside the kernel is 1
     """
-    ny = image_to_expand.shape[0]
-    nx = image_to_expand.shape[1]
+    ny, nx = image_to_expand.shape
     expanded_image = np.zeros((ny, nx))
     right_up_side = window_size // 2
     left_down_side = window_size // 2 + 1
@@ -131,8 +127,7 @@ def route_rivers(dem_in, maskRivers, window_size):
     Apply homogeneity to canyons. Specific defined for images with flow stream.
     """
     dem = copy.deepcopy(dem_in)
-    ny = dem.shape[0]
-    nx = dem.shape[1]
+    ny, nx = dem.shape
     indices = np.nonzero(maskRivers > 0.0)
     rivers_enrouted = np.zeros((ny, nx))
     right_up_side = window_size // 2
@@ -166,8 +161,7 @@ def quadratic_filter(z):
     r1 = (xx * xx).sum()
     r2 = (xx * xx * xx * xx).sum()
     r3 = (xx * xx * yy * yy).sum()
-    ny = z.shape[0]
-    nx = z.shape[1]
+    ny, nx = z.shape
     zp = z.copy()
     for i in range(n // 2, nx - n // 2):
         for j in range(n // 2, ny - n // 2):
@@ -184,8 +178,7 @@ def correct_nan_values(dem):
     """
     Correct values lower than zero, generally with extremely lowest values.
     """
-    ny = dem.shape[0]
-    nx = dem.shape[1]
+    ny, nx = dem.shape
     indices = np.nonzero(dem < 0.0)
     dem_corrected_nan = dem.copy()
     for j, i in zip(indices[0], indices[1]):
@@ -208,8 +201,7 @@ def filter_isolated_pixels(image_to_filter, window_size):
     """
     Remove isolated pixels detected to be part of a mask.
     """
-    ny = image_to_filter.shape[0]
-    nx = image_to_filter.shape[1]
+    ny, nx = image_to_filter.shape
     filtered_image = np.zeros((ny, nx))
     right_up_side = window_size // 2
     left_down_side = window_size // 2 + 1
@@ -242,8 +234,7 @@ def filter_blanks(image_to_filter, window_size):
     """
     Define the filter to detect blanks in a fourier transform image.
     """
-    ny = image_to_filter.shape[0]
-    nx = image_to_filter.shape[1]
+    ny, nx = image_to_filter.shape
     filtered_image = np.zeros((ny, nx))
     right_up_side = window_size // 2
     left_down_side = window_size // 2 + 1
@@ -302,8 +293,7 @@ def get_mask_fourier(quarter_fourier):
     :param quarter_fourier: fourier transform image.
     :return: mask with detected blanks
     """
-    quarter_ny = quarter_fourier.shape[0]
-    quarter_nx = quarter_fourier.shape[1]
+    quarter_ny, quarter_nx = quarter_fourier.shape
     final_mask_image = np.zeros((quarter_ny, quarter_nx))
     # TODO: Eliminar variables innecesarias
     image_modified = np.zeros((quarter_ny, quarter_nx))
@@ -325,8 +315,7 @@ def detect_apply_fourier(image_to_correct):
     fourier_transform = fftpack.fft2(image_to_correct_array)
     fourier_transform_shifted = fftpack.fftshift(fourier_transform)
     fft_transform_abs = np.abs(fourier_transform_shifted)
-    nx = fft_transform_abs.shape[1]
-    ny = fft_transform_abs.shape[0]
+    ny, nx = fft_transform_abs.shape
     x_odd = nx & 1
     y_odd = ny & 1
     middle_x = int(nx // 2)
@@ -495,8 +484,7 @@ def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
     :param hsheds_mask_lagoons: Mask Lagoons to exclude from rivers
     :return: Rivers detected
     """
-    cols = hsheds_mask_lagoons.shape[1]
-    rows = hsheds_mask_lagoons.shape[0]
+    rows, cols = hsheds_mask_lagoons.shape
     # Convert to Raster Rivers
     command_line = 'gdal_rasterize -a UP_CELLS -ts ' + str(cols) + ' ' + \
                    str(rows) + ' -l rivers_area_interest ' + rivers_shape + \
