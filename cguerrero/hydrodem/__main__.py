@@ -1,4 +1,4 @@
-from HydroDEMProcess import HydroDEMProcess
+from hydrodem.HydroDEMProcess import HydroDEMProcess
 
 if __name__ == '__main__':
     hydro_dem = HydroDEMProcess()

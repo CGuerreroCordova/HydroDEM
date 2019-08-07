@@ -1,7 +1,7 @@
 import numpy as np
 from osgeo import gdal
 import os, glob, filecmp
-from unittest import TestCase, skip
+from unittest import TestCase
 from numpy import testing
 from cguerrero.hydrodem.utils_dem import (majority_filter, expand_filter,
                                           route_rivers, quadratic_filter,

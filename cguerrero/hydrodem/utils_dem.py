@@ -3,7 +3,7 @@ __copyright__ = "Copyright 2017"
 __credits__ = ["Cristian Guerrero Cordova"]
 __version__ = "0.1"
 __email__ = "cguerrerocordova@gmail.com"
-__status__ = "Production"
+__status__ = "Developing"
 
 import copy
 import glob
@@ -117,7 +117,7 @@ def expand_filter(image_to_expand, window_size):
             v = set(vertical_kernel.flatten())
             h = set(horizontal_kernel.flatten())
             t = v | h
-            if len(t - s) > 0:
+            if len(t - s):
                 expanded_image[j, i] = 1
     return expanded_image
 
@@ -242,8 +242,7 @@ def filter_blanks(image_to_filter, window_size):
     for j in range(0, ny):
         for i in range(0, nx):
             if j < right_up_side:
-                above_neighbors = image_to_filter[
-                                  0: j,
+                above_neighbors = image_to_filter[0: j,
                                   i - right_up_side: i + left_down_side
                                   ].flatten().tolist()
             else:
@@ -383,17 +382,16 @@ def resample_and_cut(orig_image, shape_file, target_path):
     Resample the DEM to corresponding projection.
     Cut the area defined by shape
     """
-    gdal_warp = "gdalwarp.exe"
-    proj = '"+proj=tmerc +lat_0=-90 +lon_0=-63 +k=1 +x_0=4500000 +y_0=0 ' \
-           '+ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"'
     pixel_size = 90
-    command_line = gdal_warp + ' -t_srs ' + proj + ' ' + orig_image + ' ' \
-                   + TEMP_REPROJECTED_TO_CUT
-    os.system(command_line)
-    command_line = gdal_warp + " -cutline " + shape_file + " -crop_to_cutline " + \
-                   TEMP_REPROJECTED_TO_CUT + " " + target_path + " -tr " + \
-                   str(pixel_size) + " " + str(pixel_size) + " -ot Float32"
-    os.system(command_line)
+    in_file = gdal.Open(orig_image)
+    gdal.Warp(TEMP_REPROJECTED_TO_CUT, in_file, dstSRS='EPSG:22184')
+
+    gdw_options = gdal.WarpOptions(cutlineDSName=shape_file,
+                                   cropToCutline=True,
+                                   xRes=pixel_size, yRes=pixel_size,
+                                   outputType=gdal.GDT_Float32)
+    gdal.Warp(target_path, TEMP_REPROJECTED_TO_CUT, dstSRS='EPSG:22184',
+              options=gdw_options)
     try:
         os.remove(TEMP_REPROJECTED_TO_CUT)
     except OSError:

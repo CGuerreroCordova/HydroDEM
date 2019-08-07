@@ -20,7 +20,7 @@ setup(
     author="CGGC",
     keywords="",
     setup_requires=["pytest-runner"] if 'test' in sys.argv else [],
-    tests_require=["pytest==3.8.0", "pytest-cov", "coverage"],
+    tests_require=["pytest==5.0.1", "pytest-cov", "coverage"],
     install_requires=INSTALL_REQUIREMENTS,
     author_email="cguerrerocordova@gmail.com",
     description=DESCRIPTION,
