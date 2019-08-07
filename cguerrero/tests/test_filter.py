@@ -16,7 +16,7 @@ from cguerrero.hydrodem.utils_dem import (majority_filter, expand_filter,
                                           get_lagoons_hsheds,
                                           clip_lines_vector,
                                           process_rivers, uncompress_zip_file)
-from .settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
+from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             MAJORITY_OUTPUT, OUTPUT_FOLDER,
                             INPUT_EXPAND, EXPAND_OUTPUT, GEO_IMAGE,
                             HSHEDS_INPUT_RIVER_ROUTING, OUTPUT_GEO_IMAGE,
@@ -30,7 +30,7 @@ from .settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             SRTM_WITHOUT_STRIPS, SRTM_CORRECTED, MASK_TREES,
                             SRTM_PROCESSED, HSHEDS_FILE_TIFF,
                             SHAPE_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST,
-                            HSHEDS_AREA_INTEREST_OUTPUT, IMAGE_TEMP,
+                            HSHEDS_AREA_INTEREST_OUTPUT, SHAPE_AREA_INPUT,
                             SHAPE_AREA_OVER, SRTM_UNCOMPRESS_EXPECTED,
                             SHAPE_AREA_OVER_CREATED, OUTPUT_FOLDER,
                             HYDRO_SHEDS, ZIP_FILE, SRTM_UNCOMPRESSED,
@@ -60,6 +60,7 @@ class Test_filter(TestCase):
         os.removedirs(INPUTS_FOLDER)
         os.removedirs(EXPECTED_FOLDER)
         os.removedirs(OUTPUT_FOLDER)
+
 
     def test_array2raster(self):
         raster = gdal.Open(GEO_IMAGE)
@@ -160,7 +161,7 @@ class Test_filter(TestCase):
         testing.assert_array_equal(output_resampled, expected_resampled)
 
     def test_get_shape_over_area(self):
-        get_shape_over_area(IMAGE_TEMP, SHAPE_AREA_OVER_CREATED)
+        get_shape_over_area(SHAPE_AREA_INPUT, SHAPE_AREA_OVER_CREATED)
         self.assertTrue(filecmp.cmp(SHAPE_AREA_OVER_CREATED, SHAPE_AREA_OVER))
 
     def test_get_lagoons(self):

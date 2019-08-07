@@ -105,7 +105,8 @@ HSHEDS_AREA_INTEREST_OUTPUT = os.path.join(OUTPUT_FOLDER,
                                                'HSHEDS_AREA_INTEREST_OUTPUT'])
 
 # Test Get Shape Over Area
-IMAGE_TEMP = os.path.join(INPUTS_FOLDER, config['INPUTS']['IMAGE_TEMP'])
+SHAPE_AREA_INPUT = os.path.join(INPUTS_FOLDER,
+                                config['INPUTS']['SHAPE_AREA_INPUT'])
 SHAPE_AREA_OVER = os.path.join(EXPECTED_FOLDER,
                                config['EXPECTED']['SHAPE_AREA_OVER'])
 SHAPE_AREA_OVER_CREATED = os.path.join(OUTPUT_FOLDER,

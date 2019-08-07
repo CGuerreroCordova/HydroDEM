@@ -398,32 +398,53 @@ def resample_and_cut(orig_image, shape_file, target_path):
         pass
 
 
-def calling_system_call(command_line):
+def get_shape_over_area(shape_area_input, shape_over_area):
     """
-    Execute command line in operative system call
-    :param command_line: sentence to execute
-    """
-    command_line_list = command_line.split()
-    # FNULL = open(os.devnull, 'w')
-    # subprocess.call(command_line_list, stdout=FNULL, stderr=subprocess.STDOUT)
-    subprocess.call(command_line_list)
-
-
-def get_shape_over_area(image_temp, shape_over_area):
-    """
-    Return a rectangular shape file covering all area of interest and
+    Create a rectangular shape file covering all area of interest and
     parallel to the equator.
     """
-    shape_over_without_extension = os.path.splitext(shape_over_area)[0]
-    file_list = glob.glob(shape_over_without_extension + ".*")
-    for file_path in file_list:
-        try:
-            os.remove(file_path)
-        except:
-            print("Error while deleting file : ", file_path)
+    area_driver = ogr.GetDriverByName("ESRI Shapefile")
+    shapefile = area_driver.Open(shape_area_input, 0)
+    layer = shapefile.GetLayer()
+    feature = layer.GetFeature(0)
+    geometry = feature.GetGeometryRef()
+    minLong, maxLong, minLat, maxLat = geometry.GetEnvelope()
+    ring = ogr.Geometry(ogr.wkbLinearRing)
+    ring.AddPoint(minLong, maxLat)
+    ring.AddPoint(maxLong, maxLat)
+    ring.AddPoint(maxLong, minLat)
+    ring.AddPoint(minLong, minLat)
+    ring.AddPoint(minLong, maxLat)
 
-    command = 'gdaltindex ' + shape_over_area + ' ' + image_temp
-    calling_system_call(command)
+    poly = ogr.Geometry(ogr.wkbPolygon)
+    poly.AddGeometry(ring)
+
+    # Create the output Layer
+    outDriver = ogr.GetDriverByName("ESRI Shapefile")
+    srs = osr.SpatialReference()
+    srs.ImportFromWkt(layer.GetSpatialRef().ExportToWkt())
+
+    if os.path.exists(shape_over_area):
+        outDriver.DeleteDataSource(shape_over_area)
+
+    outDataSource = outDriver.CreateDataSource(shape_over_area)
+    outLayer = outDataSource.CreateLayer("shape_over_area", srs,
+                                         geom_type=ogr.wkbPolygon)
+
+    idField = ogr.FieldDefn("id", ogr.OFTInteger)
+    outLayer.CreateField(idField)
+
+    # Create the feature and set values
+    featureDefn = outLayer.GetLayerDefn()
+    feature = ogr.Feature(featureDefn)
+    feature.SetGeometry(poly)
+    feature.SetField("id", 1)
+    outLayer.CreateFeature(feature)
+    feature = None
+
+    # Save and close DataSource
+    inDataSource = None
+    outDataSource = None
 
 def get_lagoons_hsheds(hsheds_input):
     hsheds_maj_filter11 = majority_filter(hsheds_input, 11)
@@ -482,13 +503,12 @@ def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
     :param hsheds_mask_lagoons: Mask Lagoons to exclude from rivers
     :return: Rivers detected
     """
-    rows, cols = hsheds_mask_lagoons.shape
-    # Convert to Raster Rivers
-    command_line = 'gdal_rasterize -a UP_CELLS -ts ' + str(cols) + ' ' + \
-                   str(rows) + ' -l rivers_area_interest ' + rivers_shape + \
-                   ' ' + RIVERS_TIF
-    calling_system_call(command_line)
-
+    pixel_size = 90
+    gdr_options = gdal.RasterizeOptions(attribute='UP_CELLS',
+                                        yRes=pixel_size, xRes=pixel_size,
+                                        outputType=gdal.GDT_Float32,
+                                        layers='rivers_area_interest')
+    gdal.Rasterize(RIVERS_TIF, rivers_shape, options=gdr_options)
     river_array = gdal.Open(RIVERS_TIF).ReadAsArray()
     mask_canyons_array = (river_array > 0) * 1
     mask_canyons_expanded3 = expand_filter(mask_canyons_array, 3)
@@ -496,7 +516,7 @@ def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
                                  3)
     rivers_routed_closing = binary_closing(rivers_routed)
     intersection_lag_can = rivers_routed_closing * hsheds_mask_lagoons
-    intersection_lag_can_mask = (intersection_lag_can > 0)
+    intersection_lag_can_mask = (intersection_lag_can > 0) * 1
     rivers_routed_closing = np.bitwise_xor(rivers_routed_closing,
                                            intersection_lag_can_mask)
     return rivers_routed_closing
@@ -514,7 +534,7 @@ def uncompress_zip_file(zip_file):
 
 def clean_workspace():
     to_clean = [TREE_CLASS_AREA, SRTM_AREA_INTEREST_OVER,
-                HSHEDS_AREA_INTEREST_OVER]
+                HSHEDS_AREA_INTEREST_OVER, RIVERS_TIF]
     for file in to_clean:
         try:
             os.remove(file)

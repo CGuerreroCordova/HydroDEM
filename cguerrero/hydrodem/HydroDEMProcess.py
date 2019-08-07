@@ -13,14 +13,13 @@ from datetime import datetime
 import numpy as np
 from osgeo import gdal
 from scipy import ndimage
-from .utils_dem import (clean_workspace, uncompress_zip_file,
-                        calling_system_call, resample_and_cut,
+from .utils_dem import (clean_workspace, uncompress_zip_file, resample_and_cut,
                         get_shape_over_area, detect_apply_fourier,
                         process_srtm, correct_nan_values, get_lagoons_hsheds,
-                        clip_lines_vector, process_rivers, array2raster, )
-from .settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP, GDAL_TRANSLATE,
+                        clip_lines_vector, process_rivers, array2raster)
+from .settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP,
                        HSHEDS_FILE_INPUT, HSHEDS_FILE_TIFF, SRTM_FILE_INPUT_ZIP,
-                       SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT, DEM_TEMP,
+                       SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT,
                        SHAPE_AREA_INTEREST_OVER, TREE_CLASS_INPUT_ZIP,
                        TREE_CLASS_INPUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
@@ -51,23 +50,18 @@ class HydroDEMProcess(object):
         clean_workspace()
         print("Converting HSHEDS ADF to TIF file.")
         uncompress_zip_file(HSHEDS_FILE_INPUT_ZIP)
-        adf_to_tif_command = \
-            GDAL_TRANSLATE + " " + HSHEDS_FILE_INPUT + " -of GTIFF " + \
-            HSHEDS_FILE_TIFF
-        calling_system_call(adf_to_tif_command)
+        gdt_options = gdal.TranslateOptions(format='GTIFF')
+        gdal.Translate(HSHEDS_FILE_TIFF, HSHEDS_FILE_INPUT,
+                       options=gdt_options)
         print("Getting shape file covering area of interest.")
-        uncompress_zip_file(SRTM_FILE_INPUT_ZIP)
-        resample_and_cut(SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT, DEM_TEMP)
-        get_shape_over_area(DEM_TEMP, SHAPE_AREA_INTEREST_OVER)
-        try:
-            os.remove(DEM_TEMP)
-        except OSError:
-            pass
+        get_shape_over_area(SHAPE_AREA_INTEREST_INPUT,
+                            SHAPE_AREA_INTEREST_OVER)
         print("Resampling and cutting TREE file.")
         uncompress_zip_file(TREE_CLASS_INPUT_ZIP)
         resample_and_cut(TREE_CLASS_INPUT, SHAPE_AREA_INTEREST_OVER,
                          TREE_CLASS_AREA)
         print("Resampling and cutting SRTM file.")
+        uncompress_zip_file(SRTM_FILE_INPUT_ZIP)
         resample_and_cut(SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_OVER,
                          SRTM_AREA_INTEREST_OVER)
         print("Resampling and cutting HSHEDS file.")

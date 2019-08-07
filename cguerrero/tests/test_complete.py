@@ -4,7 +4,7 @@ from osgeo import gdal
 from numpy import testing
 from cguerrero.hydrodem.HydroDEMProcess import HydroDEMProcess
 from cguerrero.hydrodem.utils_dem import uncompress_zip_file
-from .settings_tests import FINAL_DEM_ZIP, FINAL_DEM_TEST
+from settings_tests import FINAL_DEM_ZIP, FINAL_DEM_TEST
 
 
 class Test_complete(TestCase):
