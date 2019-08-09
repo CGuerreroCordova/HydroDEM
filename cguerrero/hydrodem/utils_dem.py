@@ -21,7 +21,8 @@ from scipy import ndimage
 from scipy.ndimage.morphology import binary_closing
 
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
-                       SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER)
+                       SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
+                       HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
 
 
 def array2raster(rasterfn, new_rasterfn, array):
@@ -71,21 +72,21 @@ def majority_filter(image_to_filter, window_size):
     """
     ny, nx = image_to_filter.shape
     filtered_image = np.zeros((ny, nx))
-    right_up_side = window_size // 2
-    left_down_side = window_size // 2 + 1
-    for j in range(right_up_side, ny - left_down_side):
-        for i in range(left_down_side, nx - right_up_side):
+    right_up = window_size // 2
+    left_down = window_size // 2 + 1
+    for j in range(right_up, ny - left_down):
+        for i in range(left_down, nx - right_up):
             vertical_kernel = image_to_filter[
-                              j - right_up_side: j + left_down_side,
-                              i - (right_up_side - 1): i + (left_down_side - 1)
+                              j - right_up: j + left_down,
+                              i - (right_up - 1): i + (left_down - 1)
                               ]
             horizontal_kernel = image_to_filter[
-                                j - (right_up_side - 1): j + (
-                                        left_down_side - 1),
-                                i - right_up_side: i + left_down_side
+                                j - (right_up - 1): j + (
+                                        left_down - 1),
+                                i - right_up: i + left_down
                                 ]
-            c = Counter(vertical_kernel.flatten() +
-                        horizontal_kernel.flatten())
+            kernel = vertical_kernel.flatten() + horizontal_kernel.flatten()
+            c = Counter(kernel)
             value, count = c.most_common()[0]
             if count >= (((window_size * window_size) - 1) / 2):
                 filtered_image[j, i] = value / 2
@@ -93,29 +94,25 @@ def majority_filter(image_to_filter, window_size):
     return filtered_image
 
 
-def expand_filter(image_to_expand, window_size):
+def expand_filter(img_to_expand, window_size):
     """
     The value assigned to the center will be 1 if at least one pixel
     inside the kernel is 1
     """
-    ny, nx = image_to_expand.shape
+    ny, nx = img_to_expand.shape
     expanded_image = np.zeros((ny, nx))
-    right_up_side = window_size // 2
-    left_down_side = window_size // 2 + 1
+    right_up = window_size // 2
+    left_down = window_size // 2 + 1
     s = {0}
-    for j in range(right_up_side, ny - left_down_side):
-        for i in range(left_down_side, nx - right_up_side):
-            vertical_kernel = image_to_expand[
-                              j - right_up_side: j + left_down_side,
-                              i - (right_up_side - 1): i + (left_down_side - 1)
-                              ]
-            horizontal_kernel = image_to_expand[
-                                j - (right_up_side - 1): j + (
-                                        left_down_side - 1),
-                                i - right_up_side: i + left_down_side
-                                ]
-            v = set(vertical_kernel.flatten())
-            h = set(horizontal_kernel.flatten())
+    for j in range(right_up, ny - left_down):
+        for i in range(left_down, nx - right_up):
+            vert_kernel = img_to_expand[j - right_up: j + left_down,
+                          i - (right_up - 1): i + (left_down - 1)]
+            horiz_kernel = img_to_expand[
+                           j - (right_up - 1):j + (left_down - 1),
+                           i - right_up: i + left_down]
+            v = set(vert_kernel.flatten())
+            h = set(horiz_kernel.flatten())
             t = v | h
             if len(t - s):
                 expanded_image[j, i] = 1
@@ -130,12 +127,12 @@ def route_rivers(dem_in, maskRivers, window_size):
     ny, nx = dem.shape
     indices = np.nonzero(maskRivers > 0.0)
     rivers_enrouted = np.zeros((ny, nx))
-    right_up_side = window_size // 2
-    left_down_side = window_size // 2 + 1
+    right_up = window_size // 2
+    left_down = window_size // 2 + 1
     neighbors = np.zeros((window_size, window_size))
     for j, i in zip(indices[0], indices[1]):
-        if (left_down_side < i < nx - (right_up_side - 1) and
-                left_down_side < j < ny - (right_up_side - 1)):
+        if (left_down < i < nx - (right_up - 1) and
+                left_down < j < ny - (right_up - 1)):
             neighbors = dem[j - (window_size - 2): j + (window_size - 1),
                         i - (window_size - 2): i + (window_size - 1)]
             neighbors_flat = neighbors.flatten()
@@ -182,7 +179,7 @@ def correct_nan_values(dem):
     indices = np.nonzero(dem < 0.0)
     dem_corrected_nan = dem.copy()
     for j, i in zip(indices[0], indices[1]):
-        if i != 0 and j != 0 and i != nx - 1 and j != ny - 1:
+        if 0 < i < nx - 1 and 0 < j < ny - 1:
             neighbors = dem[j - 1, i - 1: i + 2].flatten().tolist() \
                         + dem[j + 1, i - 1: i + 2].flatten().tolist() \
                         + [dem[j, i - 1]] + [dem[j, i + 1]]
@@ -203,28 +200,27 @@ def filter_isolated_pixels(image_to_filter, window_size):
     """
     ny, nx = image_to_filter.shape
     filtered_image = np.zeros((ny, nx))
-    right_up_side = window_size // 2
-    left_down_side = window_size // 2 + 1
+    right_up = window_size // 2
+    left_down = window_size // 2 + 1
     margin = 0
-    for j in range(right_up_side, ny - left_down_side):
-        for i in range(left_down_side, nx - right_up_side):
+    for j in range(right_up, ny - left_down):
+        for i in range(left_down, nx - right_up):
             if image_to_filter[j, i] == 1:
-                above_neighbors = image_to_filter[
-                                  j - right_up_side: j - margin,
-                                  i - right_up_side: i + left_down_side
-                                  ].flatten().tolist()
+                above_neighbors = image_to_filter[j - right_up:j - margin,
+                                  i - right_up: i + left_down]
                 below_neighbors = image_to_filter[
-                                  j + 1 + margin: j + left_down_side,
-                                  i - right_up_side: i + left_down_side
-                                  ].flatten().tolist()
-                right_neighbors = image_to_filter[
-                                  j, i - right_up_side: i - margin
-                                  ].flatten().tolist()
-                left_neighbors = image_to_filter[
-                                 j, i + 1 + margin: i + left_down_side
-                                 ].flatten().tolist()
-                neighbors = above_neighbors + below_neighbors \
-                            + right_neighbors + left_neighbors
+                                  j + 1 + margin: j + left_down,
+                                  i - right_up: i + left_down]
+                right_neighbors = image_to_filter[j, i - right_up: i - margin]
+                left_neighbors = image_to_filter[j,
+                                 i + 1 + margin: i + left_down]
+                # neighbors = np.concatenate((above_neighbors, below_neighbors,
+                #                            right_neighbors, left_neighbors))
+                # neighbors = neighbors.flatten().tolist()
+                neighbors = above_neighbors.flatten().tolist() + \
+                            below_neighbors.flatten().tolist() + \
+                            right_neighbors.flatten().tolist() + \
+                            left_neighbors.flatten().tolist()
                 sum_neighbors = sum(neighbors)
                 filtered_image[j, i] = (sum_neighbors > 0) * 1
     return filtered_image
@@ -236,46 +232,36 @@ def filter_blanks(image_to_filter, window_size):
     """
     ny, nx = image_to_filter.shape
     filtered_image = np.zeros((ny, nx))
-    right_up_side = window_size // 2
-    left_down_side = window_size // 2 + 1
+    right_up = window_size // 2
+    left_down = window_size // 2 + 1
     margin = 5
     for j in range(0, ny):
         for i in range(0, nx):
-            if j < right_up_side:
-                above_neighbors = image_to_filter[0: j,
-                                  i - right_up_side: i + left_down_side
-                                  ].flatten().tolist()
+            if j < right_up:
+                above_neighbors = image_to_filter[:j,
+                                  i - right_up:i + left_down]
             else:
-                above_neighbors = image_to_filter[
-                                  j - right_up_side: j - margin,
-                                  i - right_up_side: i + left_down_side
-                                  ].flatten().tolist()
-            if j > (ny - left_down_side):
-                below_neighbors = image_to_filter[
-                                  j + 1: ny,
-                                  i - right_up_side:i + left_down_side
-                                  ].flatten().tolist()
+                above_neighbors = image_to_filter[j - right_up:j - margin,
+                                  i - right_up:i + left_down]
+            if j > (ny - left_down):
+                below_neighbors = image_to_filter[j + 1: ny,
+                                  i - right_up:i + left_down]
             else:
-                below_neighbors = image_to_filter[
-                                  j + 1 + margin:j + left_down_side,
-                                  i - right_up_side:i + left_down_side
-                                  ].flatten().tolist()
-            if i > (nx - right_up_side):
-                right_neighbors = image_to_filter[
-                                  j, i + 1:nx
-                                  ].flatten().tolist()
+                below_neighbors = image_to_filter[j + 1 + margin:j + left_down,
+                                  i - right_up:i + left_down]
+            if i > (nx - right_up):
+                right_neighbors = image_to_filter[j, i + 1:nx]
             else:
-                right_neighbors = image_to_filter[
-                                  j, i + 1 + margin:i + left_down_side
-                                  ].flatten().tolist()
-            if i < right_up_side:
-                left_neighbors = image_to_filter[j, 0:i].flatten().tolist()
+                right_neighbors = image_to_filter[j,
+                                  i + 1 + margin:i + left_down]
+            if i < right_up:
+                left_neighbors = image_to_filter[j, :i]
             else:
-                left_neighbors = image_to_filter[
-                                 j, i - right_up_side:i - margin
-                                 ].flatten().tolist()
-            neighbors = above_neighbors + below_neighbors + right_neighbors \
-                        + left_neighbors
+                left_neighbors = image_to_filter[j, i - right_up:i - margin]
+            neighbors = above_neighbors.flatten().tolist() + \
+                        below_neighbors.flatten().tolist() + \
+                        right_neighbors.flatten().tolist() + \
+                        left_neighbors.flatten().tolist()
             mean_neighbor = sum(neighbors) / len(neighbors)
             if image_to_filter[j, i] > (4 * mean_neighbor):
                 filtered_image[j, i] = mean_neighbor
@@ -320,14 +306,11 @@ def detect_apply_fourier(image_to_correct):
     middle_x = int(nx // 2)
     middle_y = int(ny // 2)
     margin = 10
-    fst_quarter_fourier = fft_transform_abs[
-                          0:middle_y - margin,
-                          0:middle_x - margin
-                          ]
-    snd_quarter_fourier = fft_transform_abs[
-                          0:middle_y - margin,
-                          middle_x + margin + x_odd:nx
-                          ]
+    fst_quarter_fourier = fft_transform_abs[:middle_y - margin,
+                          :middle_x - margin]
+    snd_quarter_fourier = fft_transform_abs[:middle_y - margin, middle_x +
+                                                                margin +
+                                                                x_odd:nx]
     # p = Pool(2)
     # masks_fourier = p.map(get_mask_fourier, [fst_quarter_fourier,
     #                                          snd_quarter_fourier])
@@ -440,11 +423,9 @@ def get_shape_over_area(shape_area_input, shape_over_area):
     feature.SetGeometry(poly)
     feature.SetField("id", 1)
     outLayer.CreateFeature(feature)
-    feature = None
 
     # Save and close DataSource
-    inDataSource = None
-    outDataSource = None
+    outDataSource.Destroy()
 
 def get_lagoons_hsheds(hsheds_input):
     hsheds_maj_filter11 = majority_filter(hsheds_input, 11)
@@ -533,8 +514,9 @@ def uncompress_zip_file(zip_file):
 
 
 def clean_workspace():
-    to_clean = [TREE_CLASS_AREA, SRTM_AREA_INTEREST_OVER,
-                HSHEDS_AREA_INTEREST_OVER, RIVERS_TIF]
+    to_clean = [TREE_CLASS_AREA, SRTM_AREA_INTEREST_OVER, SRTM_FILE_INPUT,
+                HSHEDS_AREA_INTEREST_OVER, RIVERS_TIF, HSHEDS_FILE_TIFF,
+                TREE_CLASS_INPUT]
     for file in to_clean:
         try:
             os.remove(file)
