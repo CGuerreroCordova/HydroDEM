@@ -23,6 +23,7 @@ from scipy.ndimage.morphology import binary_closing
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
+from .sliding_window import CircularWindow
 
 
 def array2raster(rasterfn, new_rasterfn, array):
@@ -99,23 +100,12 @@ def expand_filter(img_to_expand, window_size):
     The value assigned to the center will be 1 if at least one pixel
     inside the kernel is 1
     """
-    ny, nx = img_to_expand.shape
-    expanded_image = np.zeros((ny, nx))
-    right_up = window_size // 2
-    left_down = window_size // 2 + 1
-    s = {0}
-    for j in range(right_up, (ny - left_down) + 1):
-        for i in range(right_up, (nx - left_down) + 1):
-            vert_kernel = img_to_expand[j - right_up: j + left_down,
-                          i - (right_up - 1): i + (left_down - 1)]
-            horiz_kernel = img_to_expand[
-                           j - (right_up - 1):j + (left_down - 1),
-                           i - right_up: i + left_down]
-            v = set(vert_kernel.flatten())
-            h = set(horiz_kernel.flatten())
-            t = v | h
-            if len(t - s):
-                expanded_image[j, i] = 1
+    expanded_image = np.zeros(img_to_expand.shape)
+    sliding = CircularWindow(img_to_expand, window_size)
+    for window, center in sliding:
+        if any((window > 0).flatten()):
+            j, i = center
+            expanded_image[j, i] = 1
     return expanded_image
 
 

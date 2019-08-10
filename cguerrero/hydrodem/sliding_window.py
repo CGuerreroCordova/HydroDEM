@@ -7,6 +7,7 @@ class SlidingWindow:
         self.grid = grid
         self.window_size = window_size
         self._indices_nan = []
+        self.grid_nan = np.nan
 
     @property
     def grid(self):
@@ -45,7 +46,7 @@ class SlidingWindow:
                 neighbors = self.grid[j - left_up: j + right_down,
                             i - left_up: i + right_down]
                 neighbors = self.set_nan(neighbors)
-                yield neighbors
+                yield neighbors, (j, i)
 
     def customize(self):
         pass
@@ -53,7 +54,7 @@ class SlidingWindow:
     def set_nan(self, neighbors):
         cp_window = neighbors.copy()
         for index in self._indices_nan:
-            cp_window[index] = np.nan
+            cp_window[index] = self.grid_nan
         return cp_window
 
 
