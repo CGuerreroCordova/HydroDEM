@@ -16,7 +16,8 @@ from scipy import ndimage
 from .utils_dem import (clean_workspace, uncompress_zip_file, resample_and_cut,
                         get_shape_over_area, detect_apply_fourier,
                         process_srtm, correct_nan_values, get_lagoons_hsheds,
-                        clip_lines_vector, process_rivers, array2raster)
+                        clip_lines_vector, process_rivers, array2raster,
+                        array2raster_simple)
 from .settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP,
                        HSHEDS_FILE_INPUT, HSHEDS_FILE_TIFF, SRTM_FILE_INPUT_ZIP,
                        SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT,

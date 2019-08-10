@@ -36,7 +36,7 @@ from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             HYDRO_SHEDS, ZIP_FILE, SRTM_UNCOMPRESSED,
                             LAGOONS_DETECTED, RIVERS_VECTOR, RIVERS_CLIPPED,
                             RIVERS_AREA, MASK_LAGOONS, RIVERS_ROUTED_CLOSING,
-                            INPUTS_FOLDER, EXPECTED_FOLDER, FINAL_DEM_TEST)
+                            INPUTS_FOLDER, EXPECTED_FOLDER, RIVERS_AREA_INPUT)
 
 class Test_filter(TestCase):
 
@@ -179,7 +179,7 @@ class Test_filter(TestCase):
         hsheds_nan_corrected = gdal.Open(HSHEDS_NAN_CORRECTED).ReadAsArray()
         mask_lagoons = gdal.Open(MASK_LAGOONS).ReadAsArray()
         rivers_routed_closing = process_rivers(hsheds_nan_corrected,
-                                               mask_lagoons, RIVERS_AREA)
+                                               mask_lagoons, RIVERS_AREA_INPUT)
         rivers_routed_closing_expected = \
             gdal.Open(RIVERS_ROUTED_CLOSING).ReadAsArray()
         testing.assert_array_equal(rivers_routed_closing,

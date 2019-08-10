@@ -104,8 +104,8 @@ def expand_filter(img_to_expand, window_size):
     right_up = window_size // 2
     left_down = window_size // 2 + 1
     s = {0}
-    for j in range(right_up, ny - left_down):
-        for i in range(left_down, nx - right_up):
+    for j in range(right_up, (ny - left_down) + 1):
+        for i in range(right_up, (nx - left_down) + 1):
             vert_kernel = img_to_expand[j - right_up: j + left_down,
                           i - (right_up - 1): i + (left_down - 1)]
             horiz_kernel = img_to_expand[
@@ -315,7 +315,7 @@ def detect_apply_fourier(image_to_correct):
     # masks_fourier = p.map(get_mask_fourier, [fst_quarter_fourier,
     #                                          snd_quarter_fourier])
     # first_quarter_mask = masks_fourier[0]
-    # second_quarter_mask = masks_fourier[1]
+    # second_quarter_mask = masks_fourier[1]}
     first_quarter_mask = get_mask_fourier(fst_quarter_fourier)
     second_quarter_mask = get_mask_fourier(snd_quarter_fourier)
     fst_complete_quarter = np.zeros((middle_y, middle_x))

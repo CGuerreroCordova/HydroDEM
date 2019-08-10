@@ -133,7 +133,8 @@ RIVERS_AREA = os.path.join(EXPECTED_FOLDER,
 MASK_LAGOONS = os.path.join(INPUTS_FOLDER, config['INPUTS']['MASK_LAGOONS'])
 HSHEDS_NAN_CORRECTED = os.path.join(EXPECTED_FOLDER,
                                     config['EXPECTED']['HSHEDS_NAN_CORRECTED'])
-RIVERS_AREA = os.path.join(EXPECTED_FOLDER, config['EXPECTED']['RIVERS_AREA'])
+RIVERS_AREA_INPUT = os.path.join(INPUTS_FOLDER,
+                                 config['INPUTS']['RIVERS_AREA_INPUT'])
 
 RIVERS_ROUTED_CLOSING = os.path.join(EXPECTED_FOLDER,
                                      config['EXPECTED'][
