@@ -1,12 +1,12 @@
 import numpy as np
-
+from itertools import product
 
 class SlidingWindow:
-    indices_nan = []
 
-    def __init__(self, grid, window_size):
+    def __init__(self, grid, window_size, *args, **kwargs):
         self.grid = grid
         self.window_size = window_size
+        self._indices_nan = []
 
     @property
     def grid(self):
@@ -35,6 +35,8 @@ class SlidingWindow:
         left_up = self.window_size // 2
         right_down = left_up + 1
 
+        self.customize()
+
         def range_grid(max_index):
             return range(left_up, (max_index - right_down) + 1)
 
@@ -42,25 +44,73 @@ class SlidingWindow:
             for i in range_grid(nx):
                 neighbors = self.grid[j - left_up: j + right_down,
                             i - left_up: i + right_down]
-                neighbors = self.customize(neighbors)
+                neighbors = self.set_nan(neighbors)
                 yield neighbors
 
-    def customize(self, neighbors):
-        return neighbors
+    def customize(self):
+        pass
 
-    def set_nan(self, array, indices):
-        for index in indices:
-            array[index] = np.nan
+    def set_nan(self, neighbors):
+        cp_window = neighbors.copy()
+        for index in self._indices_nan:
+            cp_window[index] = np.nan
+        return cp_window
 
 
 class CircularWindow(SlidingWindow):
 
-    def customize(self, neighbors):
-        ny, nx = neighbors.shape
-        indices_nan = self.remove_corners(ny, nx)
-        cp_window = neighbors.copy()
-        self.set_nan(cp_window, indices_nan)
-        return (cp_window)
+    def __init__(self, grid, window_size, *args, **kwargs):
+        super().__init__(grid, window_size, *args, **kwargs)
 
-    def remove_corners(self, ny, nx):
-        return [(0, 0), (0, nx - 1), (ny - 1, 0), (ny - 1, nx - 1)]
+    def customize(self):
+        self._indices_nan.extend(self.remove_corners(self.window_size))
+        super().customize()
+
+    def remove_corners(self, ny):
+        return [(0, 0), (0, ny - 1), (ny - 1, 0), (ny - 1, ny - 1)]
+
+
+class InnerWindow(SlidingWindow):
+
+    def __init__(self, grid, window_size, inner_size, *args, **kwargs):
+        self.inner_size = inner_size
+        super().__init__(grid, window_size, *args, **kwargs)
+
+    def customize(self):
+        self._indices_nan.extend(self.inner_window(self.window_size,
+                                                   self.inner_size))
+        super().customize()
+
+    def inner_window(self, ny, inner_size):
+        # TODO, conditions
+        ratio_inner = inner_size // 2
+        center = ny // 2
+        indices = (center - ratio_inner, center + ratio_inner + 1)
+        pairs = product(range(*indices), range(*indices))
+        # Removing the center from the list to set nan
+        inner_window = ((x, y) for x, y in pairs if not x == y == center)
+        return inner_window
+
+
+class NoCenterWindow(SlidingWindow):
+
+    def __init__(self, grid, window_size, *args, **kwargs):
+        super().__init__(grid, window_size, *args, **kwargs)
+
+    def customize(self):
+        self._indices_nan.extend(self.center_index(self.window_size))
+        super().customize()
+
+    def center_index(self, ny):
+        center = ny // 2
+        return [(center, center)]
+
+
+class CombineWindows(NoCenterWindow, InnerWindow, CircularWindow):
+
+    def __init__(self, grid, window_size, inner_size):
+        super().__init__(grid=grid, window_size=window_size,
+                         inner_size=inner_size)
+
+    def customize(self):
+        super().customize()
