@@ -3,11 +3,13 @@ from itertools import product
 
 class SlidingWindow:
 
-    def __init__(self, grid, window_size, *args, **kwargs):
+    def __init__(self, grid, window_size, iter_over_ones=False, *args,
+                 **kwargs):
         self.grid = grid
         self.window_size = window_size
         self._indices_nan = []
         self.grid_nan = np.nan
+        self.iter_over_ones = iter_over_ones
 
     @property
     def grid(self):
@@ -38,15 +40,35 @@ class SlidingWindow:
 
         self.customize()
 
-        def range_grid(max_index):
-            return range(left_up, (max_index - right_down) + 1)
+        def range_grid(bound_index):
+            return range(left_up, (bound_index - right_down) + 1)
 
         for j in range_grid(ny):
             for i in range_grid(nx):
-                neighbors = self.grid[j - left_up: j + right_down,
-                            i - left_up: i + right_down]
-                neighbors = self.set_nan(neighbors)
-                yield neighbors, (j, i)
+                if not self.iter_over_ones or int(self.grid[j, i]) == 1:
+                    neighbors = self.grid[j - left_up: j + right_down,
+                                i - left_up: i + right_down]
+                    neighbors = self.set_nan(neighbors)
+                    yield neighbors, (j, i)
+
+    def __getitem__(self, coords):
+        # TODO: Poner condiciones de que valores se pueden pedir.
+        j, i = coords
+        left_up = self.window_size // 2
+        right_down = left_up + 1
+
+        if self._check_border(j, i, left_up, right_down):
+            neighbors = self.grid[j - left_up: j + right_down,
+                        i - left_up: i + right_down]
+            return neighbors
+        else:
+            raise ValueError("Center of window too much close of border.")
+
+    def _check_border(self, j, i, left_up, right_down):
+        ny, nx = self.grid.shape
+        return all(index >= left_up for index in (j, i)) and \
+               j <= (ny - right_down) + 1 and \
+               i <= (nx - right_down) + 1
 
     def customize(self):
         pass
@@ -109,7 +131,7 @@ class NoCenterWindow(SlidingWindow):
 
 class CombineWindows(NoCenterWindow, InnerWindow, CircularWindow):
 
-    def __init__(self, grid, window_size, inner_size):
+    def __init__(self, grid, *, window_size, inner_size):
         super().__init__(grid=grid, window_size=window_size,
                          inner_size=inner_size)
 

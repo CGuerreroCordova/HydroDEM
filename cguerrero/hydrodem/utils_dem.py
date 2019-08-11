@@ -23,7 +23,7 @@ from scipy.ndimage.morphology import binary_closing
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
-from .sliding_window import CircularWindow
+from .sliding_window import CircularWindow, SlidingWindow
 
 
 def array2raster(rasterfn, new_rasterfn, array):
@@ -98,7 +98,7 @@ def majority_filter(image_to_filter, window_size):
 def expand_filter(img_to_expand, window_size):
     """
     The value assigned to the center will be 1 if at least one pixel
-    inside the kernel is 1
+    inside the circular window is 1
     """
     expanded_image = np.zeros(img_to_expand.shape)
     sliding = CircularWindow(img_to_expand, window_size)
@@ -115,25 +115,42 @@ def route_rivers(dem_in, maskRivers, window_size):
     """
     dem = copy.deepcopy(dem_in)
     ny, nx = dem.shape
-    indices = np.nonzero(maskRivers > 0.0)
     rivers_enrouted = np.zeros((ny, nx))
-    right_up = window_size // 2
-    left_down = window_size // 2 + 1
-    neighbors = np.zeros((window_size, window_size))
-    for j, i in zip(indices[0], indices[1]):
-        if (left_down < i < nx - (right_up - 1) and
-                left_down < j < ny - (right_up - 1)):
-            neighbors = dem[j - (window_size - 2): j + (window_size - 1),
-                        i - (window_size - 2): i + (window_size - 1)]
-            neighbors_flat = neighbors.flatten()
-            neighbor_min = np.amin(neighbors_flat)
-            indices_min = np.nonzero(neighbors == neighbor_min)
-            for min_j, min_i in zip(indices_min[0], indices_min[1]):
-                min_j_index = j - (window_size - 2) + min_j
-                min_i_index = i - (window_size - 2) + min_i
-                rivers_enrouted[min_j_index, min_i_index] = 1
-                dem[min_j_index, min_i_index] = 10000
+    sliding = SlidingWindow(maskRivers, window_size=window_size,
+                            iter_over_ones=True)
+    dem_sliding = SlidingWindow(dem, window_size=window_size)
+    for _, (j, i) in sliding:
+        window_dem = dem_sliding[j, i]
+        neighbor_min = np.amin(window_dem.flatten())
+        indices_min = np.nonzero(window_dem == neighbor_min)
+        for min_j, min_i in zip(indices_min[0], indices_min[1]):
+            min_j_index = j - (window_size - 2) + min_j
+            min_i_index = i - (window_size - 2) + min_i
+            rivers_enrouted[min_j_index, min_i_index] = 1
+            dem_sliding.grid[min_j_index, min_i_index] = 10000
     return rivers_enrouted
+
+    # dem = copy.deepcopy(dem_in)
+    # ny, nx = dem.shape
+    # indices = np.nonzero(maskRivers > 0.0)
+    # rivers_enrouted = np.zeros((ny, nx))
+    # right_up = window_size // 2
+    # left_down = window_size // 2 + 1
+    # neighbors = np.zeros((window_size, window_size))
+    # for j, i in zip(indices[0], indices[1]):
+    #     if (left_down < i < nx - (right_up - 1) and
+    #             left_down < j < ny - (right_up - 1)):
+    #         neighbors = dem[j - (window_size - 2): j + (window_size - 1),
+    #                     i - (window_size - 2): i + (window_size - 1)]
+    #         neighbors_flat = neighbors.flatten()
+    #         neighbor_min = np.amin(neighbors_flat)
+    #         indices_min = np.nonzero(neighbors == neighbor_min)
+    #         for min_j, min_i in zip(indices_min[0], indices_min[1]):
+    #             min_j_index = j - (window_size - 2) + min_j
+    #             min_i_index = i - (window_size - 2) + min_i
+    #             rivers_enrouted[min_j_index, min_i_index] = 1
+    #             dem[min_j_index, min_i_index] = 10000
+    # return rivers_enrouted
 
 
 def quadratic_filter(z):
