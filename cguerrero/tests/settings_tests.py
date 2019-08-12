@@ -43,7 +43,7 @@ HSHEDS_INPUT_RIVER_ROUTING = os.path.join(INPUTS_FOLDER,
 MASK_INPUT_RIVER_ROUTING = os.path.join(INPUTS_FOLDER,
                                         config['INPUTS'][
                                             'MASK_RIVERS_ROUTING'])
-RIVER_ROUTING_EXPECTED = os.path.join(EXPECTED_FOLDER,
+RIVERS_ROUTED_EXPECTED = os.path.join(EXPECTED_FOLDER,
                                       config['EXPECTED']['RIVERS_ROUTED'])
 
 # Test Quadratic Filter
@@ -136,9 +136,8 @@ HSHEDS_NAN_CORRECTED = os.path.join(EXPECTED_FOLDER,
 RIVERS_AREA_INPUT = os.path.join(INPUTS_FOLDER,
                                  config['INPUTS']['RIVERS_AREA_INPUT'])
 
-RIVERS_ROUTED_CLOSING = os.path.join(EXPECTED_FOLDER,
-                                     config['EXPECTED'][
-                                         'RIVERS_ROUTED_CLOSING'])
+RIVERS_PROCESSED = os.path.join(EXPECTED_FOLDER,
+                                config['EXPECTED']['RIVERS_PROCESSED'])
 
 # Test Uncompress file
 ZIP_FILE = os.path.join(INPUTS_FOLDER, config['INPUTS']['ZIP_FILE'])

@@ -20,7 +20,7 @@ from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             MAJORITY_OUTPUT, OUTPUT_FOLDER,
                             INPUT_EXPAND, EXPAND_OUTPUT, GEO_IMAGE,
                             HSHEDS_INPUT_RIVER_ROUTING, OUTPUT_GEO_IMAGE,
-                            MASK_INPUT_RIVER_ROUTING, RIVER_ROUTING_EXPECTED,
+                            MASK_INPUT_RIVER_ROUTING, RIVERS_ROUTED_EXPECTED,
                             SRTM_INPUT_QUADRATIC, QUADRATIC_FILTER_EXPECTED,
                             HSHEDS_INPUT_NAN, HSHEDS_NAN_CORRECTED,
                             MASK_ISOLATED, MASK_ISOLATED_FILTERED,
@@ -35,7 +35,7 @@ from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             SHAPE_AREA_OVER_CREATED, OUTPUT_FOLDER,
                             HYDRO_SHEDS, ZIP_FILE, SRTM_UNCOMPRESSED,
                             LAGOONS_DETECTED, RIVERS_VECTOR, RIVERS_CLIPPED,
-                            RIVERS_AREA, MASK_LAGOONS, RIVERS_ROUTED_CLOSING,
+                            RIVERS_AREA, MASK_LAGOONS, RIVERS_PROCESSED,
                             INPUTS_FOLDER, EXPECTED_FOLDER, RIVERS_AREA_INPUT)
 
 class Test_filter(TestCase):
@@ -95,9 +95,10 @@ class Test_filter(TestCase):
     def test_route_rivers(self):
         hsheds_input = gdal.Open(HSHEDS_INPUT_RIVER_ROUTING).ReadAsArray()
         mask_rivers = gdal.Open(MASK_INPUT_RIVER_ROUTING).ReadAsArray()
-        result_route_rivers = route_rivers(hsheds_input, mask_rivers, 3)
-        expected_routing = gdal.Open(RIVER_ROUTING_EXPECTED).ReadAsArray()
-        testing.assert_array_equal(result_route_rivers, expected_routing)
+        rivers_routed = route_rivers(hsheds_input, mask_rivers, 3)
+        rivers_routed_expected = gdal.Open(
+            RIVERS_ROUTED_EXPECTED).ReadAsArray()
+        testing.assert_array_equal(rivers_routed, rivers_routed_expected)
 
     def test_quadratic_filter(self):
         quadratic_filter_input = gdal.Open(SRTM_INPUT_QUADRATIC).ReadAsArray()
@@ -178,15 +179,13 @@ class Test_filter(TestCase):
     def test_process_rivers(self):
         hsheds_nan_corrected = gdal.Open(HSHEDS_NAN_CORRECTED).ReadAsArray()
         mask_lagoons = gdal.Open(MASK_LAGOONS).ReadAsArray()
-        rivers_routed_closing = process_rivers(hsheds_nan_corrected,
-                                               mask_lagoons, RIVERS_AREA_INPUT)
-        rivers_routed_closing_expected = \
-            gdal.Open(RIVERS_ROUTED_CLOSING).ReadAsArray()
-        testing.assert_array_equal(rivers_routed_closing,
-                                   rivers_routed_closing_expected)
+        rivers_processed = process_rivers(hsheds_nan_corrected, mask_lagoons,
+                                          RIVERS_AREA_INPUT)
+        rivers_processed_expected = \
+            gdal.Open(RIVERS_PROCESSED).ReadAsArray()
+        testing.assert_array_equal(rivers_processed, rivers_processed_expected)
 
     def test_uncompress_zip_file(self):
         uncompress_zip_file(ZIP_FILE)
         self.assertTrue(filecmp.cmp(SRTM_UNCOMPRESSED,
                                     SRTM_UNCOMPRESS_EXPECTED))
-
