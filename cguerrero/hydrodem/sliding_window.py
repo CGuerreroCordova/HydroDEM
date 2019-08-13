@@ -57,9 +57,11 @@ class SlidingWindow:
         left_up = self.window_size // 2
         right_down = left_up + 1
 
+        self.customize()
         if self._check_border(j, i, left_up, right_down):
             neighbors = self.grid[j - left_up: j + right_down,
                         i - left_up: i + right_down]
+            neighbors = self.set_nan(neighbors)
             return neighbors
         else:
             raise ValueError("Center of window too much close of border.")

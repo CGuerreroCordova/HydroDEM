@@ -23,7 +23,7 @@ from scipy.ndimage.morphology import binary_closing
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
-from .sliding_window import CircularWindow, SlidingWindow
+from .sliding_window import CircularWindow, SlidingWindow, NoCenterWindow
 
 
 def array2raster(rasterfn, new_rasterfn, array):
@@ -158,23 +158,14 @@ def correct_nan_values(dem):
     """
     Correct values lower than zero, generally with extremely lowest values.
     """
-    ny, nx = dem.shape
-    indices = np.nonzero(dem < 0.0)
-    dem_corrected_nan = dem.copy()
-    for j, i in zip(indices[0], indices[1]):
-        if 0 < i < nx - 1 and 0 < j < ny - 1:
-            neighbors = dem[j - 1, i - 1: i + 2].flatten().tolist() \
-                        + dem[j + 1, i - 1: i + 2].flatten().tolist() \
-                        + [dem[j, i - 1]] + [dem[j, i + 1]]
-            neighbors_array = np.array(neighbors)
-            greater_than_zero = (neighbors_array > 0) * 1
-            c = Counter(greater_than_zero.flatten())
-            value, count = c.most_common()[0]
-            n = ((value == 0) * 1)
-            sum_neighbors = sum(neighbors * np.absolute(n - greater_than_zero))
-            mean_neighbors = sum_neighbors / count
-            dem_corrected_nan[j, i] = mean_neighbors
-    return dem_corrected_nan
+    mask_nan = (dem < 0.0) * 1
+    dem_sliding = NoCenterWindow(dem, window_size=3)
+    sliding_nans = SlidingWindow(mask_nan, window_size=3, iter_over_ones=True)
+    for _, center in sliding_nans:
+        neighbors_of_nan = dem_sliding[center].flatten().tolist()
+        neighbors_positives = list(filter(lambda x: x >= 0, neighbors_of_nan))
+        dem[center] = sum(neighbors_positives) / len(neighbors_positives)
+    return dem
 
 
 def filter_isolated_pixels(image_to_filter, window_size):
@@ -197,9 +188,6 @@ def filter_isolated_pixels(image_to_filter, window_size):
                 right_neighbors = image_to_filter[j, i - right_up: i - margin]
                 left_neighbors = image_to_filter[j,
                                  i + 1 + margin: i + left_down]
-                # neighbors = np.concatenate((above_neighbors, below_neighbors,
-                #                            right_neighbors, left_neighbors))
-                # neighbors = neighbors.flatten().tolist()
                 neighbors = above_neighbors.flatten().tolist() + \
                             below_neighbors.flatten().tolist() + \
                             right_neighbors.flatten().tolist() + \
