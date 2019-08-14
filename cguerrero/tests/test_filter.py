@@ -36,7 +36,8 @@ from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             HYDRO_SHEDS, ZIP_FILE, SRTM_UNCOMPRESSED,
                             LAGOONS_DETECTED, RIVERS_VECTOR, RIVERS_CLIPPED,
                             RIVERS_AREA, MASK_LAGOONS, RIVERS_PROCESSED,
-                            INPUTS_FOLDER, EXPECTED_FOLDER, RIVERS_AREA_INPUT)
+                            INPUTS_FOLDER, EXPECTED_FOLDER, RIVERS_AREA_INPUT,
+                            SRTM_PROCESSED_OUTPUT)
 
 class Test_filter(TestCase):
 
@@ -60,6 +61,7 @@ class Test_filter(TestCase):
         os.removedirs(INPUTS_FOLDER)
         os.removedirs(EXPECTED_FOLDER)
         os.removedirs(OUTPUT_FOLDER)
+        # pass
 
 
     def test_array2raster(self):
@@ -120,6 +122,7 @@ class Test_filter(TestCase):
         mask_isolated_input = gdal.Open(MASK_ISOLATED).ReadAsArray()
         isolated_points_filtered = filter_isolated_pixels(mask_isolated_input,
                                                           3)
+        # array2raster_simple('isolated_filter_output.tif', isolated_points_filtered)
         expected_isolated_points = \
             gdal.Open(MASK_ISOLATED_FILTERED).ReadAsArray()
         testing.assert_array_equal(isolated_points_filtered,
@@ -148,9 +151,12 @@ class Test_filter(TestCase):
 
     def test_process_srtm(self):
         srtm_to_process = gdal.Open(SRTM_WITHOUT_STRIPS).ReadAsArray()
-        srtm_processed = np.around(process_srtm(srtm_to_process, MASK_TREES))
+        srtm_processed = process_srtm(srtm_to_process, MASK_TREES)
+        array2raster_simple(SRTM_PROCESSED_OUTPUT, srtm_processed)
+        srtm_processed_saved = \
+            np.around(gdal.Open(SRTM_PROCESSED_OUTPUT).ReadAsArray())
         srtm_expected = np.around(gdal.Open(SRTM_PROCESSED).ReadAsArray())
-        testing.assert_array_equal(srtm_processed, srtm_expected)
+        testing.assert_array_equal(srtm_processed_saved, srtm_expected)
 
     def test_resample_and_cut(self):
         resample_and_cut(HSHEDS_FILE_TIFF, SHAPE_AREA_INTEREST_OVER,

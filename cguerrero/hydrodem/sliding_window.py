@@ -46,10 +46,10 @@ class SlidingWindow:
         for j in range_grid(ny):
             for i in range_grid(nx):
                 if not self.iter_over_ones or int(self.grid[j, i]) == 1:
-                    neighbors = self.grid[j - left_up: j + right_down,
+                    neighbour = self.grid[j - left_up: j + right_down,
                                 i - left_up: i + right_down]
-                    neighbors = self.set_nan(neighbors)
-                    yield neighbors, (j, i)
+                    neighbour = self.set_nan(neighbour)
+                    yield neighbour, (j, i)
 
     def __getitem__(self, coords):
         # TODO: Poner condiciones de que valores se pueden pedir.
@@ -59,10 +59,10 @@ class SlidingWindow:
 
         self.customize()
         if self._check_border(j, i, left_up, right_down):
-            neighbors = self.grid[j - left_up: j + right_down,
+            neighbour = self.grid[j - left_up: j + right_down,
                         i - left_up: i + right_down]
-            neighbors = self.set_nan(neighbors)
-            return neighbors
+            neighbour = self.set_nan(neighbour)
+            return neighbour
         else:
             raise ValueError("Center of window too much close of border.")
 
@@ -75,8 +75,8 @@ class SlidingWindow:
     def customize(self):
         pass
 
-    def set_nan(self, neighbors):
-        cp_window = neighbors.copy()
+    def set_nan(self, neighbour):
+        cp_window = neighbour.copy()
         for index in self._indices_nan:
             cp_window[index] = self.grid_nan
         return cp_window

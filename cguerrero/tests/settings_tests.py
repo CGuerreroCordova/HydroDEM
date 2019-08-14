@@ -89,6 +89,10 @@ SRTM_CORRECTED = os.path.join(OUTPUT_FOLDER,
                               config['OUTPUTS']['SRTM_CORRECTED'])
 # Test Process SRTM
 MASK_TREES = os.path.join(INPUTS_FOLDER, config['INPUTS']['TREE_MASK'])
+
+SRTM_PROCESSED_OUTPUT = os.path.join(OUTPUT_FOLDER,
+                                     config['OUTPUTS']['SRTM_PROCESSED_OUT'])
+
 SRTM_PROCESSED = os.path.join(EXPECTED_FOLDER,
                               config['EXPECTED']['SRTM_PROCESSED'])
 

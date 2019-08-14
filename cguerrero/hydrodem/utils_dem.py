@@ -120,8 +120,8 @@ def route_rivers(dem_in, maskRivers, window_size):
     dem_sliding = SlidingWindow(dem, window_size=window_size)
     for _, (j, i) in sliding:
         window_dem = dem_sliding[j, i]
-        neighbor_min = np.amin(window_dem.flatten())
-        indices_min = np.nonzero(window_dem == neighbor_min)
+        neighbour_min = np.amin(window_dem.flatten())
+        indices_min = np.nonzero(window_dem == neighbour_min)
         for min_j, min_i in zip(indices_min[0], indices_min[1]):
             indices = (j - left_up + min_j, i - left_up + min_i)
             rivers_enrouted[indices] = 1
@@ -159,12 +159,13 @@ def correct_nan_values(dem):
     Correct values lower than zero, generally with extremely lowest values.
     """
     mask_nan = (dem < 0.0) * 1
-    dem_sliding = NoCenterWindow(dem, window_size=3)
     sliding_nans = SlidingWindow(mask_nan, window_size=3, iter_over_ones=True)
+    dem_sliding = NoCenterWindow(dem, window_size=3)
     for _, center in sliding_nans:
-        neighbors_of_nan = dem_sliding[center].flatten().tolist()
-        neighbors_positives = list(filter(lambda x: x >= 0, neighbors_of_nan))
-        dem[center] = sum(neighbors_positives) / len(neighbors_positives)
+        neighbours_of_nan = dem_sliding[center].flatten().tolist()
+        neighbours_positives = list(
+            filter(lambda x: x >= 0, neighbours_of_nan))
+        dem[center] = sum(neighbours_positives) / len(neighbours_positives)
     return dem
 
 
@@ -172,30 +173,11 @@ def filter_isolated_pixels(image_to_filter, window_size):
     """
     Remove isolated pixels detected to be part of a mask.
     """
-    ny, nx = image_to_filter.shape
-    filtered_image = np.zeros((ny, nx))
-    right_up = window_size // 2
-    left_down = window_size // 2 + 1
-    margin = 0
-    for j in range(right_up, ny - left_down):
-        for i in range(left_down, nx - right_up):
-            if image_to_filter[j, i] == 1:
-                above_neighbors = image_to_filter[j - right_up:j - margin,
-                                  i - right_up: i + left_down]
-                below_neighbors = image_to_filter[
-                                  j + 1 + margin: j + left_down,
-                                  i - right_up: i + left_down]
-                right_neighbors = image_to_filter[j, i - right_up: i - margin]
-                left_neighbors = image_to_filter[j,
-                                 i + 1 + margin: i + left_down]
-                neighbors = above_neighbors.flatten().tolist() + \
-                            below_neighbors.flatten().tolist() + \
-                            right_neighbors.flatten().tolist() + \
-                            left_neighbors.flatten().tolist()
-                sum_neighbors = sum(neighbors)
-                filtered_image[j, i] = (sum_neighbors > 0) * 1
-    return filtered_image
-
+    sliding = NoCenterWindow(image_to_filter, window_size=window_size,
+                             iter_over_ones=True)
+    for window, center in sliding:
+        image_to_filter[center] = 1. if np.any(window > 0) else 0.
+    return image_to_filter
 
 def filter_blanks(image_to_filter, window_size):
     """
