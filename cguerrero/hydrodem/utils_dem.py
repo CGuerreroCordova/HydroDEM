@@ -23,7 +23,8 @@ from scipy.ndimage.morphology import binary_closing
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
-from .sliding_window import CircularWindow, SlidingWindow, NoCenterWindow
+from .sliding_window import (CircularWindow, SlidingWindow, NoCenterWindow,
+                             IgnoreBorderInnerSliding)
 
 
 def array2raster(rasterfn, new_rasterfn, array):
@@ -163,8 +164,8 @@ def correct_nan_values(dem):
     dem_sliding = NoCenterWindow(dem, window_size=3)
     for _, center in sliding_nans:
         neighbours_of_nan = dem_sliding[center].flatten().tolist()
-        neighbours_positives = list(
-            filter(lambda x: x >= 0, neighbours_of_nan))
+        neighbours_positives = \
+            list(filter(lambda x: x >= 0, neighbours_of_nan))
         dem[center] = sum(neighbours_positives) / len(neighbours_positives)
     return dem
 
@@ -183,46 +184,19 @@ def filter_blanks(image_to_filter, window_size):
     """
     Define the filter to detect blanks in a fourier transform image.
     """
-    ny, nx = image_to_filter.shape
-    filtered_image = np.zeros((ny, nx))
-    right_up = window_size // 2
-    left_down = window_size // 2 + 1
-    margin = 5
-    for j in range(0, ny):
-        for i in range(0, nx):
-            if j < right_up:
-                above_neighbors = image_to_filter[:j,
-                                  i - right_up:i + left_down]
-            else:
-                above_neighbors = image_to_filter[j - right_up:j - margin,
-                                  i - right_up:i + left_down]
-            if j > (ny - left_down):
-                below_neighbors = image_to_filter[j + 1: ny,
-                                  i - right_up:i + left_down]
-            else:
-                below_neighbors = image_to_filter[j + 1 + margin:j + left_down,
-                                  i - right_up:i + left_down]
-            if i > (nx - right_up):
-                right_neighbors = image_to_filter[j, i + 1:nx]
-            else:
-                right_neighbors = image_to_filter[j,
-                                  i + 1 + margin:i + left_down]
-            if i < right_up:
-                left_neighbors = image_to_filter[j, :i]
-            else:
-                left_neighbors = image_to_filter[j, i - right_up:i - margin]
-            neighbors = above_neighbors.flatten().tolist() + \
-                        below_neighbors.flatten().tolist() + \
-                        right_neighbors.flatten().tolist() + \
-                        left_neighbors.flatten().tolist()
-            mean_neighbor = sum(neighbors) / len(neighbors)
-            if image_to_filter[j, i] > (4 * mean_neighbor):
-                filtered_image[j, i] = mean_neighbor
-    mask_not_filtered = (filtered_image == 0) * 1.0
-    mask_filtered = 1 - mask_not_filtered
-    image_modified = image_to_filter * mask_not_filtered
-    return mask_filtered, image_modified
 
+    filtered_image = np.zeros(image_to_filter.shape)
+    fourier_transform = IgnoreBorderInnerSliding(image_to_filter,
+                                                 window_size=window_size,
+                                                 inner_size=5)
+    for window, center in fourier_transform:
+        mean_neighbor = np.nanmean(window)
+        real_center = center[0] - window_size // 2, \
+                      center[1] - window_size // 2,
+        if image_to_filter[real_center] > (4 * mean_neighbor):
+            filtered_image[real_center] = 1.0
+    image_modified = image_to_filter * (1 - filtered_image)
+    return filtered_image, image_modified
 
 def get_mask_fourier(quarter_fourier):
     """
@@ -249,6 +223,7 @@ def detect_apply_fourier(image_to_correct):
     """
     Detect blanks in Fourier transform image, create mask and apply fourier.
     """
+    # TODO: Aca se abre el archivo dentro de la funcion, ver si hacerlo fuera
     image_to_correct_array = gdal.Open(image_to_correct).ReadAsArray()
     fourier_transform = fftpack.fft2(image_to_correct_array)
     fourier_transform_shifted = fftpack.fftshift(fourier_transform)

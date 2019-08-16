@@ -59,10 +59,10 @@ class SlidingWindow:
 
         self.customize()
         if self._check_border(j, i, left_up, right_down):
-            neighbour = self.grid[j - left_up: j + right_down,
-                        i - left_up: i + right_down]
-            neighbour = self.set_nan(neighbour)
-            return neighbour
+            neighbours = self.grid[j - left_up: j + right_down,
+                         i - left_up: i + right_down]
+            neighbours = self.set_nan(neighbours)
+            return neighbours
         else:
             raise ValueError("Center of window too much close of border.")
 
@@ -75,12 +75,29 @@ class SlidingWindow:
     def customize(self):
         pass
 
-    def set_nan(self, neighbour):
-        cp_window = neighbour.copy()
+    def set_nan(self, neighbours):
+        cp_window = neighbours.copy()
         for index in self._indices_nan:
             cp_window[index] = self.grid_nan
         return cp_window
 
+
+class SlidingIgnoreBorder(SlidingWindow):
+
+    def __init__(self, grid, window_size, *args, **kwargs):
+        super().__init__(grid, window_size, *args, **kwargs)
+        self.grid = self._add_extra_margin()
+
+    def _add_extra_margin(self):
+        ny, nx = self.grid.shape
+        ny = ny + self.window_size - 1
+        nx = nx + self.window_size - 1
+        middle = self.window_size // 2
+        grid_expanded = np.empty((ny, nx))
+        grid_expanded[:] = np.nan
+        grid_expanded[middle:ny - middle, middle:nx - middle] = \
+            self.grid.astype('float32')
+        return grid_expanded
 
 class CircularWindow(SlidingWindow):
 
@@ -139,3 +156,10 @@ class CombineWindows(NoCenterWindow, InnerWindow, CircularWindow):
 
     def customize(self):
         super().customize()
+
+
+class IgnoreBorderInnerSliding(SlidingIgnoreBorder, InnerWindow,
+                               NoCenterWindow):
+    def __init__(self, grid, *, window_size, inner_size):
+        super().__init__(grid=grid, window_size=window_size,
+                         inner_size=inner_size)
