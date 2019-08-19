@@ -72,27 +72,13 @@ def majority_filter(image_to_filter, window_size):
     The value assigned to the center will be the most frequent value,
     contained in a windows of window_size x window_size
     """
-    ny, nx = image_to_filter.shape
-    filtered_image = np.zeros((ny, nx))
-    right_up = window_size // 2
-    left_down = window_size // 2 + 1
-    for j in range(right_up, ny - left_down):
-        for i in range(left_down, nx - right_up):
-            vertical_kernel = image_to_filter[
-                              j - right_up: j + left_down,
-                              i - (right_up - 1): i + (left_down - 1)
-                              ]
-            horizontal_kernel = image_to_filter[
-                                j - (right_up - 1): j + (
-                                        left_down - 1),
-                                i - right_up: i + left_down
-                                ]
-            kernel = vertical_kernel.flatten() + horizontal_kernel.flatten()
-            c = Counter(kernel)
-            value, count = c.most_common()[0]
-            if count >= (((window_size * window_size) - 1) / 2):
-                filtered_image[j, i] = value / 2
-
+    filtered_image = np.zeros(image_to_filter.shape)
+    sliding = CircularWindow(image_to_filter, window_size)
+    for window, center in sliding:
+        frequency = Counter(window.ravel())
+        value, count = frequency.most_common()[0]
+        if count > (window_size ** 2 - 1) * 0.7:
+            filtered_image[center] = value
     return filtered_image
 
 
@@ -104,7 +90,7 @@ def expand_filter(img_to_expand, window_size):
     expanded_image = np.zeros(img_to_expand.shape)
     sliding = CircularWindow(img_to_expand, window_size)
     for window, center in sliding:
-        if any((window > 0).flatten()):
+        if any((window > 0).ravel()):
             expanded_image[center] = 1
     return expanded_image
 
@@ -121,7 +107,7 @@ def route_rivers(dem_in, maskRivers, window_size):
     dem_sliding = SlidingWindow(dem, window_size=window_size)
     for _, (j, i) in sliding:
         window_dem = dem_sliding[j, i]
-        neighbour_min = np.amin(window_dem.flatten())
+        neighbour_min = np.amin(window_dem.ravel())
         indices_min = np.nonzero(window_dem == neighbour_min)
         for min_j, min_i in zip(indices_min[0], indices_min[1]):
             indices = (j - left_up + min_j, i - left_up + min_i)
@@ -163,7 +149,7 @@ def correct_nan_values(dem):
     sliding_nans = SlidingWindow(mask_nan, window_size=3, iter_over_ones=True)
     dem_sliding = NoCenterWindow(dem, window_size=3)
     for _, center in sliding_nans:
-        neighbours_of_nan = dem_sliding[center].flatten().tolist()
+        neighbours_of_nan = dem_sliding[center].ravel()
         neighbours_positives = \
             list(filter(lambda x: x >= 0, neighbours_of_nan))
         dem[center] = sum(neighbours_positives) / len(neighbours_positives)
@@ -422,7 +408,7 @@ def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
     mask_canyons_array = (river_array > 0) * 1
     mask_canyons_expanded3 = expand_filter(mask_canyons_array, 3)
     rivers_routed = route_rivers(hsheds_area_interest, mask_canyons_expanded3,
-                                 3)
+                                 7)
     rivers_routed_closing = binary_closing(rivers_routed)
     intersection_lag_can = rivers_routed_closing * hsheds_mask_lagoons
     intersection_lag_can_mask = (intersection_lag_can > 0) * 1
