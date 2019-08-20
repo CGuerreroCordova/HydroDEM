@@ -116,30 +116,28 @@ def route_rivers(dem_in, maskRivers, window_size):
     return rivers_enrouted
 
 
-def quadratic_filter(z):
+def quadratic_filter(dem, window_size):
     """
     Smoothness filter: Apply a quadratic filter of smoothness
-    :param z: dem image
+    :param dem: dem image
     """
-    n = 15
-    xx, yy = np.meshgrid(np.linspace(-n / 2 + 1, n / 2, n),
-                         np.linspace(-n / 2 + 1, n / 2, n))
-    r0 = n ** 2
+    values = np.linspace(-window_size / 2 + 1, window_size / 2, window_size)
+    xx, yy = np.meshgrid(values, values)
+    r0 = window_size ** 2
     r1 = (xx * xx).sum()
     r2 = (xx * xx * xx * xx).sum()
     r3 = (xx * xx * yy * yy).sum()
-    ny, nx = z.shape
-    zp = z.copy()
-    for i in range(n // 2, nx - n // 2):
-        for j in range(n // 2, ny - n // 2):
-            z_aux = z[j - n // 2:j + n // 2 + 1, i - n // 2:i + n // 2 + 1]
-            s1 = z_aux.sum()
-            s2 = (z_aux * xx * xx).sum()
-            s3 = (z_aux * yy * yy).sum()
-            zp[j, i] = ((s2 + s3) * r1 - s1 * (r2 + r3)) / (
-                    2 * r1 ** 2 - r0 * (r2 + r3))
-    dem_quadratic = zp
-    return dem_quadratic
+
+    dem_sliding = SlidingWindow(dem, window_size=window_size)
+    smoothed = dem.copy()
+
+    for window, center in dem_sliding:
+        s1 = window.sum()
+        s2 = (window * xx * xx).sum()
+        s3 = (window * yy * yy).sum()
+        smoothed[center] = ((s2 + s3) * r1 - s1 * (r2 + r3)) / \
+                           (2 * r1 ** 2 - r0 * (r2 + r3))
+    return smoothed
 
 def correct_nan_values(dem):
     """

@@ -105,7 +105,7 @@ class Test_filter(TestCase):
     def test_quadratic_filter(self):
         quadratic_filter_input = gdal.Open(SRTM_INPUT_QUADRATIC).ReadAsArray()
         result_quadratic_filter = np.around(
-            quadratic_filter(quadratic_filter_input))
+            quadratic_filter(quadratic_filter_input, 15))
         expected_quadratic = np.around(
             gdal.Open(QUADRATIC_FILTER_EXPECTED).ReadAsArray())
         testing.assert_array_equal(result_quadratic_filter, expected_quadratic)
