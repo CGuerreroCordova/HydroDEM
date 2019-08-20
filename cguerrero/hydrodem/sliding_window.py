@@ -1,5 +1,7 @@
 import numpy as np
 from itertools import product
+from .exceptions import (WindowSizeHighError, WindowSizeEvenError,
+                         CenterCloseBorderError, NumpyArrayExpectedError)
 
 class SlidingWindow:
 
@@ -18,7 +20,7 @@ class SlidingWindow:
     @grid.setter
     def grid(self, value):
         if not isinstance(value, np.ndarray):
-            raise TypeError("Expected numpy ndarray")
+            raise NumpyArrayExpectedError(value)
         self._grid = value.astype('float32')
 
     @property
@@ -28,9 +30,9 @@ class SlidingWindow:
     @window_size.setter
     def window_size(self, value):
         if value > self.grid.shape[0] or value > self.grid.shape[1]:
-            raise ValueError("Window size must be lower than grid dimension")
+            raise WindowSizeHighError(value, self.grid.shape)
         elif value % 2 != 1:
-            raise ValueError("Window size must be odd.")
+            raise WindowSizeEvenError(value)
         self._window_size = int(value)
 
     def __iter__(self):
@@ -52,7 +54,6 @@ class SlidingWindow:
                     yield neighbour, (j, i)
 
     def __getitem__(self, coords):
-        # TODO: Poner condiciones de que valores se pueden pedir.
         j, i = coords
         left_up = self.window_size // 2
         right_down = left_up + 1
@@ -64,7 +65,7 @@ class SlidingWindow:
             neighbours = self.set_nan(neighbours)
             return neighbours
         else:
-            raise ValueError("Center of window too much close of border.")
+            raise CenterCloseBorderError(coords, window_size=self.window_size)
 
     def _check_border(self, j, i, left_up, right_down):
         ny, nx = self.grid.shape

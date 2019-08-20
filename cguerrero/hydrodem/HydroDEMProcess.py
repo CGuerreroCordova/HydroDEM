@@ -83,6 +83,7 @@ class HydroDEMProcess(object):
         hydro_sheds_corrected_nan = correct_nan_values(hydro_sheds)
         print("Processing HSHEDS: Getting Lagoons.")
         hsheds_mask_lagoons_values = get_lagoons_hsheds(hydro_sheds)
+        array2raster_simple('lagoons_expected.tif', hsheds_mask_lagoons_values)
         hsheds_mask_lagoons = (hsheds_mask_lagoons_values > 0.0) * 1
         print("Processing Rivers.")
         uncompress_zip_file(RIVERS_ZIP)

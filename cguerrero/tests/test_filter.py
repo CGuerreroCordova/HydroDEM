@@ -17,7 +17,7 @@ from cguerrero.hydrodem.utils_dem import (majority_filter, expand_filter,
                                           clip_lines_vector,
                                           process_rivers, uncompress_zip_file)
 from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
-                            MAJORITY_OUTPUT, OUTPUT_FOLDER,
+                            MAJORITY_FILTER, OUTPUT_FOLDER,
                             INPUT_EXPAND, EXPAND_OUTPUT, GEO_IMAGE,
                             HSHEDS_INPUT_RIVER_ROUTING, OUTPUT_GEO_IMAGE,
                             MASK_INPUT_RIVER_ROUTING, RIVERS_ROUTED_EXPECTED,
@@ -85,7 +85,7 @@ class Test_filter(TestCase):
     def test_majority_filter(self):
         hsheds_input = gdal.Open(HSHEDS_INPUT_MAJORITY).ReadAsArray()
         result_majority_filter = majority_filter(hsheds_input, 11)
-        expected_majority = gdal.Open(MAJORITY_OUTPUT).ReadAsArray()
+        expected_majority = gdal.Open(MAJORITY_FILTER).ReadAsArray()
         testing.assert_array_equal(result_majority_filter, expected_majority)
 
     def test_expand_filter(self):

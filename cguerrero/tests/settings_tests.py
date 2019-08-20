@@ -28,7 +28,7 @@ OUTPUT_GEO_IMAGE = os.path.join(INPUTS_FOLDER,
 # Test Majority Filter
 HSHEDS_INPUT_MAJORITY = os.path.join(INPUTS_FOLDER,
                                      config['INPUTS']['HSHEDS_MAJORITY'])
-MAJORITY_OUTPUT = os.path.join(EXPECTED_FOLDER,
+MAJORITY_FILTER = os.path.join(EXPECTED_FOLDER,
                                config['EXPECTED']['MAJORITY_FILTER'])
 
 # Test Expand Filter

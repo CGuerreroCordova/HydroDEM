@@ -259,7 +259,7 @@ def process_srtm(srtm_fourier, tree_class_file):
     """
     Perform the processing corresponding to SRTM file.
     """
-    srtm_fourier_sua = quadratic_filter(srtm_fourier)
+    srtm_fourier_sua = quadratic_filter(srtm_fourier, 15)
     dem_highlighted = srtm_fourier - srtm_fourier_sua
     mask_height_greater_than_15_mt = (dem_highlighted > 1.5) * 1.0
     # TODO: Uniformizar, input, uno entrada otro path
@@ -406,7 +406,7 @@ def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
     mask_canyons_array = (river_array > 0) * 1
     mask_canyons_expanded3 = expand_filter(mask_canyons_array, 3)
     rivers_routed = route_rivers(hsheds_area_interest, mask_canyons_expanded3,
-                                 7)
+                                 3)
     rivers_routed_closing = binary_closing(rivers_routed)
     intersection_lag_can = rivers_routed_closing * hsheds_mask_lagoons
     intersection_lag_can_mask = (intersection_lag_can > 0) * 1
