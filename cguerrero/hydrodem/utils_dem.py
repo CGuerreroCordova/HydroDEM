@@ -90,7 +90,7 @@ def expand_filter(img_to_expand, window_size):
     expanded_image = np.zeros(img_to_expand.shape)
     sliding = CircularWindow(img_to_expand, window_size)
     for window, center in sliding:
-        if any((window > 0).ravel()):
+        if np.any(window > 0):
             expanded_image[center] = 1
     return expanded_image
 

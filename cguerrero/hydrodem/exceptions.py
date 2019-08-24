@@ -29,7 +29,7 @@ class WindowSizeHighError(HydroDEMException):
 
     def __init__(self, window_size, grid_dimensions=""):
         super().__init__(msg=f'Window size: {window_size} cannot be higher'
-                             f'than grid dimensions: {grid_dimensions}')
+                             f' than grid dimensions: {grid_dimensions}')
 
 
 class WindowSizeEvenError(HydroDEMException):
@@ -54,6 +54,16 @@ class CenterCloseBorderError(HydroDEMException):
 
 
 class NumpyArrayExpectedError(HydroDEMException):
+    """
+    Raise when a non numpy.ndarray element is provided
+    """
+
+    def __init__(self, provided):
+        super().__init__(msg=f'Expected numpy ndarray type. Provided: '
+                             f'{type(provided)}')
+
+
+class InnerSizeError(HydroDEMException):
     """
     Raise when a non numpy.ndarray element is provided
     """
