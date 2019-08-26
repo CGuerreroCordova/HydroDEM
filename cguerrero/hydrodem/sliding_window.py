@@ -27,6 +27,66 @@ class SlidingWindow:
         Allow to customize the sliding window returned defining indices to set
         as np.nan. For this class no one element in the window will be set as
         nan.
+
+    Notes
+    -----
+    The user must know that the values of the sliding window can have nan
+    values (due to customising), so it is his duty to take them into account
+    when using this subclass.
+
+    Examples
+    --------
+    Using iter and next (not usual)
+    >>> import numpy as np
+    >>> from sliding_window import SlidingWindow
+    >>> grid = np.arange(25).reshape((5, 5))
+    >>> grid
+    array([[ 0,  1,  2,  3,  4],
+           [ 5,  6,  7,  8,  9],
+           [10, 11, 12, 13, 14],
+           [15, 16, 17, 18, 19],
+           [20, 21, 22, 23, 24]])
+    >>> sliding = SlidingWindow(grid, window_size=3)
+    >>> i = iter(sliding)
+    >>> next(i)
+    (array([[ 0.,  1.,  2.],
+           [ 5.,  6.,  7.],
+           [10., 11., 12.]], dtype=float32), (1, 1))
+    >>> next(i)
+    (array([[ 1.,  2.,  3.],
+           [ 6.,  7.,  8.],
+           [11., 12., 13.]], dtype=float32), (1, 2))
+    >>> next(i)
+    (array([[ 2.,  3.,  4.],
+           [ 7.,  8.,  9.],
+           [12., 13., 14.]], dtype=float32), (1, 3))
+    >>> next(i)
+    (array([[ 5.,  6.,  7.],
+           [10., 11., 12.],
+           [15., 16., 17.]], dtype=float32), (2, 1))
+
+    Using "for, in"
+    >>> grid_2 = np.arange(16).reshape((4, 4))
+    >>> grid_2
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11],
+           [12, 13, 14, 15]])
+    >>> sliding_2 = SlidingWindow(grid_2, window_size=3)
+    >>> for window in sliding_2:
+    ...     print(window)
+    (array([[ 0.,  1.,  2.],
+           [ 4.,  5.,  6.],
+           [ 8.,  9., 10.]], dtype=float32), (1, 1))
+    (array([[ 1.,  2.,  3.],
+           [ 5.,  6.,  7.],
+           [ 9., 10., 11.]], dtype=float32), (1, 2))
+    (array([[ 4.,  5.,  6.],
+           [ 8.,  9., 10.],
+           [12., 13., 14.]], dtype=float32), (2, 1))
+    (array([[ 5.,  6.,  7.],
+           [ 9., 10., 11.],
+           [13., 14., 15.]], dtype=float32), (2, 2))
     """
 
     def __init__(self, grid, window_size, iter_over_ones=False):
@@ -111,61 +171,6 @@ class SlidingWindow:
         -----
         Are presented two examples. One of them using 'iter' and 'next', and
         the other one using 'for, in'
-
-        Examples
-        --------
-        Using iter and next (not usual)
-        >>> import numpy as np
-        >>> from sliding_window import SlidingWindow
-        >>> grid = np.arange(25).reshape((5, 5))
-        >>> grid
-        array([[ 0,  1,  2,  3,  4],
-               [ 5,  6,  7,  8,  9],
-               [10, 11, 12, 13, 14],
-               [15, 16, 17, 18, 19],
-               [20, 21, 22, 23, 24]])
-        >>> sliding = SlidingWindow(grid, window_size=3)
-        >>> i = iter(sliding)
-        >>> next(i)
-        (array([[ 0.,  1.,  2.],
-               [ 5.,  6.,  7.],
-               [10., 11., 12.]], dtype=float32), (1, 1))
-        >>> next(i)
-        (array([[ 1.,  2.,  3.],
-               [ 6.,  7.,  8.],
-               [11., 12., 13.]], dtype=float32), (1, 2))
-        >>> next(i)
-        (array([[ 2.,  3.,  4.],
-               [ 7.,  8.,  9.],
-               [12., 13., 14.]], dtype=float32), (1, 3))
-        >>> next(i)
-        (array([[ 5.,  6.,  7.],
-               [10., 11., 12.],
-               [15., 16., 17.]], dtype=float32), (2, 1))
-
-        Example using "for, in"
-
-        >>> grid_2 = np.arange(16).reshape((4, 4))
-        >>> grid_2
-        array([[ 0,  1,  2,  3],
-               [ 4,  5,  6,  7],
-               [ 8,  9, 10, 11],
-               [12, 13, 14, 15]])
-        >>> sliding_2 = SlidingWindow(grid_2, window_size=3)
-        >>> for window in sliding_2:
-        ...     print(window)
-        (array([[ 0.,  1.,  2.],
-               [ 4.,  5.,  6.],
-               [ 8.,  9., 10.]], dtype=float32), (1, 1))
-        (array([[ 1.,  2.,  3.],
-               [ 5.,  6.,  7.],
-               [ 9., 10., 11.]], dtype=float32), (1, 2))
-        (array([[ 4.,  5.,  6.],
-               [ 8.,  9., 10.],
-               [12., 13., 14.]], dtype=float32), (2, 1))
-        (array([[ 5.,  6.,  7.],
-               [ 9., 10., 11.],
-               [13., 14., 15.]], dtype=float32), (2, 2))
         """
         ny, nx = self.grid.shape
         left_up = self.window_size // 2
@@ -299,10 +304,73 @@ class SlidingIgnoreBorder(SlidingWindow):
     sliding window that ignores original border of the grid. The new margin
     will be set with nan values, so it doesn't modify the values of the grid.
 
-    Notes
-    -----
-    The user must know that the values of the sliding window can have nan
-    values, so it is his duty to take them into account when using this subclass.
+    Examples
+    --------
+    Using iter and next (not usual)
+    >>> import numpy as np
+    >>> from sliding_window import SlidingIgnoreBorder
+    >>> grid = np.arange(25).reshape((5, 5))
+    >>> grid
+    array([[ 0,  1,  2,  3,  4],
+           [ 5,  6,  7,  8,  9],
+           [10, 11, 12, 13, 14],
+           [15, 16, 17, 18, 19],
+           [20, 21, 22, 23, 24]])
+    >>> sliding = SlidingIgnoreBorder(grid, window_size=3)
+    >>> i = iter(sliding)
+    >>> next(i)
+    (array([[nan, nan, nan],
+           [nan,  0.,  1.],
+           [nan,  5.,  6.]], dtype=float32), (1, 1))
+    >>> next(i)
+    (array([[nan, nan, nan],
+           [ 0.,  1.,  2.],
+           [ 5.,  6.,  7.]], dtype=float32), (1, 2))
+    >>> next(i)
+    (array([[nan, nan, nan],
+           [ 1.,  2.,  3.],
+           [ 6.,  7.,  8.]], dtype=float32), (1, 3))
+    >>> next(i)
+    (array([[nan, nan, nan],
+           [ 2.,  3.,  4.],
+           [ 7.,  8.,  9.]], dtype=float32), (1, 4))
+
+    Example using "for, in"
+    >>> grid_2 = np.arange(9).reshape((3, 3))
+    >>> grid_2
+    array([[0, 1, 2],
+           [3, 4, 5],
+           [6, 7, 8]])
+    >>> sliding_2 = SlidingIgnoreBorder(grid_2, window_size=3)
+    >>> for window in sliding_2:
+    ...     print(window)
+    (array([[nan, nan, nan],
+           [nan,  0.,  1.],
+           [nan,  3.,  4.]], dtype=float32), (1, 1))
+    (array([[nan, nan, nan],
+           [ 0.,  1.,  2.],
+           [ 3.,  4.,  5.]], dtype=float32), (1, 2))
+    (array([[nan, nan, nan],
+           [ 1.,  2., nan],
+           [ 4.,  5., nan]], dtype=float32), (1, 3))
+    (array([[nan,  0.,  1.],
+           [nan,  3.,  4.],
+           [nan,  6.,  7.]], dtype=float32), (2, 1))
+    (array([[0., 1., 2.],
+           [3., 4., 5.],
+           [6., 7., 8.]], dtype=float32), (2, 2))
+    (array([[ 1.,  2., nan],
+           [ 4.,  5., nan],
+           [ 7.,  8., nan]], dtype=float32), (2, 3))
+    (array([[nan,  3.,  4.],
+           [nan,  6.,  7.],
+           [nan, nan, nan]], dtype=float32), (3, 1))
+    (array([[ 3.,  4.,  5.],
+           [ 6.,  7.,  8.],
+           [nan, nan, nan]], dtype=float32), (3, 2))
+    (array([[ 4.,  5., nan],
+           [ 7.,  8., nan],
+           [nan, nan, nan]], dtype=float32), (3, 3))
     """
 
     def __init__(self, grid, window_size, *args, **kwargs):
@@ -351,8 +419,54 @@ class CircularWindow(SlidingWindow):
     Modify the functionality of the SlidingWindow iterator extending the
     customization to include a circular window, that is adding corners
     element of window to be set as nan.
-    """
 
+    Examples
+    --------
+    Using iter and next (not usual)
+    >>> import numpy as np
+    >>> from sliding_window import CircularWindow
+    >>> grid = np.arange(25).reshape((5, 5))
+    >>> grid
+    array([[ 0,  1,  2,  3,  4],
+           [ 5,  6,  7,  8,  9],
+           [10, 11, 12, 13, 14],
+           [15, 16, 17, 18, 19],
+           [20, 21, 22, 23, 24]])
+    >>> sliding = CircularWindow(grid, window_size=3)
+    >>> i = iter(sliding)
+    >>> next(i)
+    (array([[nan,  1., nan],
+           [ 5.,  6.,  7.],
+           [nan, 11., nan]], dtype=float32), (1, 1))
+    >>> next(i)
+    (array([[nan,  2., nan],
+           [ 6.,  7.,  8.],
+           [nan, 12., nan]], dtype=float32), (1, 2))
+    >>> next(i)
+    (array([[nan,  3., nan],
+           [ 7.,  8.,  9.],
+           [nan, 13., nan]], dtype=float32), (1, 3))
+    >>> next(i)
+    (array([[nan,  6., nan],
+           [10., 11., 12.],
+           [nan, 16., nan]], dtype=float32), (2, 1))
+
+    Example using "for, in"
+    >>> grid_2 = np.arange(12).reshape((3, 4))
+    >>> grid_2
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11]])
+    >>> sliding_2 = CircularWindow(grid_2, window_size=3)
+    >>> for window in sliding_2:
+    ...     print(window)
+    (array([[nan,  1., nan],
+           [ 4.,  5.,  6.],
+           [nan,  9., nan]], dtype=float32), (1, 1))
+    (array([[nan,  2., nan],
+           [ 5.,  6.,  7.],
+           [nan, 10., nan]], dtype=float32), (1, 2))
+    """
 
     def customize(self):
         """
@@ -392,6 +506,82 @@ class InnerWindow(SlidingWindow):
     ----------
     inner_size : array_like
         Size of inner window inside the sliding window of iteration
+
+    Examples
+    --------
+    Using iter and next (not usual)
+    >>> import numpy as np
+    >>> from sliding_window import InnerWindow
+    >>> grid = np.arange(81).reshape((9, 9))
+    >>> grid
+    array([[ 0,  1,  2,  3,  4,  5,  6,  7,  8],
+           [ 9, 10, 11, 12, 13, 14, 15, 16, 17],
+           [18, 19, 20, 21, 22, 23, 24, 25, 26],
+           [27, 28, 29, 30, 31, 32, 33, 34, 35],
+           [36, 37, 38, 39, 40, 41, 42, 43, 44],
+           [45, 46, 47, 48, 49, 50, 51, 52, 53],
+           [54, 55, 56, 57, 58, 59, 60, 61, 62],
+           [63, 64, 65, 66, 67, 68, 69, 70, 71],
+           [72, 73, 74, 75, 76, 77, 78, 79, 80]])
+    >>> sliding = InnerWindow(grid, window_size=5, inner_size=3)
+    >>> i = iter(sliding)
+    >>> next(i)
+    (array([[ 0.,  1.,  2.,  3.,  4.],
+           [ 9., nan, nan, nan, 13.],
+           [18., nan, 20., nan, 22.],
+           [27., nan, nan, nan, 31.],
+           [36., 37., 38., 39., 40.]], dtype=float32), (2, 2))
+    >>> next(i)
+    (array([[ 1.,  2.,  3.,  4.,  5.],
+           [10., nan, nan, nan, 14.],
+           [19., nan, 21., nan, 23.],
+           [28., nan, nan, nan, 32.],
+           [37., 38., 39., 40., 41.]], dtype=float32), (2, 3))
+    >>> next(i)
+    (array([[ 2.,  3.,  4.,  5.,  6.],
+           [11., nan, nan, nan, 15.],
+           [20., nan, 22., nan, 24.],
+           [29., nan, nan, nan, 33.],
+           [38., 39., 40., 41., 42.]], dtype=float32), (2, 4))
+    >>> next(i)
+    (array([[ 3.,  4.,  5.,  6.,  7.],
+           [12., nan, nan, nan, 16.],
+           [21., nan, 23., nan, 25.],
+           [30., nan, nan, nan, 34.],
+           [39., 40., 41., 42., 43.]], dtype=float32), (2, 5))
+
+    Example using "for, in"
+    >>> grid_2 = np.arange(36).reshape((6, 6))
+    >>> grid_2
+    array([[ 0,  1,  2,  3,  4,  5],
+           [ 6,  7,  8,  9, 10, 11],
+           [12, 13, 14, 15, 16, 17],
+           [18, 19, 20, 21, 22, 23],
+           [24, 25, 26, 27, 28, 29],
+           [30, 31, 32, 33, 34, 35]])
+    >>> sliding_2 = InnerWindow(grid_2, window_size=5, inner_size=3)
+    >>> for window in sliding_2:
+    ...     print(window)
+    (array([[ 0.,  1.,  2.,  3.,  4.],
+           [ 6., nan, nan, nan, 10.],
+           [12., nan, 14., nan, 16.],
+           [18., nan, nan, nan, 22.],
+           [24., 25., 26., 27., 28.]], dtype=float32), (2, 2))
+    (array([[ 1.,  2.,  3.,  4.,  5.],
+           [ 7., nan, nan, nan, 11.],
+           [13., nan, 15., nan, 17.],
+           [19., nan, nan, nan, 23.],
+           [25., 26., 27., 28., 29.]], dtype=float32), (2, 3))
+    (array([[ 6.,  7.,  8.,  9., 10.],
+           [12., nan, nan, nan, 16.],
+           [18., nan, 20., nan, 22.],
+           [24., nan, nan, nan, 28.],
+           [30., 31., 32., 33., 34.]], dtype=float32), (3, 2))
+    (array([[ 7.,  8.,  9., 10., 11.],
+           [13., nan, nan, nan, 17.],
+           [19., nan, 21., nan, 23.],
+           [25., nan, nan, nan, 29.],
+           [31., 32., 33., 34., 35.]], dtype=float32), (3, 3))
     """
 
     def __init__(self, grid, window_size, inner_size, *args, **kwargs):
@@ -466,6 +656,53 @@ class NoCenterWindow(SlidingWindow):
     Modify the functionality of the SlidingWindow iterator extending the
     customization to ommit the center of the window returned in each
     iteration.
+
+    Examples
+    --------
+    Using iter and next (not usual)
+    >>> import numpy as np
+    >>> from sliding_window import NoCenterWindow
+    >>> grid = np.arange(25).reshape((5, 5))
+    >>> grid
+    array([[ 0,  1,  2,  3,  4],
+           [ 5,  6,  7,  8,  9],
+           [10, 11, 12, 13, 14],
+           [15, 16, 17, 18, 19],
+           [20, 21, 22, 23, 24]])
+    >>> sliding = NoCenterWindow(grid, window_size=3)
+    >>> i = iter(sliding)
+    >>> next(i)
+    (array([[ 0.,  1.,  2.],
+           [ 5., nan,  7.],
+           [10., 11., 12.]], dtype=float32), (1, 1))
+    >>> next(i)
+    (array([[ 1.,  2.,  3.],
+           [ 6., nan,  8.],
+           [11., 12., 13.]], dtype=float32), (1, 2))
+    >>> next(i)
+    (array([[ 2.,  3.,  4.],
+           [ 7., nan,  9.],
+           [12., 13., 14.]], dtype=float32), (1, 3))
+    >>> next(i)
+    (array([[ 5.,  6.,  7.],
+           [10., nan, 12.],
+       [15., 16., 17.]], dtype=float32), (2, 1))
+
+    Example using "for, in"
+    >>> grid_2 = np.arange(12).reshape((3, 4))
+    >>> grid_2
+    array([[ 0,  1,  2,  3],
+           [ 4,  5,  6,  7],
+           [ 8,  9, 10, 11]])
+    >>> sliding_2 = NoCenterWindow(grid_2, window_size=3)
+    >>> for window in sliding_2:
+    ...     print(window)
+    (array([[ 0.,  1.,  2.],
+           [ 4., nan,  6.],
+           [ 8.,  9., 10.]], dtype=float32), (1, 1))
+    (array([[ 1.,  2.,  3.],
+           [ 5., nan,  7.],
+           [ 9., 10., 11.]], dtype=float32), (1, 2))
     """
 
     def customize(self):
@@ -506,6 +743,50 @@ class IgnoreBorderInnerSliding(SlidingIgnoreBorder, InnerWindow,
         The Center element is omitted
     This is a cooperative inheritance using the customising of elements to be
     set as nan. Constructor and methods are omitted because are in charge of
-    the parent classes combination
+    the parent classes combination.
+
+    Examples
+    --------
+    Using iter and next (not usual)
+    >>> import numpy as np
+    >>> from sliding_window import IgnoreBorderInnerSliding
+    >>> grid = np.arange(81).reshape((9, 9))
+    >>> grid
+    array([[ 0,  1,  2,  3,  4,  5,  6,  7,  8],
+           [ 9, 10, 11, 12, 13, 14, 15, 16, 17],
+           [18, 19, 20, 21, 22, 23, 24, 25, 26],
+           [27, 28, 29, 30, 31, 32, 33, 34, 35],
+           [36, 37, 38, 39, 40, 41, 42, 43, 44],
+           [45, 46, 47, 48, 49, 50, 51, 52, 53],
+           [54, 55, 56, 57, 58, 59, 60, 61, 62],
+           [63, 64, 65, 66, 67, 68, 69, 70, 71],
+           [72, 73, 74, 75, 76, 77, 78, 79, 80]])
+    >>> sliding = IgnoreBorderInnerSliding(grid, window_size=5, inner_size=3)
+    >>> i = iter(sliding)
+    >>> next(i)
+    (array([[nan, nan, nan, nan, nan],
+           [nan, nan, nan, nan, nan],
+           [nan, nan, nan, nan,  2.],
+           [nan, nan, nan, nan, 11.],
+           [nan, nan, 18., 19., 20.]], dtype=float32), (2, 2))
+    >>> next(i)
+    (array([[nan, nan, nan, nan, nan],
+           [nan, nan, nan, nan, nan],
+           [nan, nan, nan, nan,  3.],
+           [nan, nan, nan, nan, 12.],
+           [nan, 18., 19., 20., 21.]], dtype=float32), (2, 3))
+    >>> next(i)
+    (array([[nan, nan, nan, nan, nan],
+           [nan, nan, nan, nan, nan],
+           [ 0., nan, nan, nan,  4.],
+           [ 9., nan, nan, nan, 13.],
+           [18., 19., 20., 21., 22.]], dtype=float32), (2, 4))
+    >>> next(i)
+    (array([[nan, nan, nan, nan, nan],
+           [nan, nan, nan, nan, nan],
+           [ 1., nan, nan, nan,  5.],
+           [10., nan, nan, nan, 14.],
+           [19., 20., 21., 22., 23.]], dtype=float32), (2, 5))
+
     """
     pass
