@@ -56,7 +56,6 @@ class SlidingWindow:
         ------
         NumpyArrayExpectedError:
             If the parameters provided is not ndarray type.
-
         """
         return self._grid
 
@@ -115,6 +114,7 @@ class SlidingWindow:
 
         Examples
         --------
+        Using iter and next (not usual)
         >>> import numpy as np
         >>> from sliding_window import SlidingWindow
         >>> grid = np.arange(25).reshape((5, 5))
@@ -142,6 +142,9 @@ class SlidingWindow:
         (array([[ 5.,  6.,  7.],
                [10., 11., 12.],
                [15., 16., 17.]], dtype=float32), (2, 1))
+
+        Example using "for, in"
+
         >>> grid_2 = np.arange(16).reshape((4, 4))
         >>> grid_2
         array([[ 0,  1,  2,  3],
@@ -263,10 +266,6 @@ class SlidingWindow:
         Allow to customize the sliding window returned defining indices to set
         as np.nan. For this class no one element in the window will be set as
         nan.
-
-        Returns
-        -------
-        None
         """
         pass
 
@@ -294,12 +293,49 @@ class SlidingWindow:
 
 
 class SlidingIgnoreBorder(SlidingWindow):
+    """
+    Modify the functionality of SlidingWindow iterator changing the unlerlying
+    grid by adding an extra margin to grid attribute, this way it allows to have
+    sliding window that ignores original border of the grid. The new margin
+    will be set with nan values, so it doesn't modify the values of the grid.
+
+    Notes
+    -----
+    The user must know that the values of the sliding window can have nan
+    values, so it is his duty to take them into account when using this subclass.
+    """
 
     def __init__(self, grid, window_size, *args, **kwargs):
+        """
+        Extends the parent constructor modifying the grid with the addition of
+        an extra margin to the grid of size: window_size
+
+        Parameters
+        ----------
+        grid : ndarray
+            The grid on which the iterator will be created to get the sliding
+            window
+        window_size: int
+            The size of the sliding window
+        *args
+            Variable length argument list.
+        **kwargs
+            Arbitrary keyword arguments.
+        """
         super().__init__(grid, window_size, *args, **kwargs)
         self.grid = self._add_extra_margin()
 
     def _add_extra_margin(self):
+        """
+        Add an extra margin to all sides of self.grid of size self.window_size.
+        To do this create a new grid greater than self.grid (filled with nan
+        values) and copy the content of self.grid centered in the new grid
+
+        Returns
+        -------
+        ndarray
+            The new grid with an extra margin added.
+        """
         ny, nx = self.grid.shape
         ny = ny + self.window_size - 1
         nx = nx + self.window_size - 1
@@ -311,30 +347,107 @@ class SlidingIgnoreBorder(SlidingWindow):
         return grid_expanded
 
 class CircularWindow(SlidingWindow):
+    """
+    Modify the functionality of the SlidingWindow iterator extending the
+    customization to include a circular window, that is adding corners
+    element of window to be set as nan.
+    """
 
-    def __init__(self, grid, window_size, *args, **kwargs):
-        super().__init__(grid, window_size, *args, **kwargs)
 
     def customize(self):
-        self._indices_nan.extend(self.remove_corners(self.window_size))
+        """
+        Extends the customize method to include in self._indices_nan
+        elements in the corners of the sliding window
+        Also it calls super customize method so, other customization can be
+        done for any cooperative class.
+        """
+        self._indices_nan.extend(self._remove_corners(self.window_size))
         super().customize()
 
-    def remove_corners(self, ny):
+    def _remove_corners(self, ny):
+        """
+        Define corners indices pairs using window size
+
+        Parameters
+        ----------
+        ny :  int
+            window size
+
+        Returns
+        -------
+        list(tuple(int, int))
+            List of indice pairs corresponding to window corners.
+        """
         return [(0, 0), (0, ny - 1), (ny - 1, 0), (ny - 1, ny - 1)]
 
 
 class InnerWindow(SlidingWindow):
+    """
+    Modify the functionality of the SlidingWindow iterator extending the
+    customization to include a inner window inside the window returned in each
+    iteration. The inner window is composed by nan values. The inner window
+    doesn't include the center pixel unless the size of inner size is 1.
+
+    Attributes
+    ----------
+    inner_size : array_like
+        Size of inner window inside the sliding window of iteration
+    """
 
     def __init__(self, grid, window_size, inner_size, *args, **kwargs):
+        """
+        Extends the parent constructor adding a new attribute inner_size that
+        keep the value of size of inner window
+
+        Parameters
+        ----------
+        grid : ndarray
+            The grid on which the iterator will be created to get the sliding
+            window
+        window_size : int
+            The size of the sliding window
+        inner_size : int
+            The size of the inner window inside the sliding window
+        *args
+            Variable length argument list.
+        **kwargs
+            Arbitrary keyword arguments.
+        """
         self.inner_size = inner_size
         super().__init__(grid, window_size, *args, **kwargs)
 
     def customize(self):
-        self._indices_nan.extend(self.inner_window(self.window_size,
-                                                   self.inner_size))
+        """
+        Extends the customize method to include into self._indices_nan
+        elements of the inner window.
+        Also it calls super customize method so, others customization can be
+        done for any cooperative class.
+        """
+        self._indices_nan.extend(self._inner_window(self.window_size,
+                                                    self.inner_size))
         super().customize()
 
-    def inner_window(self, ny, inner_size):
+    def _inner_window(self, ny, inner_size):
+        """
+        Define inner window indices pairs using inner_size
+
+        Parameters
+        ----------
+        ny :  int
+            window size
+        inner_size : int
+            inner window size
+
+        Raises
+        ------
+        InnerSizeError
+            If inner_size is greater than window_size attribute
+
+        Returns
+        -------
+        list(tuple(int, int))
+            List of indice pairs corresponding to inner window.
+        """
 
         if inner_size > self.window_size:
             raise InnerSizeError(inner_size, self.window_size)
@@ -349,21 +462,50 @@ class InnerWindow(SlidingWindow):
 
 
 class NoCenterWindow(SlidingWindow):
-
-    def __init__(self, grid, window_size, *args, **kwargs):
-        super().__init__(grid, window_size, *args, **kwargs)
+    """
+    Modify the functionality of the SlidingWindow iterator extending the
+    customization to ommit the center of the window returned in each
+    iteration.
+    """
 
     def customize(self):
-        self._indices_nan.extend(self.center_index(self.window_size))
+        """
+        Extends the customize method to include into self._indices_nan
+        elements the center element of the sliding window.
+        Also it calls super customize method so, others customization can be
+        done for any cooperative class.
+        """
+        self._indices_nan.extend(self._center_index(self.window_size))
         super().customize()
 
-    def center_index(self, ny):
+    def _center_index(self, ny):
+        """
+        Compute the center of the window
+
+        Parameters
+        ----------
+        ny :  int
+            window size
+
+        Returns
+        -------
+        list(tuple(int, int))
+            List containing a pair with the center indices of the sliding
+            window
+        """
         center = ny // 2
         return [(center, center)]
 
 
 class IgnoreBorderInnerSliding(SlidingIgnoreBorder, InnerWindow,
                                NoCenterWindow):
-    def __init__(self, grid, *, window_size, inner_size):
-        super().__init__(grid=grid, window_size=window_size,
-                         inner_size=inner_size)
+    """
+    Represent an Sliding Window iterator that:
+        Ignore Borders
+        Have an Inner Window
+        The Center element is omitted
+    This is a cooperative inheritance using the customising of elements to be
+    set as nan. Constructor and methods are omitted because are in charge of
+    the parent classes combination
+    """
+    pass
