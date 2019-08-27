@@ -33,6 +33,7 @@ class SlidingWindow:
     The user must know that the values of the sliding window can have nan
     values (due to customising), so it is his duty to take them into account
     when using this subclass.
+    The values in the grid will be converted to
 
     Examples
     --------
@@ -93,7 +94,7 @@ class SlidingWindow:
         """
         Parameters
         ----------
-        grid : ndarray
+        grid : array_like
             The grid on which the iterator will be created to get the sliding
             window
         window_size: int
@@ -391,9 +392,9 @@ class SlidingIgnoreBorder(SlidingWindow):
             Arbitrary keyword arguments.
         """
         super().__init__(grid, window_size, *args, **kwargs)
-        self.grid = self._add_extra_margin()
+        self.grid = self.__add_extra_margin()
 
-    def _add_extra_margin(self):
+    def __add_extra_margin(self):
         """
         Add an extra margin to all sides of self.grid of size self.window_size.
         To do this create a new grid greater than self.grid (filled with nan
@@ -591,7 +592,7 @@ class InnerWindow(SlidingWindow):
 
         Parameters
         ----------
-        grid : ndarray
+        grid : array_like
             The grid on which the iterator will be created to get the sliding
             window
         window_size : int
@@ -636,7 +637,7 @@ class InnerWindow(SlidingWindow):
         Returns
         -------
         list(tuple(int, int))
-            List of indice pairs corresponding to inner window.
+            List of indices pairs corresponding to inner window.
         """
 
         if inner_size > self.window_size:
@@ -654,7 +655,7 @@ class InnerWindow(SlidingWindow):
 class NoCenterWindow(SlidingWindow):
     """
     Modify the functionality of the SlidingWindow iterator extending the
-    customization to ommit the center of the window returned in each
+    customization to omit the center of the window returned in each
     iteration.
 
     Examples
