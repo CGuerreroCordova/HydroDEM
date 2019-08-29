@@ -177,7 +177,7 @@ class SlidingWindow:
         left_up = self.window_size // 2
         right_down = left_up + 1
 
-        self.customize()
+        self._customize()
 
         def range_grid(bound_index):
             return range(left_up, (bound_index - right_down) + 1)
@@ -242,7 +242,7 @@ class SlidingWindow:
         left_up = self.window_size // 2
         right_down = left_up + 1
 
-        self.customize()
+        self._customize()
 
         def _get_slice(coord):
             """
@@ -264,10 +264,10 @@ class SlidingWindow:
         """
         ny, nx = self.grid.shape
         return all(index >= left_up for index in (j, i)) and \
-               j <= (ny - right_down) + 1 and \
-               i <= (nx - right_down) + 1
+               j <= (ny - right_down) and \
+               i <= (nx - right_down)
 
-    def customize(self):
+    def _customize(self):
         """
         Allow to customize the sliding window returned defining indices to set
         as np.nan. For this class no one element in the window will be set as
@@ -469,7 +469,7 @@ class CircularWindow(SlidingWindow):
            [nan, 10., nan]], dtype=float32), (1, 2))
     """
 
-    def customize(self):
+    def _customize(self):
         """
         Extends the customize method to include in self._indices_nan
         elements in the corners of the sliding window
@@ -477,7 +477,7 @@ class CircularWindow(SlidingWindow):
         done for any cooperative class.
         """
         self._indices_nan.extend(self._remove_corners(self.window_size))
-        super().customize()
+        super()._customize()
 
     def _remove_corners(self, ny):
         """
@@ -607,7 +607,7 @@ class InnerWindow(SlidingWindow):
         self.inner_size = inner_size
         super().__init__(grid, window_size, *args, **kwargs)
 
-    def customize(self):
+    def _customize(self):
         """
         Extends the customize method to include into self._indices_nan
         elements of the inner window.
@@ -616,7 +616,7 @@ class InnerWindow(SlidingWindow):
         """
         self._indices_nan.extend(self._inner_window(self.window_size,
                                                     self.inner_size))
-        super().customize()
+        super()._customize()
 
     def _inner_window(self, ny, inner_size):
         """
@@ -706,7 +706,7 @@ class NoCenterWindow(SlidingWindow):
            [ 9., 10., 11.]], dtype=float32), (1, 2))
     """
 
-    def customize(self):
+    def _customize(self):
         """
         Extends the customize method to include into self._indices_nan
         elements the center element of the sliding window.
@@ -714,7 +714,7 @@ class NoCenterWindow(SlidingWindow):
         done for any cooperative class.
         """
         self._indices_nan.extend(self._center_index(self.window_size))
-        super().customize()
+        super()._customize()
 
     def _center_index(self, ny):
         """
