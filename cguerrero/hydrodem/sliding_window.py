@@ -264,8 +264,8 @@ class SlidingWindow:
         """
         ny, nx = self.grid.shape
         return all(index >= left_up for index in (j, i)) and \
-               j <= (ny - right_down) and \
-               i <= (nx - right_down)
+               j <= (ny - right_down) + 1 and \
+               i <= (nx - right_down) + 1
 
     def _customize(self):
         """

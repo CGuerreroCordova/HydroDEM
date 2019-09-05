@@ -1,3 +1,10 @@
+"""
+Contains definition de constants to be used as truth value to expected values
+of iteration. This values can be stored in a dictionary and then in a file
+using Pickle, this way this file can be hide, but perhaps is useful the
+user can check what truth values are compared the expected values in tests.
+"""
+
 import numpy as np
 
 sliding_window_3x3 = [(np.array([[0., 1., 2.],

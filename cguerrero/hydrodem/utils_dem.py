@@ -6,12 +6,9 @@ __email__ = "cguerrerocordova@gmail.com"
 __status__ = "Developing"
 
 import copy
-import glob
 import os
-import subprocess
 import zipfile
 from collections import Counter
-
 import numpy as np
 import ogr
 import osr
@@ -25,6 +22,9 @@ from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
 from .sliding_window import (CircularWindow, SlidingWindow, NoCenterWindow,
                              IgnoreBorderInnerSliding)
+from .filters import (MajorityFilter, BinaryErosion, ExpandFilter,
+                      EnrouteRivers)
+
 
 
 def array2raster(rasterfn, new_rasterfn, array):
@@ -66,54 +66,6 @@ def array2raster_simple(new_rasterfn, array):
     outband = out_raster.GetRasterBand(1)
     outband.WriteArray(array)
     outband.FlushCache()
-
-def majority_filter(image_to_filter, window_size):
-    """
-    The value assigned to the center will be the most frequent value,
-    contained in a windows of window_size x window_size
-    """
-    filtered_image = np.zeros(image_to_filter.shape)
-    sliding = CircularWindow(image_to_filter, window_size)
-    for window, center in sliding:
-        frequency = Counter(window.ravel())
-        value, count = frequency.most_common()[0]
-        if count > (window_size ** 2 - 1) * 0.7:
-            filtered_image[center] = value
-    return filtered_image
-
-
-def expand_filter(img_to_expand, window_size):
-    """
-    The value assigned to the center will be 1 if at least one pixel
-    inside the circular window is 1
-    """
-    expanded_image = np.zeros(img_to_expand.shape)
-    sliding = CircularWindow(img_to_expand, window_size)
-    for window, center in sliding:
-        if np.any(window > 0):
-            expanded_image[center] = 1
-    return expanded_image
-
-
-def route_rivers(dem_in, maskRivers, window_size):
-    """
-    Apply homogeneity to canyons. Specific defined for images with flow stream.
-    """
-    dem = copy.deepcopy(dem_in)
-    left_up = window_size // 2
-    rivers_enrouted = np.zeros(dem.shape)
-    sliding = SlidingWindow(maskRivers, window_size=window_size,
-                            iter_over_ones=True)
-    dem_sliding = SlidingWindow(dem, window_size=window_size)
-    for _, (j, i) in sliding:
-        window_dem = dem_sliding[j, i]
-        neighbour_min = np.amin(window_dem.ravel())
-        indices_min = np.nonzero(window_dem == neighbour_min)
-        for min_j, min_i in zip(indices_min[0], indices_min[1]):
-            indices = (j - left_up + min_j, i - left_up + min_i)
-            rivers_enrouted[indices] = 1
-            dem_sliding.grid[indices] = 10000
-    return rivers_enrouted
 
 
 def quadratic_filter(dem, window_size):
@@ -189,18 +141,29 @@ def get_mask_fourier(quarter_fourier):
     :param quarter_fourier: fourier transform image.
     :return: mask with detected blanks
     """
-    quarter_ny, quarter_nx = quarter_fourier.shape
-    final_mask_image = np.zeros((quarter_ny, quarter_nx))
-    # TODO: Eliminar variables innecesarias
-    image_modified = np.zeros((quarter_ny, quarter_nx))
-    for i in range(0, 2):
-        (filtered_blank_image, image_modified) = \
-            filter_blanks(quarter_fourier, 55)
-        final_mask_image = final_mask_image + filtered_blank_image
-        quarter_fourier = image_modified
-    final_mask_im_without_pts = filter_isolated_pixels(final_mask_image, 3)
-    final_mask = expand_filter(final_mask_im_without_pts, 13)
-    return final_mask
+    final_mask_image = detect_blanks_fourier(quarter_fourier)
+    final_mask_without_pts = filter_isolated_pixels(final_mask_image, 3)
+    return ExpandFilter(window_size=13).apply(final_mask_without_pts)
+    # return expand_filter(final_mask_without_pts, 13)
+
+
+def detect_blanks_fourier(quarter_fourier):
+    """
+    Parameters
+    ----------
+    quarter_fourier
+
+    Returns
+    -------
+
+    """
+    final_mask_image = np.zeros(quarter_fourier.shape)
+    for i in (0, 1):
+        filtered_blanks, quarter_fourier = filter_blanks(quarter_fourier, 55)
+        final_mask_image += filtered_blanks
+    return final_mask_image
+
+
 
 
 def detect_apply_fourier(image_to_correct):
@@ -208,8 +171,8 @@ def detect_apply_fourier(image_to_correct):
     Detect blanks in Fourier transform image, create mask and apply fourier.
     """
     # TODO: Aca se abre el archivo dentro de la funcion, ver si hacerlo fuera
-    image_to_correct_array = gdal.Open(image_to_correct).ReadAsArray()
-    fourier_transform = fftpack.fft2(image_to_correct_array)
+    image_to_correct = gdal.Open(image_to_correct).ReadAsArray()
+    fourier_transform = fftpack.fft2(image_to_correct)
     fourier_transform_shifted = fftpack.fftshift(fourier_transform)
     fft_transform_abs = np.abs(fourier_transform_shifted)
     ny, nx = fft_transform_abs.shape
@@ -218,8 +181,8 @@ def detect_apply_fourier(image_to_correct):
     middle_x = int(nx // 2)
     middle_y = int(ny // 2)
     margin = 10
-    fst_quarter_fourier = fft_transform_abs[:middle_y - margin,
-                          :middle_x - margin]
+    fst_quarter_fourier = fft_transform_abs[:middle_y - margin, :middle_x -
+                                                                 margin]
     snd_quarter_fourier = fft_transform_abs[:middle_y - margin, middle_x +
                                                                 margin +
                                                                 x_odd:nx]
@@ -236,9 +199,9 @@ def detect_apply_fourier(image_to_correct):
         first_quarter_mask
     snd_complete_quarter[0:middle_y - margin, margin:middle_x] = \
         second_quarter_mask
-    reverse_array_x = (middle_x - 1) - np.arange(0, middle_x)
-    reverse_array_y = (middle_y - 1) - np.arange(0, middle_y)
-    indices = np.ix_(reverse_array_y, reverse_array_x)
+    reverse_x = (middle_x - 1) - np.arange(0, middle_x)
+    reverse_y = (middle_y - 1) - np.arange(0, middle_y)
+    indices = np.ix_(reverse_y, reverse_x)
     fth_complete_quarter = fst_complete_quarter[indices]
     trd_complete_quarter = snd_complete_quarter[indices]
 
@@ -272,15 +235,16 @@ def process_srtm(srtm_fourier, tree_class_file):
     return dem_corrected_15
 
 
+
 def resample_and_cut(orig_image, shape_file, target_path):
     """
     Resample the DEM to corresponding projection.
     Cut the area defined by shape
     """
+
     pixel_size = 90
     in_file = gdal.Open(orig_image)
     gdal.Warp(TEMP_REPROJECTED_TO_CUT, in_file, dstSRS='EPSG:22184')
-
     gdw_options = gdal.WarpOptions(cutlineDSName=shape_file,
                                    cropToCutline=True,
                                    xRes=pixel_size, yRes=pixel_size,
@@ -340,11 +304,14 @@ def get_shape_over_area(shape_area_input, shape_over_area):
     outDataSource.Destroy()
 
 def get_lagoons_hsheds(hsheds_input):
-    hsheds_maj_filter11 = majority_filter(hsheds_input, 11)
-    hsheds_maj_filter11_ero2 = ndimage.binary_erosion(hsheds_maj_filter11,
-                                                      iterations=2)
-    hsheds_maj_filter11_ero2_expand7 = expand_filter(hsheds_maj_filter11_ero2,
-                                                     7)
+    # majority_filter = MajorityFilter(window_size=11)
+    hsheds_maj_filter11 = MajorityFilter(window_size=11).apply(hsheds_input)
+    hsheds_maj_filter11_ero2 = \
+        BinaryErosion(iterations=2).apply(hsheds_maj_filter11)
+    # hsheds_maj_filter11_ero2 = ndimage.binary_erosion(hsheds_maj_filter11,
+    #                                                   iterations=2)
+    hsheds_maj_filter11_ero2_expand7 = \
+        ExpandFilter(window_size=7).apply(hsheds_maj_filter11_ero2)
     hsheds_maj11_ero2_expand7_prod_maj11 = \
         hsheds_maj_filter11_ero2_expand7 * hsheds_maj_filter11
     hsheds_mask_lagoons_values = ndimage.grey_dilation(
@@ -402,9 +369,9 @@ def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
                                         outputType=gdal.GDT_Float32,
                                         layers='rivers_area_interest')
     gdal.Rasterize(RIVERS_TIF, rivers_shape, options=gdr_options)
-    river_array = gdal.Open(RIVERS_TIF).ReadAsArray()
-    mask_canyons_array = (river_array > 0) * 1
-    mask_canyons_expanded3 = expand_filter(mask_canyons_array, 3)
+    rivers = gdal.Open(RIVERS_TIF).ReadAsArray()
+    mask_canyons = (rivers > 0) * 1
+    mask_canyons_expanded3 = ExpandFilter(window_size=3).apply(mask_canyons)
     rivers_routed = route_rivers(hsheds_area_interest, mask_canyons_expanded3,
                                  3)
     rivers_routed_closing = binary_closing(rivers_routed)

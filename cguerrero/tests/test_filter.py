@@ -3,8 +3,8 @@ from osgeo import gdal
 import os, glob, filecmp
 from unittest import TestCase
 from numpy import testing
-from cguerrero.hydrodem.utils_dem import (majority_filter, expand_filter,
-                                          route_rivers, quadratic_filter,
+from cguerrero.hydrodem.filters import MajorityFilter, ExpandFilter
+from cguerrero.hydrodem.utils_dem import (route_rivers, quadratic_filter,
                                           correct_nan_values,
                                           filter_isolated_pixels,
                                           filter_blanks,
@@ -84,13 +84,14 @@ class Test_filter(TestCase):
 
     def test_majority_filter(self):
         hsheds_input = gdal.Open(HSHEDS_INPUT_MAJORITY).ReadAsArray()
-        result_majority_filter = majority_filter(hsheds_input, 11)
+        result_majority_filter = \
+            MajorityFilter(window_size=11).apply(hsheds_input)
         expected_majority = gdal.Open(MAJORITY_FILTER).ReadAsArray()
         testing.assert_array_equal(result_majority_filter, expected_majority)
 
     def test_expand_filter(self):
         expand_input = gdal.Open(INPUT_EXPAND).ReadAsArray()
-        result_expand_filter = expand_filter(expand_input, 7)
+        result_expand_filter = ExpandFilter(window_size=7).apply(expand_input)
         expected_expanded = gdal.Open(EXPAND_OUTPUT).ReadAsArray()
         testing.assert_array_equal(result_expand_filter, expected_expanded)
 
