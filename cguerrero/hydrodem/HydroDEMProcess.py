@@ -15,7 +15,7 @@ from osgeo import gdal
 from scipy import ndimage
 from .utils_dem import (clean_workspace, uncompress_zip_file, resample_and_cut,
                         get_shape_over_area, detect_apply_fourier,
-                        process_srtm, correct_nan_values, get_lagoons_hsheds,
+                        process_srtm, get_lagoons_hsheds,
                         clip_lines_vector, process_rivers, array2raster,
                         array2raster_simple)
 from .settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP,
@@ -26,6 +26,8 @@ from .settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        RIVERS_FULL, RIVERS_SHAPE, FINAL_DEM, PROFILE_FILE,
                        MEMORY_TIME_FILE)
+
+from .filters import CorrectNANValues, MaskPositives
 
 
 class HydroDEMProcess(object):
@@ -70,21 +72,23 @@ class HydroDEMProcess(object):
                          HSHEDS_AREA_INTEREST_OVER)
         print("Detecting and applying Fourier")
         # tracemalloc.start()
-        srtm_fourier = detect_apply_fourier(SRTM_AREA_INTEREST_OVER)
+        srtm_raw = gdal.Open(SRTM_AREA_INTEREST_OVER).ReadAsArray()
+        srtm_fourier = detect_apply_fourier(srtm_raw)
         print("Processing SRTM.")
         print("Processing SRTM: First Iteration.")
-        srtm_proc1 = process_srtm(srtm_fourier, TREE_CLASS_AREA)
+        tree_class_raw = gdal.Open(TREE_CLASS_AREA).ReadAsArray()
+        srtm_proc1 = process_srtm(srtm_fourier, tree_class_raw)
         print("Processing SRTM: Second Iteration.")
-        srtm_proc2 = process_srtm(srtm_proc1, TREE_CLASS_AREA)
+        srtm_proc2 = process_srtm(srtm_proc1, tree_class_raw)
         print("Processing SRTM: Third Iteration.")
-        srtm_proc = process_srtm(srtm_proc2, TREE_CLASS_AREA)
+        srtm_proc = process_srtm(srtm_proc2, tree_class_raw)
         print("Processing HSHEDS.")
         hydro_sheds = gdal.Open(HSHEDS_AREA_INTEREST_OVER).ReadAsArray()
-        hydro_sheds_corrected_nan = correct_nan_values(hydro_sheds)
+        hydro_sheds_corrected_nan = CorrectNANValues().apply(hydro_sheds)
         print("Processing HSHEDS: Getting Lagoons.")
         hsheds_mask_lagoons_values = get_lagoons_hsheds(hydro_sheds)
         array2raster_simple('lagoons_expected.tif', hsheds_mask_lagoons_values)
-        hsheds_mask_lagoons = (hsheds_mask_lagoons_values > 0.0) * 1
+        hsheds_mask_lagoons = MaskPositives().apply(hsheds_mask_lagoons_values)
         print("Processing Rivers.")
         uncompress_zip_file(RIVERS_ZIP)
         clip_lines_vector(RIVERS_FULL, SHAPE_AREA_INTEREST_OVER, RIVERS_SHAPE)

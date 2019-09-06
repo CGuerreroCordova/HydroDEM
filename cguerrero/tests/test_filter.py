@@ -3,12 +3,11 @@ from osgeo import gdal
 import os, glob, filecmp
 from unittest import TestCase
 from numpy import testing
-from cguerrero.hydrodem.filters import MajorityFilter, ExpandFilter
-from cguerrero.hydrodem.utils_dem import (route_rivers, quadratic_filter,
-                                          correct_nan_values,
-                                          filter_isolated_pixels,
-                                          filter_blanks,
-                                          get_mask_fourier, array2raster,
+from cguerrero.hydrodem.filters import (MajorityFilter, ExpandFilter,
+                                        EnrouteRivers, QuadraticFilter,
+                                        CorrectNANValues, IsolatedPoints,
+                                        BlanksFourier, MaskFourier)
+from cguerrero.hydrodem.utils_dem import (array2raster,
                                           detect_apply_fourier,
                                           array2raster_simple, process_srtm,
                                           resample_and_cut,
@@ -98,22 +97,24 @@ class Test_filter(TestCase):
     def test_route_rivers(self):
         hsheds_input = gdal.Open(HSHEDS_INPUT_RIVER_ROUTING).ReadAsArray()
         mask_rivers = gdal.Open(MASK_INPUT_RIVER_ROUTING).ReadAsArray()
-        rivers_routed = route_rivers(hsheds_input, mask_rivers, 3)
+        rivers_routed = EnrouteRivers(window_size=3).apply(hsheds_input,
+                                                           mask_rivers)
         rivers_routed_expected = gdal.Open(
             RIVERS_ROUTED_EXPECTED).ReadAsArray()
         testing.assert_array_equal(rivers_routed, rivers_routed_expected)
 
     def test_quadratic_filter(self):
         quadratic_filter_input = gdal.Open(SRTM_INPUT_QUADRATIC).ReadAsArray()
-        result_quadratic_filter = np.around(
-            quadratic_filter(quadratic_filter_input, 15))
+        result_quadratic_filter = \
+            np.around(
+                QuadraticFilter(window_size=15).apply(quadratic_filter_input))
         expected_quadratic = np.around(
             gdal.Open(QUADRATIC_FILTER_EXPECTED).ReadAsArray())
         testing.assert_array_equal(result_quadratic_filter, expected_quadratic)
 
     def test_nan_values_filter(self):
         nan_values_input = gdal.Open(HSHEDS_INPUT_NAN).ReadAsArray()
-        nan_values_corrected = correct_nan_values(nan_values_input)
+        nan_values_corrected = CorrectNANValues().apply(nan_values_input)
         expected_nan_values_corrected = gdal.Open(
             HSHEDS_NAN_CORRECTED).ReadAsArray()
         testing.assert_array_equal(nan_values_corrected,
@@ -121,9 +122,8 @@ class Test_filter(TestCase):
 
     def test_isolated_filter(self):
         mask_isolated_input = gdal.Open(MASK_ISOLATED).ReadAsArray()
-        isolated_points_filtered = filter_isolated_pixels(mask_isolated_input,
-                                                          3)
-        # array2raster_simple('isolated_filter_output.tif', isolated_points_filtered)
+        isolated_points_filtered = \
+            IsolatedPoints(window_size=3).apply(mask_isolated_input)
         expected_isolated_points = \
             gdal.Open(MASK_ISOLATED_FILTERED).ReadAsArray()
         testing.assert_array_equal(isolated_points_filtered,
@@ -131,7 +131,10 @@ class Test_filter(TestCase):
 
     def test_filter_blanks_fourier(self):
         quarter_fourier = gdal.Open(QUARTER_FOURIER).ReadAsArray()
-        filtered_blanks, fourier_modified = filter_blanks(quarter_fourier, 55)
+        # filtered_blanks, fourier_modified = filter_blanks(quarter_fourier, 55)
+        filtered_blanks, fourier_modified = \
+            BlanksFourier(window_size=55).apply(quarter_fourier)
+
         expected_filtered_blanks = gdal.Open(FILTERED_FOURIER_1).ReadAsArray()
         expected_fourier_modified = gdal.Open(FILTERED_FOURIER_2).ReadAsArray()
         testing.assert_array_equal(filtered_blanks, expected_filtered_blanks)
@@ -139,20 +142,22 @@ class Test_filter(TestCase):
 
     def test_get_mask_fourier(self):
         first_quarter = gdal.Open(FIRST_QUARTER).ReadAsArray()
-        mask_fourier = get_mask_fourier(first_quarter)
+        mask_fourier = MaskFourier().apply(first_quarter)
         expected_mask_fourier = gdal.Open(FIRST_MASK_FOURIER).ReadAsArray()
         testing.assert_array_equal(mask_fourier, expected_mask_fourier)
 
     def test_detect_apply_fourier(self):
-        srtm_corrected = detect_apply_fourier(SRTM_STRIPPED)
+        srtm_raw = gdal.Open(SRTM_STRIPPED).ReadAsArray()
+        srtm_corrected = detect_apply_fourier(srtm_raw)
         array2raster_simple(SRTM_CORRECTED, srtm_corrected)
         srtm_corrected_open = gdal.Open(SRTM_CORRECTED).ReadAsArray()
         srtm_expected = gdal.Open(SRTM_WITHOUT_STRIPS).ReadAsArray()
         testing.assert_array_equal(srtm_corrected_open, srtm_expected)
 
     def test_process_srtm(self):
+        mask_trees = gdal.Open(MASK_TREES).ReadAsArray()
         srtm_to_process = gdal.Open(SRTM_WITHOUT_STRIPS).ReadAsArray()
-        srtm_processed = process_srtm(srtm_to_process, MASK_TREES)
+        srtm_processed = process_srtm(srtm_to_process, mask_trees)
         array2raster_simple(SRTM_PROCESSED_OUTPUT, srtm_processed)
         srtm_processed_saved = \
             np.around(gdal.Open(SRTM_PROCESSED_OUTPUT).ReadAsArray())

@@ -23,7 +23,8 @@ from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
 from .sliding_window import (CircularWindow, SlidingWindow, NoCenterWindow,
                              IgnoreBorderInnerSliding)
 from .filters import (MajorityFilter, BinaryErosion, ExpandFilter,
-                      EnrouteRivers)
+                      EnrouteRivers, QuadraticFilter, MaskPositives,
+                      IsolatedPoints, DetectBlanksFourier, MaskFourier)
 
 
 
@@ -68,102 +69,6 @@ def array2raster_simple(new_rasterfn, array):
     outband.FlushCache()
 
 
-def quadratic_filter(dem, window_size):
-    """
-    Smoothness filter: Apply a quadratic filter of smoothness
-    :param dem: dem image
-    """
-    values = np.linspace(-window_size / 2 + 1, window_size / 2, window_size)
-    xx, yy = np.meshgrid(values, values)
-    r0 = window_size ** 2
-    r1 = (xx * xx).sum()
-    r2 = (xx * xx * xx * xx).sum()
-    r3 = (xx * xx * yy * yy).sum()
-
-    dem_sliding = SlidingWindow(dem, window_size=window_size)
-    smoothed = dem.copy()
-
-    for window, center in dem_sliding:
-        s1 = window.sum()
-        s2 = (window * xx * xx).sum()
-        s3 = (window * yy * yy).sum()
-        smoothed[center] = ((s2 + s3) * r1 - s1 * (r2 + r3)) / \
-                           (2 * r1 ** 2 - r0 * (r2 + r3))
-    return smoothed
-
-def correct_nan_values(dem):
-    """
-    Correct values lower than zero, generally with extremely lowest values.
-    """
-    mask_nan = (dem < 0.0) * 1
-    sliding_nans = SlidingWindow(mask_nan, window_size=3, iter_over_ones=True)
-    dem_sliding = NoCenterWindow(dem, window_size=3)
-    for _, center in sliding_nans:
-        neighbours_of_nan = dem_sliding[center].ravel()
-        neighbours_positives = \
-            list(filter(lambda x: x >= 0, neighbours_of_nan))
-        dem[center] = sum(neighbours_positives) / len(neighbours_positives)
-    return dem
-
-
-def filter_isolated_pixels(image_to_filter, window_size):
-    """
-    Remove isolated pixels detected to be part of a mask.
-    """
-    sliding = NoCenterWindow(image_to_filter, window_size=window_size,
-                             iter_over_ones=True)
-    for window, center in sliding:
-        image_to_filter[center] = 1. if np.any(window > 0) else 0.
-    return image_to_filter
-
-def filter_blanks(image_to_filter, window_size):
-    """
-    Define the filter to detect blanks in a fourier transform image.
-    """
-
-    filtered_image = np.zeros(image_to_filter.shape)
-    fourier_transform = IgnoreBorderInnerSliding(image_to_filter,
-                                                 window_size=window_size,
-                                                 inner_size=5)
-    for window, center in fourier_transform:
-        mean_neighbor = np.nanmean(window)
-        real_center = center[0] - window_size // 2, \
-                      center[1] - window_size // 2,
-        if image_to_filter[real_center] > (4 * mean_neighbor):
-            filtered_image[real_center] = 1.0
-    image_modified = image_to_filter * (1 - filtered_image)
-    return filtered_image, image_modified
-
-def get_mask_fourier(quarter_fourier):
-    """
-    Perform iterations of filter blanks functions and produce a final mask
-    with blanks of fourier transform.
-    :param quarter_fourier: fourier transform image.
-    :return: mask with detected blanks
-    """
-    final_mask_image = detect_blanks_fourier(quarter_fourier)
-    final_mask_without_pts = filter_isolated_pixels(final_mask_image, 3)
-    return ExpandFilter(window_size=13).apply(final_mask_without_pts)
-    # return expand_filter(final_mask_without_pts, 13)
-
-
-def detect_blanks_fourier(quarter_fourier):
-    """
-    Parameters
-    ----------
-    quarter_fourier
-
-    Returns
-    -------
-
-    """
-    final_mask_image = np.zeros(quarter_fourier.shape)
-    for i in (0, 1):
-        filtered_blanks, quarter_fourier = filter_blanks(quarter_fourier, 55)
-        final_mask_image += filtered_blanks
-    return final_mask_image
-
-
 
 
 def detect_apply_fourier(image_to_correct):
@@ -171,7 +76,7 @@ def detect_apply_fourier(image_to_correct):
     Detect blanks in Fourier transform image, create mask and apply fourier.
     """
     # TODO: Aca se abre el archivo dentro de la funcion, ver si hacerlo fuera
-    image_to_correct = gdal.Open(image_to_correct).ReadAsArray()
+    # image_to_correct = gdal.Open(image_to_correct).ReadAsArray()
     fourier_transform = fftpack.fft2(image_to_correct)
     fourier_transform_shifted = fftpack.fftshift(fourier_transform)
     fft_transform_abs = np.abs(fourier_transform_shifted)
@@ -191,8 +96,8 @@ def detect_apply_fourier(image_to_correct):
     #                                          snd_quarter_fourier])
     # first_quarter_mask = masks_fourier[0]
     # second_quarter_mask = masks_fourier[1]}
-    first_quarter_mask = get_mask_fourier(fst_quarter_fourier)
-    second_quarter_mask = get_mask_fourier(snd_quarter_fourier)
+    first_quarter_mask = MaskFourier().apply(fst_quarter_fourier)
+    second_quarter_mask = MaskFourier().apply(snd_quarter_fourier)
     fst_complete_quarter = np.zeros((middle_y, middle_x))
     snd_complete_quarter = np.zeros((middle_y, middle_x))
     fst_complete_quarter[0:middle_y - margin, 0:middle_x - margin] = \
@@ -218,16 +123,15 @@ def detect_apply_fourier(image_to_correct):
     corrected_image = fftpack.ifft2(shifted)
     return corrected_image
 
-def process_srtm(srtm_fourier, tree_class_file):
+
+def process_srtm(srtm_fourier, tree_classification):
     """
     Perform the processing corresponding to SRTM file.
     """
-    srtm_fourier_sua = quadratic_filter(srtm_fourier, 15)
+    srtm_fourier_sua = QuadraticFilter(window_size=15).apply(srtm_fourier)
     dem_highlighted = srtm_fourier - srtm_fourier_sua
     mask_height_greater_than_15_mt = (dem_highlighted > 1.5) * 1.0
-    # TODO: Uniformizar, input, uno entrada otro path
-    tree_class_raw = gdal.Open(tree_class_file).ReadAsArray()
-    tree_class = ndimage.binary_closing(tree_class_raw, np.ones((3, 3)))
+    tree_class = ndimage.binary_closing(tree_classification, np.ones((3, 3)))
     tree_class_height_15_mt = tree_class * mask_height_greater_than_15_mt
     tree_class_height_15_mt_compl = 1 - tree_class_height_15_mt
     trees_removed = dem_highlighted * tree_class_height_15_mt_compl
@@ -304,12 +208,9 @@ def get_shape_over_area(shape_area_input, shape_over_area):
     outDataSource.Destroy()
 
 def get_lagoons_hsheds(hsheds_input):
-    # majority_filter = MajorityFilter(window_size=11)
     hsheds_maj_filter11 = MajorityFilter(window_size=11).apply(hsheds_input)
     hsheds_maj_filter11_ero2 = \
         BinaryErosion(iterations=2).apply(hsheds_maj_filter11)
-    # hsheds_maj_filter11_ero2 = ndimage.binary_erosion(hsheds_maj_filter11,
-    #                                                   iterations=2)
     hsheds_maj_filter11_ero2_expand7 = \
         ExpandFilter(window_size=7).apply(hsheds_maj_filter11_ero2)
     hsheds_maj11_ero2_expand7_prod_maj11 = \
@@ -370,13 +271,13 @@ def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
                                         layers='rivers_area_interest')
     gdal.Rasterize(RIVERS_TIF, rivers_shape, options=gdr_options)
     rivers = gdal.Open(RIVERS_TIF).ReadAsArray()
-    mask_canyons = (rivers > 0) * 1
-    mask_canyons_expanded3 = ExpandFilter(window_size=3).apply(mask_canyons)
-    rivers_routed = route_rivers(hsheds_area_interest, mask_canyons_expanded3,
-                                 3)
+    mask_rivers = MaskPositives().apply(rivers)
+    mask_rivers_expanded3 = ExpandFilter(window_size=3).apply(mask_rivers)
+    rivers_routed = EnrouteRivers(window_size=3).apply(hsheds_area_interest,
+                                                       mask_rivers_expanded3)
     rivers_routed_closing = binary_closing(rivers_routed)
     intersection_lag_can = rivers_routed_closing * hsheds_mask_lagoons
-    intersection_lag_can_mask = (intersection_lag_can > 0) * 1
+    intersection_lag_can_mask = MaskPositives().apply(intersection_lag_can)
     rivers_routed_closing = np.bitwise_xor(rivers_routed_closing,
                                            intersection_lag_can_mask)
     return rivers_routed_closing
