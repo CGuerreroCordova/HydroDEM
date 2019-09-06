@@ -5,10 +5,8 @@ __version__ = "0.1"
 __email__ = "cguerrerocordova@gmail.com"
 __status__ = "Developing"
 
-import copy
 import os
 import zipfile
-from collections import Counter
 import numpy as np
 import ogr
 import osr
@@ -20,11 +18,9 @@ from scipy.ndimage.morphology import binary_closing
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
-from .sliding_window import (CircularWindow, SlidingWindow, NoCenterWindow,
-                             IgnoreBorderInnerSliding)
 from .filters import (MajorityFilter, BinaryErosion, ExpandFilter,
                       EnrouteRivers, QuadraticFilter, MaskPositives,
-                      IsolatedPoints, DetectBlanksFourier, MaskFourier)
+                      MaskFourier)
 
 
 
@@ -75,8 +71,6 @@ def detect_apply_fourier(image_to_correct):
     """
     Detect blanks in Fourier transform image, create mask and apply fourier.
     """
-    # TODO: Aca se abre el archivo dentro de la funcion, ver si hacerlo fuera
-    # image_to_correct = gdal.Open(image_to_correct).ReadAsArray()
     fourier_transform = fftpack.fft2(image_to_correct)
     fourier_transform_shifted = fftpack.fftshift(fourier_transform)
     fft_transform_abs = np.abs(fourier_transform_shifted)

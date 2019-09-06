@@ -131,7 +131,6 @@ class Test_filter(TestCase):
 
     def test_filter_blanks_fourier(self):
         quarter_fourier = gdal.Open(QUARTER_FOURIER).ReadAsArray()
-        # filtered_blanks, fourier_modified = filter_blanks(quarter_fourier, 55)
         filtered_blanks, fourier_modified = \
             BlanksFourier(window_size=55).apply(quarter_fourier)
 
