@@ -15,9 +15,8 @@ from osgeo import gdal
 from scipy import ndimage
 from .utils_dem import (clean_workspace, uncompress_zip_file, resample_and_cut,
                         get_shape_over_area, detect_apply_fourier,
-                        process_srtm, get_lagoons_hsheds,
-                        clip_lines_vector, process_rivers, array2raster,
-                        array2raster_simple)
+                        process_srtm, clip_lines_vector, process_rivers,
+                        array2raster)
 from .settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP,
                        HSHEDS_FILE_INPUT, HSHEDS_FILE_TIFF, SRTM_FILE_INPUT_ZIP,
                        SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT,
@@ -26,6 +25,7 @@ from .settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        RIVERS_FULL, RIVERS_SHAPE, FINAL_DEM, PROFILE_FILE,
                        MEMORY_TIME_FILE)
+from filters import LagoonsDetection
 
 from .filters import CorrectNANValues, MaskPositives
 
@@ -86,8 +86,7 @@ class HydroDEMProcess(object):
         hydro_sheds = gdal.Open(HSHEDS_AREA_INTEREST_OVER).ReadAsArray()
         hydro_sheds_corrected_nan = CorrectNANValues().apply(hydro_sheds)
         print("Processing HSHEDS: Getting Lagoons.")
-        hsheds_mask_lagoons_values = get_lagoons_hsheds(hydro_sheds)
-        array2raster_simple('lagoons_expected.tif', hsheds_mask_lagoons_values)
+        hsheds_mask_lagoons_values = LagoonsDetection().apply(hydro_sheds)
         hsheds_mask_lagoons = MaskPositives().apply(hsheds_mask_lagoons_values)
         print("Processing Rivers.")
         uncompress_zip_file(RIVERS_ZIP)
@@ -114,7 +113,7 @@ class HydroDEMProcess(object):
         final_dem = np.around(dem_ready_smooth)
         print("DEM Hydrologicaly conditioned ready.")
         print("DEM Ready to use can be found at {}.".format(FINAL_DEM))
-        array2raster(SRTM_AREA_INTEREST_OVER, FINAL_DEM, final_dem)
+        array2raster(FINAL_DEM, final_dem, SRTM_AREA_INTEREST_OVER)
         print("Cleaning Workspace")
         clean_workspace()
 

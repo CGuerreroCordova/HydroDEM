@@ -7,7 +7,7 @@ from collections import Counter
 import numpy as np
 from hydrodem.sliding_window import (SlidingWindow, CircularWindow,
                                      NoCenterWindow, IgnoreBorderInnerSliding)
-from scipy.ndimage import binary_erosion
+from scipy.ndimage import binary_erosion, grey_dilation
 
 
 class Filter(ABC):
@@ -162,18 +162,24 @@ class CorrectNANValues(Filter):
         return dem
 
 
-class NegativesValues(Filter):
+class LowerThan(Filter):
+
+    def __init__(self, *, value):
+        self.value = value
 
     def apply(self, image_to_filter):
         # TODO: Condition about values, Exceptions
-        return image_to_filter < 0.0
+        return image_to_filter < self.value
 
 
-class PositivesValues(Filter):
+class GreaterThan(Filter):
+
+    def __init__(self, *, value):
+        self.value = value
 
     def apply(self, image_to_filter):
         # TODO: Condition about values, Exceptions
-        return image_to_filter > 0.0
+        return image_to_filter > self.value
 
 
 class BooleanToInteger(Filter):
@@ -187,13 +193,13 @@ class MaskNegatives(ComposedFilter):
 
     def __init__(self):
         # TODO check to put in properties
-        self.filters = [NegativesValues(), BooleanToInteger()]
+        self.filters = [LowerThan(value=0.0), BooleanToInteger()]
 
 
 class MaskPositives(ComposedFilter):
 
     def __init__(self):
-        self.filters = [PositivesValues(), BooleanToInteger()]
+        self.filters = [GreaterThan(value=0.0), BooleanToInteger()]
 
 
 class IsolatedPoints(Filter):
@@ -260,3 +266,51 @@ class MaskFourier(ComposedFilter):
         # TODO check to put in properties
         self.filters = [DetectBlanksFourier(), IsolatedPoints(window_size=3),
                         ExpandFilter(window_size=13)]
+
+
+class ProductFilter(Filter):
+
+    def __init__(self, factor=1):
+        # TODO Conditions about types.
+        self.factor = factor
+
+    def apply(self, factor):
+        return self.factor * factor
+
+
+class SubtractionFilter(Filter):
+
+    def __init__(self, *, minuend):
+        self.minuend = minuend
+
+    def apply(self, subtracting):
+        return self.minuend - subtracting
+
+
+class GreyDilation(Filter):
+
+    def __init__(self, *, size):
+        self.size = size
+
+    def apply(self, image_to_filter):
+        return grey_dilation(image_to_filter, size=self.size)
+
+
+class TidyingLagoons(ComposedFilter):
+
+    def __init__(self):
+        self.filters = [BinaryErosion(iterations=2),
+                        ExpandFilter(window_size=7),
+                        ProductFilter(),
+                        GreyDilation(size=(7, 7))]
+
+    def apply(self, image_to_filter):
+        self.filters[2].factor = content = image_to_filter
+        for filter in self.filters:
+            content = filter.apply(content)
+        return content
+
+
+class LagoonsDetection(ComposedFilter):
+    def __init__(self):
+        self.filters = [MajorityFilter(window_size=11), TidyingLagoons()]

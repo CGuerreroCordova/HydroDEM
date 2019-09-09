@@ -18,53 +18,35 @@ from scipy.ndimage.morphology import binary_closing
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
-from .filters import (MajorityFilter, BinaryErosion, ExpandFilter,
-                      EnrouteRivers, QuadraticFilter, MaskPositives,
-                      MaskFourier)
+from .filters import (ExpandFilter, EnrouteRivers, QuadraticFilter,
+                      MaskPositives, MaskFourier, SubtractionFilter)
 
 
-
-def array2raster(rasterfn, new_rasterfn, array):
+def array2raster(new_rasterfn, array, rasterfn=None):
     """
     Save image contained in an array format to a tiff georeferenced file.
     New image file will be located in new_rasterfn pathfile.
     Georeference is taken from rasterfn file.
     rasterfn and new_rasterfn must be strings with pathfile.
     """
-    raster = gdal.Open(rasterfn)
-    geo_transform = raster.GetGeoTransform()
-    origin_x, pixel_width, _, origin_y, _, pixel_height = geo_transform
 
-    cols = raster.RasterXSize
-    rows = raster.RasterYSize
-
-    driver = gdal.GetDriverByName('GTiff')
-    out_raster = driver.Create(new_rasterfn, cols, rows, 1, gdal.GDT_Float32)
-    out_raster.SetGeoTransform((origin_x, pixel_width, 0, origin_y, 0,
-                                pixel_height))
-    out_band = out_raster.GetRasterBand(1)
-    out_band.WriteArray(array)
-    out_raster_srs = osr.SpatialReference()
-    out_raster_srs.ImportFromWkt(raster.GetProjectionRef())
-    out_raster.SetProjection(out_raster_srs.ExportToWkt())
-    out_band.FlushCache()
-
-
-def array2raster_simple(new_rasterfn, array):
-    """
-    Save an image 2-D array in a tiff file.
-    :param new_rasterfn: path file target
-    :param array: 2-D array
-    :return: void
-    """
     rows, cols = array.shape
     driver = gdal.GetDriverByName('GTiff')
     out_raster = driver.Create(new_rasterfn, cols, rows, 1, gdal.GDT_Float32)
-    outband = out_raster.GetRasterBand(1)
-    outband.WriteArray(array)
-    outband.FlushCache()
 
+    if rasterfn:
+        raster = gdal.Open(rasterfn)
+        geo_transform = raster.GetGeoTransform()
+        origin_x, pixel_width, _, origin_y, _, pixel_height = geo_transform
+        out_raster.SetGeoTransform((origin_x, pixel_width, 0, origin_y, 0,
+                                    pixel_height))
+        out_raster_srs = osr.SpatialReference()
+        out_raster_srs.ImportFromWkt(raster.GetProjectionRef())
+        out_raster.SetProjection(out_raster_srs.ExportToWkt())
 
+    out_band = out_raster.GetRasterBand(1)
+    out_band.WriteArray(array)
+    out_band.FlushCache()
 
 
 def detect_apply_fourier(image_to_correct):
@@ -123,15 +105,15 @@ def process_srtm(srtm_fourier, tree_classification):
     Perform the processing corresponding to SRTM file.
     """
     srtm_fourier_sua = QuadraticFilter(window_size=15).apply(srtm_fourier)
-    dem_highlighted = srtm_fourier - srtm_fourier_sua
-    mask_height_greater_than_15_mt = (dem_highlighted > 1.5) * 1.0
+    dem_highlighted = SubtractionFilter(minuend=srtm_fourier).apply(
+        srtm_fourier_sua)
+    mask_tall_trees = (dem_highlighted > 1.5) * 1.0
     tree_class = ndimage.binary_closing(tree_classification, np.ones((3, 3)))
-    tree_class_height_15_mt = tree_class * mask_height_greater_than_15_mt
+    tree_class_height_15_mt = tree_class * mask_tall_trees
     tree_class_height_15_mt_compl = 1 - tree_class_height_15_mt
     trees_removed = dem_highlighted * tree_class_height_15_mt_compl
     dem_corrected_15 = trees_removed + srtm_fourier_sua
     return dem_corrected_15
-
 
 
 def resample_and_cut(orig_image, shape_file, target_path):
@@ -200,18 +182,6 @@ def get_shape_over_area(shape_area_input, shape_over_area):
 
     # Save and close DataSource
     outDataSource.Destroy()
-
-def get_lagoons_hsheds(hsheds_input):
-    hsheds_maj_filter11 = MajorityFilter(window_size=11).apply(hsheds_input)
-    hsheds_maj_filter11_ero2 = \
-        BinaryErosion(iterations=2).apply(hsheds_maj_filter11)
-    hsheds_maj_filter11_ero2_expand7 = \
-        ExpandFilter(window_size=7).apply(hsheds_maj_filter11_ero2)
-    hsheds_maj11_ero2_expand7_prod_maj11 = \
-        hsheds_maj_filter11_ero2_expand7 * hsheds_maj_filter11
-    hsheds_mask_lagoons_values = ndimage.grey_dilation(
-        hsheds_maj11_ero2_expand7_prod_maj11, size=(7, 7))
-    return hsheds_mask_lagoons_values
 
 
 def clip_lines_vector(lines_vector, polygon_vector, lines_output):

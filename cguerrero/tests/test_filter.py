@@ -6,13 +6,12 @@ from numpy import testing
 from cguerrero.hydrodem.filters import (MajorityFilter, ExpandFilter,
                                         EnrouteRivers, QuadraticFilter,
                                         CorrectNANValues, IsolatedPoints,
-                                        BlanksFourier, MaskFourier)
+                                        BlanksFourier, MaskFourier,
+                                        LagoonsDetection)
 from cguerrero.hydrodem.utils_dem import (array2raster,
-                                          detect_apply_fourier,
-                                          array2raster_simple, process_srtm,
+                                          detect_apply_fourier, process_srtm,
                                           resample_and_cut,
                                           get_shape_over_area,
-                                          get_lagoons_hsheds,
                                           clip_lines_vector,
                                           process_rivers, uncompress_zip_file)
 from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
@@ -62,21 +61,20 @@ class Test_filter(TestCase):
         os.removedirs(OUTPUT_FOLDER)
         # pass
 
-
-    def test_array2raster(self):
+    def test_array2raster_georeferenced(self):
         raster = gdal.Open(GEO_IMAGE)
         array = raster.ReadAsArray()
-        array2raster(GEO_IMAGE, OUTPUT_GEO_IMAGE, array)
+        array2raster(OUTPUT_GEO_IMAGE, array, GEO_IMAGE)
         raster_new = gdal.Open(OUTPUT_GEO_IMAGE)
         array_new = raster_new.ReadAsArray()
         testing.assert_array_equal(array, array_new)
         self.assertEqual(raster.GetGeoTransform(),
                          raster_new.GetGeoTransform())
 
-    def test_array2raster_simple(self):
+    def test_array2raster_no_georeferenced(self):
         raster = gdal.Open(GEO_IMAGE)
         array = raster.ReadAsArray()
-        array2raster_simple(OUTPUT_GEO_IMAGE, array)
+        array2raster(OUTPUT_GEO_IMAGE, array)
         raster_new = gdal.Open(OUTPUT_GEO_IMAGE)
         array_new = raster_new.ReadAsArray()
         testing.assert_array_equal(array, array_new)
@@ -148,7 +146,7 @@ class Test_filter(TestCase):
     def test_detect_apply_fourier(self):
         srtm_raw = gdal.Open(SRTM_STRIPPED).ReadAsArray()
         srtm_corrected = detect_apply_fourier(srtm_raw)
-        array2raster_simple(SRTM_CORRECTED, srtm_corrected)
+        array2raster(SRTM_CORRECTED, srtm_corrected)
         srtm_corrected_open = gdal.Open(SRTM_CORRECTED).ReadAsArray()
         srtm_expected = gdal.Open(SRTM_WITHOUT_STRIPS).ReadAsArray()
         testing.assert_array_equal(srtm_corrected_open, srtm_expected)
@@ -157,7 +155,7 @@ class Test_filter(TestCase):
         mask_trees = gdal.Open(MASK_TREES).ReadAsArray()
         srtm_to_process = gdal.Open(SRTM_WITHOUT_STRIPS).ReadAsArray()
         srtm_processed = process_srtm(srtm_to_process, mask_trees)
-        array2raster_simple(SRTM_PROCESSED_OUTPUT, srtm_processed)
+        array2raster(SRTM_PROCESSED_OUTPUT, srtm_processed)
         srtm_processed_saved = \
             np.around(gdal.Open(SRTM_PROCESSED_OUTPUT).ReadAsArray())
         srtm_expected = np.around(gdal.Open(SRTM_PROCESSED).ReadAsArray())
@@ -178,7 +176,7 @@ class Test_filter(TestCase):
 
     def test_get_lagoons(self):
         hydro_sheds = gdal.Open(HYDRO_SHEDS).ReadAsArray()
-        lagoons_detected = get_lagoons_hsheds(hydro_sheds)
+        lagoons_detected = LagoonsDetection().apply(hydro_sheds)
         lagoons_expected = gdal.Open(LAGOONS_DETECTED).ReadAsArray()
         testing.assert_array_equal(lagoons_detected, lagoons_expected)
 
