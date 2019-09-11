@@ -12,14 +12,12 @@ import ogr
 import osr
 from osgeo import gdal
 from scipy import fftpack
-from scipy import ndimage
-from scipy.ndimage.morphology import binary_closing
+
 
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
-from .filters import (ExpandFilter, EnrouteRivers, QuadraticFilter,
-                      MaskPositives, MaskFourier, SubtractionFilter)
+from .filters import (MaskFourier, ProcessRivers, ClipLagoonsRivers)
 
 
 def array2raster(new_rasterfn, array, rasterfn=None):
@@ -100,20 +98,26 @@ def detect_apply_fourier(image_to_correct):
     return corrected_image
 
 
-def process_srtm(srtm_fourier, tree_classification):
-    """
-    Perform the processing corresponding to SRTM file.
-    """
-    srtm_fourier_sua = QuadraticFilter(window_size=15).apply(srtm_fourier)
-    dem_highlighted = SubtractionFilter(minuend=srtm_fourier).apply(
-        srtm_fourier_sua)
-    mask_tall_trees = (dem_highlighted > 1.5) * 1.0
-    tree_class = ndimage.binary_closing(tree_classification, np.ones((3, 3)))
-    tree_class_height_15_mt = tree_class * mask_tall_trees
-    tree_class_height_15_mt_compl = 1 - tree_class_height_15_mt
-    trees_removed = dem_highlighted * tree_class_height_15_mt_compl
-    dem_corrected_15 = trees_removed + srtm_fourier_sua
-    return dem_corrected_15
+# def process_srtm(srtm_fourier, tree_classification):
+#     """
+#     Perform the processing corresponding to SRTM file.
+#     """
+#
+#     tree_class = BinaryClosing(structure=np.ones((3, 3))).apply(tree_classification)
+#
+#     # srtm_fourier_sua = QuadraticFilter(window_size=15).apply(srtm_fourier)
+#     # dem_highlighted = SubtractionFilter(minuend=srtm_fourier).apply(srtm_fourier_sua)
+#     # mask_tall_trees = MaskTallTrees().apply(dem_highlighted)
+#     # tree_height_15_mt = ProductFilter(factor=tree_class).apply(mask_tall_trees)
+#     # tree_height_15_mt_compl = SubtractionFilter(minuend=1).apply(tree_height_15_mt)
+#     #
+#     #
+#     # trees_removed = dem_highlighted * tree_height_15_mt_compl
+#     # dem_corrected_15 = srtm_fourier_sua + trees_removed
+#     # return dem_corrected_15
+#
+#     return SRTMProcess(tree_class).apply(srtm_fourier)
+
 
 
 def resample_and_cut(orig_image, shape_file, target_path):
@@ -221,30 +225,26 @@ def clip_lines_vector(lines_vector, polygon_vector, lines_output):
     outDataSource.Destroy()
 
 
-def process_rivers(hsheds_area_interest, hsheds_mask_lagoons, rivers_shape):
+def process_rivers(hsheds, mask_lagoons, rivers):
     """
     Get rivers from hsheds DEM
-    :param hsheds_area_interest: DEM HSHEDS to get rivers
-    :param hsheds_mask_lagoons: Mask Lagoons to exclude from rivers
+    :param hsheds: DEM HSHEDS to get rivers
+    :param mask_lagoons: Mask Lagoons to exclude from rivers
     :return: Rivers detected
     """
+    rivers_routed = ProcessRivers(hsheds).apply(rivers)
+    return ClipLagoonsRivers(mask_lagoons, rivers_routed).apply(rivers_routed)
+
+
+def rasterize_rivers(rivers_shape, rivers_tif):
+
     pixel_size = 90
     gdr_options = gdal.RasterizeOptions(attribute='UP_CELLS',
                                         yRes=pixel_size, xRes=pixel_size,
                                         outputType=gdal.GDT_Float32,
                                         layers='rivers_area_interest')
-    gdal.Rasterize(RIVERS_TIF, rivers_shape, options=gdr_options)
-    rivers = gdal.Open(RIVERS_TIF).ReadAsArray()
-    mask_rivers = MaskPositives().apply(rivers)
-    mask_rivers_expanded3 = ExpandFilter(window_size=3).apply(mask_rivers)
-    rivers_routed = EnrouteRivers(window_size=3).apply(hsheds_area_interest,
-                                                       mask_rivers_expanded3)
-    rivers_routed_closing = binary_closing(rivers_routed)
-    intersection_lag_can = rivers_routed_closing * hsheds_mask_lagoons
-    intersection_lag_can_mask = MaskPositives().apply(intersection_lag_can)
-    rivers_routed_closing = np.bitwise_xor(rivers_routed_closing,
-                                           intersection_lag_can_mask)
-    return rivers_routed_closing
+    gdal.Rasterize(rivers_tif, rivers_shape, options=gdr_options)
+
 
 def uncompress_zip_file(zip_file):
     """

@@ -7,7 +7,7 @@ from collections import Counter
 import numpy as np
 from hydrodem.sliding_window import (SlidingWindow, CircularWindow,
                                      NoCenterWindow, IgnoreBorderInnerSliding)
-from scipy.ndimage import binary_erosion, grey_dilation
+from scipy.ndimage import binary_erosion, binary_closing, grey_dilation
 
 
 class Filter(ABC):
@@ -37,6 +37,15 @@ class ComposedFilter(Filter):
         for filter in self.filters:
             content = filter.apply(content)
         return content
+
+
+class BitwiseXOR(Filter):
+
+    def __init__(self, *, operand):
+        self.operand = copy.deepcopy(operand)
+
+    def apply(self, image_to_filter):
+        return np.bitwise_xor(self.operand, image_to_filter)
 
 class MajorityFilter(Filter):
     """
@@ -70,6 +79,17 @@ class BinaryErosion(Filter):
         return binary_erosion(image_to_filter, iterations=self.iterations)
 
 
+class BinaryClosing(Filter):
+    """
+    Represents the Mmajority Filter
+    """
+
+    def __init__(self, *, structure=None):
+        self.structure = structure
+
+    def apply(self, image_to_filter):
+        return binary_closing(image_to_filter, structure=self.structure)
+
 class ExpandFilter(Filter):
     """
     The value assigned to the center will be 1 if at least one pixel
@@ -93,16 +113,16 @@ class EnrouteRivers(Filter):
     Apply homogeneity to canyons. Specific defined for images with flow stream.
     """
 
-    def __init__(self, *, window_size):
+    def __init__(self, *, window_size, dem):
         self.window_size = window_size
+        self.dem = copy.deepcopy(dem)
 
-    def apply(self, dem_in, mask_rivers):
-        dem = copy.deepcopy(dem_in)
+    def apply(self, mask_rivers):
         left_up = self.window_size // 2
-        rivers_enrouted = np.zeros(dem.shape)
+        rivers_enrouted = np.zeros(self.dem.shape)
         sliding = SlidingWindow(mask_rivers, window_size=self.window_size,
                                 iter_over_ones=True)
-        dem_sliding = SlidingWindow(dem, window_size=self.window_size)
+        dem_sliding = SlidingWindow(self.dem, window_size=self.window_size)
         for _, (j, i) in sliding:
             window_dem = dem_sliding[j, i]
             neighbour_min = np.amin(window_dem.ravel())
@@ -202,6 +222,11 @@ class MaskPositives(ComposedFilter):
         self.filters = [GreaterThan(value=0.0), BooleanToInteger()]
 
 
+class MaskTallTrees(ComposedFilter):
+
+    def __init__(self):
+        self.filters = [GreaterThan(value=1.5), BooleanToInteger()]
+
 class IsolatedPoints(Filter):
 
     def __init__(self, *, window_size):
@@ -278,9 +303,19 @@ class ProductFilter(Filter):
         return self.factor * factor
 
 
+class AdditionFilter(Filter):
+
+    def __init__(self, adding=0):
+        # TODO Conditions about types.
+        self.adding = adding
+
+    def apply(self, adding):
+        return self.adding + adding
+
+
 class SubtractionFilter(Filter):
 
-    def __init__(self, *, minuend):
+    def __init__(self, *, minuend=0.0):
         self.minuend = minuend
 
     def apply(self, subtracting):
@@ -314,3 +349,45 @@ class TidyingLagoons(ComposedFilter):
 class LagoonsDetection(ComposedFilter):
     def __init__(self):
         self.filters = [MajorityFilter(window_size=11), TidyingLagoons()]
+
+
+class SRTMProcess(ComposedFilter):
+
+    def __init__(self, tree_class):
+        self.partial_results = []
+        self.filters = [QuadraticFilter(window_size=15), SubtractionFilter(),
+                        MaskTallTrees(), ProductFilter(factor=tree_class),
+                        SubtractionFilter(minuend=1)]
+
+    def apply(self, image_to_filter):
+        self.filters[1].minuend = content = image_to_filter
+        for filter in self.filters:
+            content = filter.apply(content)
+            self.partial_results.append(copy.deepcopy(content))
+
+        final_addition = AdditionFilter(adding=self.partial_results[0])
+        final_product = ProductFilter(factor=self.partial_results[1])
+        self.filters = [final_product, final_addition]
+        return super().apply(content)
+
+
+class SRTMProcessIterations(ComposedFilter):
+
+    def __init__(self, tree_class):
+        self.filters = [SRTMProcess(tree_class), SRTMProcess(tree_class),
+                        SRTMProcess(tree_class)]
+
+
+class ProcessRivers(ComposedFilter):
+
+    def __init__(self, hsheds):
+        self.filters = [MaskPositives(), ExpandFilter(window_size=3),
+                        EnrouteRivers(window_size=3, dem=hsheds),
+                        BinaryClosing()]
+
+
+class ClipLagoonsRivers(ComposedFilter):
+
+    def __init__(self, mask_lagoons, rivers_routed_closing):
+        self.filters = [ProductFilter(factor=mask_lagoons), MaskPositives(),
+                        BitwiseXOR(operand=rivers_routed_closing)]

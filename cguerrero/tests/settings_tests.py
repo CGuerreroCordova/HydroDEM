@@ -45,6 +45,7 @@ MASK_INPUT_RIVER_ROUTING = os.path.join(INPUTS_FOLDER,
                                             'MASK_RIVERS_ROUTING'])
 RIVERS_ROUTED_EXPECTED = os.path.join(EXPECTED_FOLDER,
                                       config['EXPECTED']['RIVERS_ROUTED'])
+RASTER_RIVERS = os.path.join(INPUTS_FOLDER, config['INPUTS']['RASTER_RIVERS'])
 
 # Test Quadratic Filter
 SRTM_INPUT_QUADRATIC = os.path.join(INPUTS_FOLDER,

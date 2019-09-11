@@ -15,17 +15,19 @@ from osgeo import gdal
 from scipy import ndimage
 from .utils_dem import (clean_workspace, uncompress_zip_file, resample_and_cut,
                         get_shape_over_area, detect_apply_fourier,
-                        process_srtm, clip_lines_vector, process_rivers,
-                        array2raster)
+                        clip_lines_vector, process_rivers,
+                        array2raster, rasterize_rivers)
 from .settings import (RIVERS_ZIP, HSHEDS_FILE_INPUT_ZIP,
-                       HSHEDS_FILE_INPUT, HSHEDS_FILE_TIFF, SRTM_FILE_INPUT_ZIP,
+                       HSHEDS_FILE_INPUT, HSHEDS_FILE_TIFF,
+                       SRTM_FILE_INPUT_ZIP,
                        SRTM_FILE_INPUT, SHAPE_AREA_INTEREST_INPUT,
                        SHAPE_AREA_INTEREST_OVER, TREE_CLASS_INPUT_ZIP,
                        TREE_CLASS_INPUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        RIVERS_FULL, RIVERS_SHAPE, FINAL_DEM, PROFILE_FILE,
-                       MEMORY_TIME_FILE)
-from filters import LagoonsDetection
+                       MEMORY_TIME_FILE, RIVERS_TIF)
+from filters import (LagoonsDetection, SRTMProcess, BinaryClosing,
+                     SRTMProcessIterations)
 
 from .filters import CorrectNANValues, MaskPositives
 
@@ -77,11 +79,9 @@ class HydroDEMProcess(object):
         print("Processing SRTM.")
         print("Processing SRTM: First Iteration.")
         tree_class_raw = gdal.Open(TREE_CLASS_AREA).ReadAsArray()
-        srtm_proc1 = process_srtm(srtm_fourier, tree_class_raw)
-        print("Processing SRTM: Second Iteration.")
-        srtm_proc2 = process_srtm(srtm_proc1, tree_class_raw)
-        print("Processing SRTM: Third Iteration.")
-        srtm_proc = process_srtm(srtm_proc2, tree_class_raw)
+        tree_class = \
+            BinaryClosing(structure=np.ones((3, 3))).apply(tree_class_raw)
+        srtm_proc = SRTMProcessIterations(tree_class).apply(srtm_fourier)
         print("Processing HSHEDS.")
         hydro_sheds = gdal.Open(HSHEDS_AREA_INTEREST_OVER).ReadAsArray()
         hydro_sheds_corrected_nan = CorrectNANValues().apply(hydro_sheds)
@@ -91,9 +91,12 @@ class HydroDEMProcess(object):
         print("Processing Rivers.")
         uncompress_zip_file(RIVERS_ZIP)
         clip_lines_vector(RIVERS_FULL, SHAPE_AREA_INTEREST_OVER, RIVERS_SHAPE)
+        rasterize_rivers(RIVERS_SHAPE, RIVERS_TIF)
+        rivers = gdal.Open(RIVERS_TIF).ReadAsArray()
+
         rivers_routed_closing = process_rivers(hydro_sheds_corrected_nan,
                                                hsheds_mask_lagoons,
-                                               RIVERS_SHAPE)
+                                               rivers)
         print("Getting terms for final merging.")
         first_term_hsheds_canyons = hydro_sheds_corrected_nan * \
                                     rivers_routed_closing

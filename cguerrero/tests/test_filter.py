@@ -9,7 +9,7 @@ from cguerrero.hydrodem.filters import (MajorityFilter, ExpandFilter,
                                         BlanksFourier, MaskFourier,
                                         LagoonsDetection)
 from cguerrero.hydrodem.utils_dem import (array2raster,
-                                          detect_apply_fourier, process_srtm,
+                                          detect_apply_fourier,
                                           resample_and_cut,
                                           get_shape_over_area,
                                           clip_lines_vector,
@@ -23,7 +23,7 @@ from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             HSHEDS_INPUT_NAN, HSHEDS_NAN_CORRECTED,
                             MASK_ISOLATED, MASK_ISOLATED_FILTERED,
                             QUARTER_FOURIER, FILTERED_FOURIER_1,
-                            FILTERED_FOURIER_2, FIRST_QUARTER,
+                            FILTERED_FOURIER_2, FIRST_QUARTER, RASTER_RIVERS,
                             FIRST_MASK_FOURIER, SRTM_STRIPPED,
                             SRTM_WITHOUT_STRIPS, SRTM_CORRECTED, MASK_TREES,
                             SRTM_PROCESSED, HSHEDS_FILE_TIFF,
@@ -95,8 +95,8 @@ class Test_filter(TestCase):
     def test_route_rivers(self):
         hsheds_input = gdal.Open(HSHEDS_INPUT_RIVER_ROUTING).ReadAsArray()
         mask_rivers = gdal.Open(MASK_INPUT_RIVER_ROUTING).ReadAsArray()
-        rivers_routed = EnrouteRivers(window_size=3).apply(hsheds_input,
-                                                           mask_rivers)
+        rivers_routed = EnrouteRivers(window_size=3, dem=hsheds_input).apply(
+            mask_rivers)
         rivers_routed_expected = gdal.Open(
             RIVERS_ROUTED_EXPECTED).ReadAsArray()
         testing.assert_array_equal(rivers_routed, rivers_routed_expected)
@@ -151,15 +151,6 @@ class Test_filter(TestCase):
         srtm_expected = gdal.Open(SRTM_WITHOUT_STRIPS).ReadAsArray()
         testing.assert_array_equal(srtm_corrected_open, srtm_expected)
 
-    def test_process_srtm(self):
-        mask_trees = gdal.Open(MASK_TREES).ReadAsArray()
-        srtm_to_process = gdal.Open(SRTM_WITHOUT_STRIPS).ReadAsArray()
-        srtm_processed = process_srtm(srtm_to_process, mask_trees)
-        array2raster(SRTM_PROCESSED_OUTPUT, srtm_processed)
-        srtm_processed_saved = \
-            np.around(gdal.Open(SRTM_PROCESSED_OUTPUT).ReadAsArray())
-        srtm_expected = np.around(gdal.Open(SRTM_PROCESSED).ReadAsArray())
-        testing.assert_array_equal(srtm_processed_saved, srtm_expected)
 
     def test_resample_and_cut(self):
         resample_and_cut(HSHEDS_FILE_TIFF, SHAPE_AREA_INTEREST_OVER,
@@ -188,8 +179,9 @@ class Test_filter(TestCase):
     def test_process_rivers(self):
         hsheds_nan_corrected = gdal.Open(HSHEDS_NAN_CORRECTED).ReadAsArray()
         mask_lagoons = gdal.Open(MASK_LAGOONS).ReadAsArray()
+        rivers = gdal.Open(RASTER_RIVERS).ReadAsArray()
         rivers_processed = process_rivers(hsheds_nan_corrected, mask_lagoons,
-                                          RIVERS_AREA_INPUT)
+                                          rivers)
         rivers_processed_expected = \
             gdal.Open(RIVERS_PROCESSED).ReadAsArray()
         testing.assert_array_equal(rivers_processed, rivers_processed_expected)
