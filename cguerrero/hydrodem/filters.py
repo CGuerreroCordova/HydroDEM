@@ -8,7 +8,7 @@ import numpy as np
 from hydrodem.sliding_window import (SlidingWindow, CircularWindow,
                                      NoCenterWindow, IgnoreBorderInnerSliding)
 from scipy.ndimage import binary_erosion, binary_closing, grey_dilation
-
+from scipy import fftpack
 
 class Filter(ABC):
     """
@@ -391,3 +391,198 @@ class ClipLagoonsRivers(ComposedFilter):
     def __init__(self, mask_lagoons, rivers_routed_closing):
         self.filters = [ProductFilter(factor=mask_lagoons), MaskPositives(),
                         BitwiseXOR(operand=rivers_routed_closing)]
+
+
+class FourierTransform(Filter):
+
+    def apply(self, image_to_filter):
+        return fftpack.fft2(image_to_filter)
+
+
+class FourierITransform(Filter):
+
+    def apply(self, image_to_filter):
+        return fftpack.ifft2(image_to_filter)
+
+
+class FourierShift(Filter):
+
+    def apply(self, image_to_filter):
+        return fftpack.fftshift(image_to_filter)
+
+
+class FourierIShift(Filter):
+
+    def apply(self, image_to_filter):
+        return fftpack.ifftshift(image_to_filter)
+
+
+class AbsolutValues(Filter):
+
+    def apply(self, image_to_filter):
+        return np.abs(image_to_filter)
+
+
+class FourierInitial(ComposedFilter):
+    def __init__(self):
+        self.results = dict()
+        self.filters = [FourierTransform(), FourierShift(), AbsolutValues()]
+
+    def apply(self, image_to_filter):
+        content = image_to_filter
+        for filter in self.filters:
+            content = filter.apply(content)
+            self.results[filter.__class__.__name__] = content
+        return content
+
+
+class FourierProcessQuarters(Filter):
+
+    def __init__(self, fft_transform_abs):
+        self._filters = [self._get_firsts_quarters,
+                         self._apply_mask_fourier,
+                         self._fill_complete_quarters,
+                         self._getting_reversed_masks,
+                         self._fill_complete_mask]
+        self.fft_transform_abs = fft_transform_abs
+        self._ny, self._nx = fft_transform_abs.shape
+        self._mid_y, self._y_odd = divmod(self._ny, 2)
+        self._mid_x, self._x_odd = divmod(self._nx, 2)
+        self._margin = 10
+
+    def apply(self, *args):
+        content = None
+        for filter in self._filters:
+            content = filter(content)
+        return content
+
+    def _get_firsts_quarters(self, args=None):
+        """
+        Get first (upper left) and second (upper right) quarter from Fourier
+        transform image, removing central strip with a .
+        """
+        fst_quarter_fourier = \
+            self.fft_transform_abs[:self._mid_y - self._margin,
+            :self._mid_x - self._margin]
+        snd_quarter_fourier = \
+            self.fft_transform_abs[:self._mid_y - self._margin,
+            self._mid_x + self._margin +
+            self._x_odd:self._nx]
+        return fst_quarter_fourier, snd_quarter_fourier
+
+    def _apply_mask_fourier(self, quarters):
+        """
+        Apply detection blanks fourier algorithm to first two quarters of the
+        image.
+
+        Parameters
+        ----------
+        quarters: tuple(ndarray, ndarray)
+            images to apply fourier blank detection
+
+        Returns
+        -------
+            tuple(ndarray, ndarray)
+                tuple of masks of blank fourier detected for each quarter
+        """
+        mask_quarters = tuple(map(MaskFourier().apply, quarters))
+        return mask_quarters
+
+    def _fill_complete_quarters(self, quarters):
+        """
+        Create quarters of base image with zeros values (these quarters
+        contains also margin and central line). After creation these quarters
+        are filled with quarters input. They suposed to be mask of blank fourier
+        detected previously.
+
+        Parameters
+        ----------
+        quarters: tuple(ndarray, ndarray)
+            quarters that are going to be place inside the quarter of real size
+            the image
+
+        Returns
+        -------
+        first and second quarters of real size of the image filled with mask
+        fourier detected.
+        """
+        fst_complete_quarter = np.zeros((self._mid_y, self._mid_x))
+        snd_complete_quarter = np.zeros((self._mid_y, self._mid_x))
+        fst_complete_quarter[:self._mid_y - self._margin,
+        :self._mid_x - self._margin] = quarters[0]
+        snd_complete_quarter[:self._mid_y - self._margin,
+        self._margin:self._mid_x] = quarters[1]
+        return fst_complete_quarter, snd_complete_quarter
+
+    def _getting_reverse_indices(self):
+        """
+        Get indices mesh of images reversed
+
+        Returns
+        -------
+            Combination of pairs of indices to reverse some image.
+        """
+        reverse_x = (self._mid_x - 1) - np.arange(self._mid_x)
+        reverse_y = (self._mid_y - 1) - np.arange(self._mid_y)
+        indices = np.ix_(reverse_y, reverse_x)
+        return indices
+
+    def _getting_reversed_masks(self, quarters):
+        """
+        Create images reversed of input images.
+
+        Parameters
+        ----------
+        quarters: tuple(ndarray, ndarray)
+            images to be reversed
+
+        Returns
+        -------
+            tuple(ndarray, ndarray, ndarray, ndarray)
+                tuple of four images, the first two are the input images, while
+                the second ones are the reversed images.
+        """
+        indices = self._getting_reverse_indices()
+        trd_complete_quarter = quarters[1][indices]
+        fth_complete_quarter = quarters[0][indices]
+
+        return (quarters[0], quarters[1], trd_complete_quarter,
+                fth_complete_quarter)
+
+    def _fill_complete_mask(self, quarters):
+        """
+        Assemble the complete fourier mask using quarters provided as input
+
+        Parameters
+        ----------
+        quarters: tuple(ndarray, ndarray, ndarray, ndarray)
+            images needed to assemble the final fourier mask.
+        Returns
+        -------
+            ndarray
+                fourier mask complete.
+        """
+        masks_fourier = np.zeros((self._ny, self._nx))
+        masks_fourier[:self._mid_y, :self._mid_x] = quarters[0]
+        masks_fourier[:self._mid_y,
+        self._mid_x + self._x_odd:self._nx] = quarters[1]
+        masks_fourier[self._mid_y + self._y_odd:self._ny,
+        :self._mid_x] = quarters[2]
+        masks_fourier[self._mid_y + self._y_odd:self._ny,
+        self._mid_x + self._x_odd:self._nx] = quarters[3]
+        return masks_fourier
+
+
+class DetectApplyFourier(ComposedFilter):
+    def __init__(self):
+        self.initial = FourierInitial()
+
+    def apply(self, image_to_filter):
+        self.fft_transform_abs = self.initial.apply(image_to_filter)
+        self.filters = [FourierProcessQuarters(self.fft_transform_abs),
+                        SubtractionFilter(minuend=1),
+                        ProductFilter(
+                            factor=self.initial.results["FourierShift"]),
+                        FourierIShift(), FourierITransform()]
+        content = None
+        return super().apply(content)

@@ -1,5 +1,5 @@
 __author__ = "Cristian Guerrero Cordova"
-__copyright__ = "Copyright 2017"
+__copyright__ = "Copyright 2019"
 __credits__ = ["Cristian Guerrero Cordova"]
 __version__ = "0.1"
 __email__ = "cguerrerocordova@gmail.com"
@@ -7,18 +7,12 @@ __status__ = "Developing"
 
 import os
 import zipfile
-import numpy as np
 import ogr
 import osr
 from osgeo import gdal
-from scipy import fftpack
-
-
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
                        SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
-from .filters import (MaskFourier, ProcessRivers, ClipLagoonsRivers)
-
 
 def array2raster(new_rasterfn, array, rasterfn=None):
     """
@@ -27,7 +21,6 @@ def array2raster(new_rasterfn, array, rasterfn=None):
     Georeference is taken from rasterfn file.
     rasterfn and new_rasterfn must be strings with pathfile.
     """
-
     rows, cols = array.shape
     driver = gdal.GetDriverByName('GTiff')
     out_raster = driver.Create(new_rasterfn, cols, rows, 1, gdal.GDT_Float32)
@@ -45,57 +38,6 @@ def array2raster(new_rasterfn, array, rasterfn=None):
     out_band = out_raster.GetRasterBand(1)
     out_band.WriteArray(array)
     out_band.FlushCache()
-
-
-def detect_apply_fourier(image_to_correct):
-    """
-    Detect blanks in Fourier transform image, create mask and apply fourier.
-    """
-    fourier_transform = fftpack.fft2(image_to_correct)
-    fourier_transform_shifted = fftpack.fftshift(fourier_transform)
-    fft_transform_abs = np.abs(fourier_transform_shifted)
-    ny, nx = fft_transform_abs.shape
-    x_odd = nx & 1
-    y_odd = ny & 1
-    middle_x = int(nx // 2)
-    middle_y = int(ny // 2)
-    margin = 10
-    fst_quarter_fourier = fft_transform_abs[:middle_y - margin, :middle_x -
-                                                                 margin]
-    snd_quarter_fourier = fft_transform_abs[:middle_y - margin, middle_x +
-                                                                margin +
-                                                                x_odd:nx]
-    # p = Pool(2)
-    # masks_fourier = p.map(get_mask_fourier, [fst_quarter_fourier,
-    #                                          snd_quarter_fourier])
-    # first_quarter_mask = masks_fourier[0]
-    # second_quarter_mask = masks_fourier[1]}
-    first_quarter_mask = MaskFourier().apply(fst_quarter_fourier)
-    second_quarter_mask = MaskFourier().apply(snd_quarter_fourier)
-    fst_complete_quarter = np.zeros((middle_y, middle_x))
-    snd_complete_quarter = np.zeros((middle_y, middle_x))
-    fst_complete_quarter[0:middle_y - margin, 0:middle_x - margin] = \
-        first_quarter_mask
-    snd_complete_quarter[0:middle_y - margin, margin:middle_x] = \
-        second_quarter_mask
-    reverse_x = (middle_x - 1) - np.arange(0, middle_x)
-    reverse_y = (middle_y - 1) - np.arange(0, middle_y)
-    indices = np.ix_(reverse_y, reverse_x)
-    fth_complete_quarter = fst_complete_quarter[indices]
-    trd_complete_quarter = snd_complete_quarter[indices]
-
-    masks_fourier = np.zeros((2 * middle_y + y_odd, 2 * middle_x + x_odd))
-    masks_fourier[0:middle_y, 0:middle_x] = fst_complete_quarter
-    masks_fourier[0:middle_y, middle_x + x_odd:nx] = snd_complete_quarter
-    masks_fourier[middle_y + y_odd:ny, 0:middle_x] = trd_complete_quarter
-    masks_fourier[middle_y + y_odd:ny, middle_x + x_odd:nx] = \
-        fth_complete_quarter
-    complement_mask_fourier = 1 - masks_fourier
-    fourier_transform_corrected = fourier_transform_shifted \
-                                  * complement_mask_fourier
-    shifted = fftpack.ifftshift(fourier_transform_corrected)
-    corrected_image = fftpack.ifft2(shifted)
-    return corrected_image
 
 
 # def process_srtm(srtm_fourier, tree_classification):
@@ -225,15 +167,15 @@ def clip_lines_vector(lines_vector, polygon_vector, lines_output):
     outDataSource.Destroy()
 
 
-def process_rivers(hsheds, mask_lagoons, rivers):
-    """
-    Get rivers from hsheds DEM
-    :param hsheds: DEM HSHEDS to get rivers
-    :param mask_lagoons: Mask Lagoons to exclude from rivers
-    :return: Rivers detected
-    """
-    rivers_routed = ProcessRivers(hsheds).apply(rivers)
-    return ClipLagoonsRivers(mask_lagoons, rivers_routed).apply(rivers_routed)
+# def process_rivers(hsheds, mask_lagoons, rivers):
+#     """
+#     Get rivers from hsheds DEM
+#     :param hsheds: DEM HSHEDS to get rivers
+#     :param mask_lagoons: Mask Lagoons to exclude from rivers
+#     :return: Rivers detected
+#     """
+#     rivers_routed = ProcessRivers(hsheds).apply(rivers)
+#     return ClipLagoonsRivers(mask_lagoons, rivers_routed).apply(rivers_routed)
 
 
 def rasterize_rivers(rivers_shape, rivers_tif):
