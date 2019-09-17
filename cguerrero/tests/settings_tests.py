@@ -22,7 +22,7 @@ EXPECTED_ZIP = os.path.join(RESOURCES_FOLDER,
 # Test saving images
 GEO_IMAGE = os.path.join(INPUTS_FOLDER,
                          config['INPUTS']['GEO_IMAGE'])
-OUTPUT_GEO_IMAGE = os.path.join(INPUTS_FOLDER,
+OUTPUT_GEO_IMAGE = os.path.join(OUTPUT_FOLDER,
                                 config['OUTPUTS']['OUTPUT_GEO_IMAGE'])
 
 # Test Majority Filter

@@ -11,7 +11,7 @@ import ogr
 import osr
 from osgeo import gdal
 from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
-                       SRTM_AREA_INTEREST_OVER, HSHEDS_AREA_INTEREST_OVER,
+                       SRTM_AREA_OVER, HSHEDS_AREA_OVER,
                        HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
 
 def array2raster(new_rasterfn, array, rasterfn=None):
@@ -58,7 +58,7 @@ def array2raster(new_rasterfn, array, rasterfn=None):
 #     # dem_corrected_15 = srtm_fourier_sua + trees_removed
 #     # return dem_corrected_15
 #
-#     return SRTMProcess(tree_class).apply(srtm_fourier)
+#     return GrovesCorrection(tree_class).apply(srtm_fourier)
 
 
 
@@ -83,7 +83,7 @@ def resample_and_cut(orig_image, shape_file, target_path):
         pass
 
 
-def get_shape_over_area(shape_area_input, shape_over_area):
+def shape_enveloping(shape_area_input, shape_over_area):
     """
     Create a rectangular shape file covering all area of interest and
     parallel to the equator.
@@ -188,7 +188,7 @@ def rasterize_rivers(rivers_shape, rivers_tif):
     gdal.Rasterize(rivers_tif, rivers_shape, options=gdr_options)
 
 
-def uncompress_zip_file(zip_file):
+def unzip_resource(zip_file):
     """
     Uncompress zip file
     :param zip_file: path where file to uncompress is located
@@ -200,8 +200,8 @@ def uncompress_zip_file(zip_file):
 
 
 def clean_workspace():
-    to_clean = [TREE_CLASS_AREA, SRTM_AREA_INTEREST_OVER, SRTM_FILE_INPUT,
-                HSHEDS_AREA_INTEREST_OVER, RIVERS_TIF, HSHEDS_FILE_TIFF,
+    to_clean = [TREE_CLASS_AREA, SRTM_AREA_OVER, SRTM_FILE_INPUT,
+                HSHEDS_AREA_OVER, RIVERS_TIF, HSHEDS_FILE_TIFF,
                 TREE_CLASS_INPUT]
     for file in to_clean:
         try:

@@ -14,8 +14,8 @@ SRTM_FILE_INPUT_ZIP = os.path.join(INPUTS_FOLDER,
                                    config['SRTM']['SRTM_FILE_INPUT_ZIP'])
 SRTM_FILE_INPUT = os.path.join(INPUTS_FOLDER,
                                config['SRTM']['SRTM_FILE_INPUT'])
-SRTM_AREA_INTEREST_OVER = os.path.join(INPUTS_FOLDER,
-                                       config['SRTM'][
+SRTM_AREA_OVER = os.path.join(INPUTS_FOLDER,
+                              config['SRTM'][
                                            'SRTM_AREA_INTEREST_OVER'])
 HSHEDS_FILE_INPUT_ZIP = os.path.join(INPUTS_FOLDER,
                                      config['HSHEDS']['HSHEDS_FILE_INPUT_ZIP'])
@@ -23,14 +23,14 @@ HSHEDS_FILE_INPUT = os.path.join(INPUTS_FOLDER,
                                  config['HSHEDS']['HSHEDS_FILE_INPUT'])
 HSHEDS_FILE_TIFF = os.path.join(INPUTS_FOLDER,
                                 config['HSHEDS']['HSHEDS_FILE_TIFF'])
-HSHEDS_AREA_INTEREST_OVER = os.path.join(INPUTS_FOLDER,
-                                         config['HSHEDS'][
+HSHEDS_AREA_OVER = os.path.join(INPUTS_FOLDER,
+                                config['HSHEDS'][
                                              'HSHEDS_AREA_INTEREST_OVER'])
-SHAPE_AREA_INTEREST_INPUT = os.path.join(INPUTS_FOLDER,
-                                         config['SHAPES'][
+AREA_INTEREST = os.path.join(INPUTS_FOLDER,
+                             config['SHAPES'][
                                              'SHAPE_AREA_INTEREST_INPUT'])
-SHAPE_AREA_INTEREST_OVER = os.path.join(INPUTS_FOLDER,
-                                        config['SHAPES'][
+AREA_OVER = os.path.join(INPUTS_FOLDER,
+                         config['SHAPES'][
                                             'SHAPE_AREA_INTEREST_OVER'])
 RIVERS_SHAPE = os.path.join(INPUTS_FOLDER, config['SHAPES']['RIVERS_SHAPE'])
 RIVERS_FULL = os.path.join(INPUTS_FOLDER, config['SHAPES']['RIVERS_FULL'])

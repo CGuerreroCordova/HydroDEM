@@ -2,8 +2,8 @@ import os, glob
 from unittest import TestCase
 from osgeo import gdal
 from numpy import testing
-from cguerrero.hydrodem.HydroDEMProcess import HydroDEMProcess
-from cguerrero.hydrodem.utils_dem import uncompress_zip_file
+from cguerrero.hydrodem.hydro_dem_process import HydroDEMProcess
+from cguerrero.hydrodem.utils_dem import unzip_resource
 from settings_tests import FINAL_DEM_ZIP, FINAL_DEM_TEST
 
 
@@ -11,7 +11,7 @@ class Test_complete(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        uncompress_zip_file(FINAL_DEM_ZIP)
+        unzip_resource(FINAL_DEM_ZIP)
 
     @classmethod
     def tearDownClass(cls):

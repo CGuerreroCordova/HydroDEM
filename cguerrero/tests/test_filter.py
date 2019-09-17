@@ -7,13 +7,12 @@ from cguerrero.hydrodem.filters import (MajorityFilter, ExpandFilter,
                                         EnrouteRivers, QuadraticFilter,
                                         CorrectNANValues, IsolatedPoints,
                                         BlanksFourier, MaskFourier,
-                                        LagoonsDetection)
+                                        LagoonsDetection, DetectApplyFourier)
 from cguerrero.hydrodem.utils_dem import (array2raster,
-                                          detect_apply_fourier,
                                           resample_and_cut,
-                                          get_shape_over_area,
+                                          shape_enveloping,
                                           clip_lines_vector,
-                                          process_rivers, uncompress_zip_file)
+                                          unzip_resource)
 from settings_tests import (INPUTS_ZIP, EXPECTED_ZIP, HSHEDS_INPUT_MAJORITY,
                             MAJORITY_FILTER, OUTPUT_FOLDER,
                             INPUT_EXPAND, EXPAND_OUTPUT, GEO_IMAGE,
@@ -41,8 +40,8 @@ class Test_filter(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        uncompress_zip_file(INPUTS_ZIP)
-        uncompress_zip_file(EXPECTED_ZIP)
+        unzip_resource(INPUTS_ZIP)
+        unzip_resource(EXPECTED_ZIP)
         if not os.path.exists(OUTPUT_FOLDER):
             os.makedirs(OUTPUT_FOLDER)
 
@@ -145,7 +144,7 @@ class Test_filter(TestCase):
 
     def test_detect_apply_fourier(self):
         srtm_raw = gdal.Open(SRTM_STRIPPED).ReadAsArray()
-        srtm_corrected = detect_apply_fourier(srtm_raw)
+        srtm_corrected = DetectApplyFourier().apply(srtm_raw)
         array2raster(SRTM_CORRECTED, srtm_corrected)
         srtm_corrected_open = gdal.Open(SRTM_CORRECTED).ReadAsArray()
         srtm_expected = gdal.Open(SRTM_WITHOUT_STRIPS).ReadAsArray()
@@ -162,12 +161,14 @@ class Test_filter(TestCase):
         testing.assert_array_equal(output_resampled, expected_resampled)
 
     def test_get_shape_over_area(self):
-        get_shape_over_area(SHAPE_AREA_INPUT, SHAPE_AREA_OVER_CREATED)
+        shape_enveloping(SHAPE_AREA_INPUT, SHAPE_AREA_OVER_CREATED)
         self.assertTrue(filecmp.cmp(SHAPE_AREA_OVER_CREATED, SHAPE_AREA_OVER))
 
     def test_get_lagoons(self):
         hydro_sheds = gdal.Open(HYDRO_SHEDS).ReadAsArray()
-        lagoons_detected = LagoonsDetection().apply(hydro_sheds)
+        lagoons = LagoonsDetection()
+        lagoons.apply(hydro_sheds)
+        lagoons_detected = lagoons.results["TidyingLagoons"]
         lagoons_expected = gdal.Open(LAGOONS_DETECTED).ReadAsArray()
         testing.assert_array_equal(lagoons_detected, lagoons_expected)
 
@@ -176,17 +177,17 @@ class Test_filter(TestCase):
                           RIVERS_CLIPPED)
         self.assertTrue(filecmp.cmp(RIVERS_AREA, RIVERS_CLIPPED))
 
-    def test_process_rivers(self):
-        hsheds_nan_corrected = gdal.Open(HSHEDS_NAN_CORRECTED).ReadAsArray()
-        mask_lagoons = gdal.Open(MASK_LAGOONS).ReadAsArray()
-        rivers = gdal.Open(RASTER_RIVERS).ReadAsArray()
-        rivers_processed = process_rivers(hsheds_nan_corrected, mask_lagoons,
-                                          rivers)
-        rivers_processed_expected = \
-            gdal.Open(RIVERS_PROCESSED).ReadAsArray()
-        testing.assert_array_equal(rivers_processed, rivers_processed_expected)
+    # def test_process_rivers(self):
+    #     hsheds_nan_corrected = gdal.Open(HSHEDS_NAN_CORRECTED).ReadAsArray()
+    #     mask_lagoons = gdal.Open(MASK_LAGOONS).ReadAsArray()
+    #     rivers = gdal.Open(RASTER_RIVERS).ReadAsArray()
+    #     rivers_processed = process_rivers(hsheds_nan_corrected, mask_lagoons,
+    #                                       rivers)
+    #     rivers_processed_expected = \
+    #         gdal.Open(RIVERS_PROCESSED).ReadAsArray()
+    #     testing.assert_array_equal(rivers_processed, rivers_processed_expected)
 
     def test_uncompress_zip_file(self):
-        uncompress_zip_file(ZIP_FILE)
+        unzip_resource(ZIP_FILE)
         self.assertTrue(filecmp.cmp(SRTM_UNCOMPRESSED,
                                     SRTM_UNCOMPRESS_EXPECTED))

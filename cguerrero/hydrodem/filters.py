@@ -7,7 +7,8 @@ from collections import Counter
 import numpy as np
 from hydrodem.sliding_window import (SlidingWindow, CircularWindow,
                                      NoCenterWindow, IgnoreBorderInnerSliding)
-from scipy.ndimage import binary_erosion, binary_closing, grey_dilation
+from scipy.ndimage import (binary_erosion, binary_closing, grey_dilation,
+                           convolve)
 from scipy import fftpack
 
 class Filter(ABC):
@@ -36,6 +37,19 @@ class ComposedFilter(Filter):
         content = image_to_filter
         for filter in self.filters:
             content = filter.apply(content)
+        return content
+
+
+class ComposedFilterResults(Filter):
+
+    def __init__(self):
+        self.results = dict()
+
+    def apply(self, image_to_filter):
+        content = image_to_filter
+        for filter in self.filters:
+            content = filter.apply(content)
+            self.results[filter.__class__.__name__] = content
         return content
 
 
@@ -103,6 +117,7 @@ class ExpandFilter(Filter):
         expanded_image = np.zeros(img_to_expand.shape)
         sliding = CircularWindow(img_to_expand, self.window_size)
         for window, center in sliding:
+            window = window[~np.isnan(window)]
             if np.any(window > 0):
                 expanded_image[center] = 1
         return expanded_image
@@ -176,6 +191,7 @@ class CorrectNANValues(Filter):
         dem_sliding = NoCenterWindow(dem, window_size=3)
         for _, center in sliding_nans:
             neighbours_of_nan = dem_sliding[center].ravel()
+            neighbours_of_nan = neighbours_of_nan[~np.isnan(neighbours_of_nan)]
             neighbours_positives = \
                 list(filter(lambda x: x >= 0, neighbours_of_nan))
             dem[center] = sum(neighbours_positives) / len(neighbours_positives)
@@ -239,6 +255,7 @@ class IsolatedPoints(Filter):
         sliding = NoCenterWindow(image_to_filter, window_size=self.window_size,
                                  iter_over_ones=True)
         for window, center in sliding:
+            window = window[~np.isnan(window)]
             image_to_filter[center] = 1. if np.any(window > 0) else 0.
         return image_to_filter
 
@@ -346,12 +363,23 @@ class TidyingLagoons(ComposedFilter):
         return content
 
 
-class LagoonsDetection(ComposedFilter):
+class LagoonsDetection(ComposedFilterResults):
     def __init__(self):
-        self.filters = [MajorityFilter(window_size=11), TidyingLagoons()]
+        super().__init__()
+        self.filters = [CorrectNANValues(), MajorityFilter(window_size=11),
+                        TidyingLagoons(), MaskPositives()]
+
+    def apply(self, image_to_filter):
+        result = super().apply(image_to_filter)
+
+        self.hsheds_nan_fixed = self.results["CorrectNANValues"]
+        self.mask_lagoons = self.results["MaskPositives"]
+        self.lagoons_values = self.results["TidyingLagoons"]
+
+        return result
 
 
-class SRTMProcess(ComposedFilter):
+class GrovesCorrection(ComposedFilter):
 
     def __init__(self, tree_class):
         self.partial_results = []
@@ -371,11 +399,12 @@ class SRTMProcess(ComposedFilter):
         return super().apply(content)
 
 
-class SRTMProcessIterations(ComposedFilter):
+class GrovesCorrectionsIter(ComposedFilter):
 
     def __init__(self, tree_class):
-        self.filters = [SRTMProcess(tree_class), SRTMProcess(tree_class),
-                        SRTMProcess(tree_class)]
+        self.filters = [GrovesCorrection(tree_class),
+                        GrovesCorrection(tree_class),
+                        GrovesCorrection(tree_class)]
 
 
 class ProcessRivers(ComposedFilter):
@@ -423,7 +452,24 @@ class AbsolutValues(Filter):
         return np.abs(image_to_filter)
 
 
+class Around(Filter):
+
+    def apply(self, image_to_filter):
+        return np.around(image_to_filter)
+
+
+class Convolve(Filter):
+
+    def __init__(self, weights=np.ones((3, 3))):
+        self.weights = weights
+
+    def apply(self, image_to_filter):
+        return convolve(image_to_filter, weights=self.weights) / \
+               self.weights.size
+
+
 class FourierInitial(ComposedFilter):
+    # TODO Cambiar de quien hereda esta clase ComposedFilterResults
     def __init__(self):
         self.results = dict()
         self.filters = [FourierTransform(), FourierShift(), AbsolutValues()]
@@ -583,6 +629,31 @@ class DetectApplyFourier(ComposedFilter):
                         SubtractionFilter(minuend=1),
                         ProductFilter(
                             factor=self.initial.results["FourierShift"]),
-                        FourierIShift(), FourierITransform()]
+                        FourierIShift(), FourierITransform(), AbsolutValues()]
         content = None
         return super().apply(content)
+
+
+class SRTMProcess(ComposedFilter):
+
+    def apply(self, srtm_to_process, tree_class_raw):
+        tree_class = \
+            BinaryClosing(structure=np.ones((3, 3))).apply(tree_class_raw)
+        self.filters = [DetectApplyFourier(),
+                        GrovesCorrectionsIter(tree_class)]
+        return super().apply(srtm_to_process)
+
+
+class HSHEDSProcess(ComposedFilter):
+
+    def apply(self, hsheds):
+        hydro_sheds_corrected_nan = CorrectNANValues().apply(hsheds)
+        hsheds_mask_lagoons_values = LagoonsDetection().apply(
+            hydro_sheds_corrected_nan)
+        hsheds_mask_lagoons = MaskPositives().apply(hsheds_mask_lagoons_values)
+
+
+class PostProcessingFinal(ComposedFilter):
+
+    def __init__(self):
+        self.filters = [Convolve(), Around()]
