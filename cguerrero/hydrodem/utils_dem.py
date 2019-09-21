@@ -7,12 +7,13 @@ __status__ = "Developing"
 
 import os
 import zipfile
+
 import ogr
 import osr
 from osgeo import gdal
-from .settings import (RIVERS_TIF, TEMP_REPROJECTED_TO_CUT, TREE_CLASS_AREA,
-                       SRTM_AREA_OVER, HSHEDS_AREA_OVER,
-                       HSHEDS_FILE_TIFF, SRTM_FILE_INPUT, TREE_CLASS_INPUT)
+
+TEMP_REPROJECTED_TO_CUT = "temp_reprojected.tif"
+
 
 def array2raster(new_rasterfn, array, rasterfn=None):
     """
@@ -198,13 +199,12 @@ def unzip_resource(zip_file):
     zip_ref.extractall(dir_name)
     zip_ref.close()
 
-
-def clean_workspace():
-    to_clean = [TREE_CLASS_AREA, SRTM_AREA_OVER, SRTM_FILE_INPUT,
-                HSHEDS_AREA_OVER, RIVERS_TIF, HSHEDS_FILE_TIFF,
-                TREE_CLASS_INPUT]
-    for file in to_clean:
-        try:
-            os.remove(file)
-        except OSError:
-            pass
+# def clean_workspace():
+#     to_clean = [TREE_CLASS_AREA, SRTM_AREA_OVER, SRTM_FILE_INPUT,
+#                 HSHEDS_AREA_OVER, RIVERS_TIF, HSHEDS_FILE_TIFF,
+#                 TREE_CLASS_INPUT]
+#     for file in to_clean:
+#         try:
+#             os.remove(file)
+#         except OSError:
+#             pass

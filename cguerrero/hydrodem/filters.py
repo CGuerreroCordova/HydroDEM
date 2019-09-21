@@ -401,7 +401,11 @@ class GrovesCorrection(ComposedFilter):
 
 class GrovesCorrectionsIter(ComposedFilter):
 
+    # TODO: Ver de modificar esto
     def __init__(self, tree_class):
+        # self.filters = []
+        # for i in iterations:
+        #     self.filters.append(GrovesCorrection(tree_class))
         self.filters = [GrovesCorrection(tree_class),
                         GrovesCorrection(tree_class),
                         GrovesCorrection(tree_class)]
@@ -642,15 +646,6 @@ class SRTMProcess(ComposedFilter):
         self.filters = [DetectApplyFourier(),
                         GrovesCorrectionsIter(tree_class)]
         return super().apply(srtm_to_process)
-
-
-class HSHEDSProcess(ComposedFilter):
-
-    def apply(self, hsheds):
-        hydro_sheds_corrected_nan = CorrectNANValues().apply(hsheds)
-        hsheds_mask_lagoons_values = LagoonsDetection().apply(
-            hydro_sheds_corrected_nan)
-        hsheds_mask_lagoons = MaskPositives().apply(hsheds_mask_lagoons_values)
 
 
 class PostProcessingFinal(ComposedFilter):
