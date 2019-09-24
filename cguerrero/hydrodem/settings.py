@@ -34,7 +34,7 @@ DEM_READY_AREA_INTEREST = os.path.join(IMAGES_FOLDER,
 TEMP_REPROJECTED_TO_CUT = os.path.join(IMAGES_FOLDER,
                                        config['TEMP'][
                                            'TEMP_REPROJECTED_TO_CUT'])
-FINAL_DEM = os.path.join(IMAGES_FOLDER, config['FINAL']['DEM_READY'])
+DEM_READY = os.path.join(IMAGES_FOLDER, config['FINAL']['DEM_READY'])
 PROFILE_FILE = os.path.join(PROFILES_FOLDER,
                             config['PROFILES']['PROFILE_FILE'])
 MEMORY_TIME_FILE = os.path.join(PROFILES_FOLDER,

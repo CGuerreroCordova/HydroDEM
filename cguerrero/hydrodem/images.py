@@ -3,18 +3,24 @@ from abc import ABC, abstractmethod
 import gdal
 import numpy as np
 
-from filters import LagoonsDetection, ClipLagoonsRivers, \
-    ProcessRivers, DetectApplyFourier, BinaryClosing, GrovesCorrectionsIter
-from utils_dem import resample_and_cut, unzip_resource, rasterize_rivers, \
-    clip_lines_vector
-from settings import (GROVES_ZIP, SRTM_ZIP,
-                      GROVES_TIF, AREA_ENVELOPE, GROVES_AREA,
-                      SRTM_AREA, SRTM_TIF, HSHEDS_ZIP,
-                      HSHEDS_TIF, HSHEDS_ADF, HSHEDS_AREA,
-                      RIVERS_AREA, RIVERS_TIF, RIVERS_FULL, RIVERS_ZIP)
+from filters import (LagoonsDetection, ClipLagoonsRivers, ProcessRivers,
+                     DetectApplyFourier, BinaryClosing, GrovesCorrectionsIter)
+from utils_dem import (resample_and_cut, unzip_resource, rasterize_rivers,
+                       clip_lines_vector)
+from config_loader import Config
 
+# from settings import (GROVES_ZIP, SRTM_ZIP,
+#                       GROVES_TIF, AREA_ENVELOPE, GROVES_AREA,
+#                       SRTM_AREA, SRTM_TIF, HSHEDS_ZIP,
+#                       HSHEDS_TIF, HSHEDS_ADF, HSHEDS_AREA,
+#                       RIVERS_AREA, RIVERS_TIF, RIVERS_FULL, RIVERS_ZIP)
+
+
+Config.initialize()
 
 class Image(ABC):
+    # TODO: Ver de incluir area_envelope aca, ya que es comun a todas las
+    #  clases
 
     @abstractmethod
     def prepare(self):
@@ -26,12 +32,13 @@ class Image(ABC):
 
 
 class SRTM(Image):
+
     def __init__(self):
-        self.srtm_zip = SRTM_ZIP
-        self.srtm_tif = SRTM_TIF
-        self.area_polygon = AREA_ENVELOPE
-        self.srtm_interest = SRTM_AREA
-        self.fourier = Fourier(SRTM_AREA)
+        self.srtm_zip = Config.srtm('SRTM_ZIP')
+        self.srtm_tif = Config.srtm('SRTM_TIF')
+        self.area_polygon = Config.shapes('AREA_ENVELOPE')
+        self.srtm_interest = Config.srtm('SRTM_AREA')
+        self.fourier = Fourier(self.srtm_interest)
         self.groves = Groves()
 
     def prepare(self):
@@ -61,10 +68,10 @@ class Fourier(Image):
 class Groves(Image):
 
     def __init__(self):
-        self.groves_class_zip = GROVES_ZIP
-        self.groves_class_tif = GROVES_TIF
-        self.area_polygon = AREA_ENVELOPE
-        self.groves_interest = GROVES_AREA
+        self.groves_class_zip = Config.groves('GROVES_ZIP')
+        self.groves_class_tif = Config.groves('GROVES_TIF')
+        self.area_polygon = Config.shapes('AREA_ENVELOPE')
+        self.groves_interest = Config.groves('GROVES_AREA')
 
     def prepare(self):
         unzip_resource(self.groves_class_zip)
@@ -81,11 +88,11 @@ class Groves(Image):
 class HSHEDS(Image):
 
     def __init__(self):
-        self.hsheds_zip = HSHEDS_ZIP
-        self.hsheds_adf = HSHEDS_ADF
-        self.hsheds_tif = HSHEDS_TIF
-        self.area_polygon = AREA_ENVELOPE
-        self.hsheds_interest = HSHEDS_AREA
+        self.hsheds_zip = Config.hsheds('HSHEDS_ZIP')
+        self.hsheds_adf = Config.hsheds('HSHEDS_ADF')
+        self.hsheds_tif = Config.hsheds('HSHEDS_TIF')
+        self.area_polygon = Config.shapes('AREA_ENVELOPE')
+        self.hsheds_interest = Config.hsheds('HSHEDS_AREA')
         self.lagoons = Lagoons(self.hsheds_interest)
         self.rivers = Rivers()
 
@@ -120,11 +127,11 @@ class Lagoons(Image):
 
 class Rivers(Image):
     def __init__(self):
-        self.rivers_zip = RIVERS_ZIP
-        self.rivers_full = RIVERS_FULL
-        self.rivers_tif = RIVERS_TIF
-        self.area_polygon = AREA_ENVELOPE
-        self.rivers_interest = RIVERS_AREA
+        self.rivers_zip = Config.rivers('RIVERS_ZIP')
+        self.rivers_full = Config.rivers('RIVERS_FULL')
+        self.rivers_tif = Config.rivers('RIVERS_TIF')
+        self.area_polygon = Config.shapes('AREA_ENVELOPE')
+        self.rivers_interest = Config.rivers('RIVERS_AREA')
 
     def prepare(self):
         unzip_resource(self.rivers_zip)

@@ -12,10 +12,12 @@ import cProfile, pstats
 from datetime import datetime
 import logging
 from .utils_dem import (shape_enveloping, array2raster)
-from .settings import (AREA_INTEREST,
-                       AREA_ENVELOPE, SRTM_AREA, FINAL_DEM, PROFILE_FILE)
+# from .settings import (AREA_INTEREST,
+#                        AREA_ENVELOPE, SRTM_AREA, DEM_READY, PROFILE_FILE)
 from filters import (SubtractionFilter, ProductFilter,
                      AdditionFilter, PostProcessingFinal)
+
+from .config_loader import Config
 
 logger = logging.getLogger(__name__)
 console_handler = logging.StreamHandler()
@@ -32,10 +34,12 @@ class HydroDEMProcess(object):
         """
         class constructor
         """
+
         pass
 
     def _define_shape_area(self):
-        shape_enveloping(AREA_INTEREST, AREA_ENVELOPE)
+        shape_enveloping(Config.shapes('AREA_INTEREST'),
+                         Config.shapes('AREA_ENVELOPE'))
 
 
     def _prepare_final_terms(self, srtm, lagoons, rivers):
@@ -62,9 +66,7 @@ class HydroDEMProcess(object):
         # Profile tool
         pr = cProfile.Profile()
         pr.enable()
-
         # clean_workspace()
-
         self._define_shape_area()
         srtm_proc = SRTM().prepare().process()
         lagoons, rivers = HSHEDS().prepare().process()
@@ -75,7 +77,8 @@ class HydroDEMProcess(object):
         dem_complete = first_term + snd_term + third_term
 
         final_dem = PostProcessingFinal().apply(dem_complete)
-        array2raster(FINAL_DEM, final_dem, SRTM_AREA)
+        array2raster(Config.final('DEM_READY'), final_dem,
+                     Config.srtm('SRTM_AREA'))
         # clean_workspace()
 
         # Profile tool
@@ -85,7 +88,7 @@ class HydroDEMProcess(object):
         sortby = 'cumulative'
         ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
         now = datetime.now().strftime('%Y%m%d_%H%M%S')
-        ps.dump_stats(PROFILE_FILE.format(now))
+        ps.dump_stats(Config.profiles('PROFILE_FILE').format(now))
         # with open(MEMORY_TIME_FILE.format(now), 'w') as f:
         #     f.write(f'Memory Current: {current} - Memory Peak: {peak}')
         return final_dem
