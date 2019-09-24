@@ -13,7 +13,7 @@ from datetime import datetime
 import logging
 from .utils_dem import (shape_enveloping, array2raster)
 from .settings import (AREA_INTEREST,
-                       AREA_OVER, SRTM_AREA_OVER, FINAL_DEM, PROFILE_FILE)
+                       AREA_ENVELOPE, SRTM_AREA, FINAL_DEM, PROFILE_FILE)
 from filters import (SubtractionFilter, ProductFilter,
                      AdditionFilter, PostProcessingFinal)
 
@@ -35,7 +35,7 @@ class HydroDEMProcess(object):
         pass
 
     def _define_shape_area(self):
-        shape_enveloping(AREA_INTEREST, AREA_OVER)
+        shape_enveloping(AREA_INTEREST, AREA_ENVELOPE)
 
 
     def _prepare_final_terms(self, srtm, lagoons, rivers):
@@ -65,7 +65,8 @@ class HydroDEMProcess(object):
 
         # clean_workspace()
 
-        srtm_proc = SRTM().process()
+        self._define_shape_area()
+        srtm_proc = SRTM().prepare().process()
         lagoons, rivers = HSHEDS().prepare().process()
 
         first_term, snd_term, third_term = self._prepare_final_terms(srtm_proc,
@@ -74,7 +75,7 @@ class HydroDEMProcess(object):
         dem_complete = first_term + snd_term + third_term
 
         final_dem = PostProcessingFinal().apply(dem_complete)
-        array2raster(FINAL_DEM, final_dem, SRTM_AREA_OVER)
+        array2raster(FINAL_DEM, final_dem, SRTM_AREA)
         # clean_workspace()
 
         # Profile tool

@@ -50,7 +50,7 @@ def array2raster(new_rasterfn, array, rasterfn=None):
 #
 #     # srtm_fourier_sua = QuadraticFilter(window_size=15).apply(srtm_fourier)
 #     # dem_highlighted = SubtractionFilter(minuend=srtm_fourier).apply(srtm_fourier_sua)
-#     # mask_tall_trees = MaskTallTrees().apply(dem_highlighted)
+#     # mask_tall_trees = MaskTallGroves().apply(dem_highlighted)
 #     # tree_height_15_mt = ProductFilter(factor=tree_class).apply(mask_tall_trees)
 #     # tree_height_15_mt_compl = SubtractionFilter(minuend=1).apply(tree_height_15_mt)
 #     #
@@ -182,10 +182,12 @@ def clip_lines_vector(lines_vector, polygon_vector, lines_output):
 def rasterize_rivers(rivers_shape, rivers_tif):
 
     pixel_size = 90
+    layer = os.path.splitext(os.path.basename(rivers_tif))[0]
     gdr_options = gdal.RasterizeOptions(attribute='UP_CELLS',
                                         yRes=pixel_size, xRes=pixel_size,
                                         outputType=gdal.GDT_Float32,
-                                        layers='rivers_area_interest')
+                                        layers=layer)
+    # layers='rivers_area_interest')
     gdal.Rasterize(rivers_tif, rivers_shape, options=gdr_options)
 
 
@@ -200,7 +202,7 @@ def unzip_resource(zip_file):
     zip_ref.close()
 
 # def clean_workspace():
-#     to_clean = [TREE_CLASS_AREA, SRTM_AREA_OVER, SRTM_FILE_INPUT,
+#     to_clean = [TREE_CLASS_AREA, SRTM_AREA_OVER, SRTM_FILE_TIF,
 #                 HSHEDS_AREA_OVER, RIVERS_TIF, HSHEDS_FILE_TIFF,
 #                 TREE_CLASS_INPUT]
 #     for file in to_clean:

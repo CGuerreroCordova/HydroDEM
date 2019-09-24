@@ -238,7 +238,7 @@ class MaskPositives(ComposedFilter):
         self.filters = [GreaterThan(value=0.0), BooleanToInteger()]
 
 
-class MaskTallTrees(ComposedFilter):
+class MaskTallGroves(ComposedFilter):
 
     def __init__(self):
         self.filters = [GreaterThan(value=1.5), BooleanToInteger()]
@@ -381,10 +381,10 @@ class LagoonsDetection(ComposedFilterResults):
 
 class GrovesCorrection(ComposedFilter):
 
-    def __init__(self, tree_class):
+    def __init__(self, groves_class):
         self.partial_results = []
         self.filters = [QuadraticFilter(window_size=15), SubtractionFilter(),
-                        MaskTallTrees(), ProductFilter(factor=tree_class),
+                        MaskTallGroves(), ProductFilter(factor=groves_class),
                         SubtractionFilter(minuend=1)]
 
     def apply(self, image_to_filter):
@@ -402,13 +402,10 @@ class GrovesCorrection(ComposedFilter):
 class GrovesCorrectionsIter(ComposedFilter):
 
     # TODO: Ver de modificar esto
-    def __init__(self, tree_class):
-        # self.filters = []
-        # for i in iterations:
-        #     self.filters.append(GrovesCorrection(tree_class))
-        self.filters = [GrovesCorrection(tree_class),
-                        GrovesCorrection(tree_class),
-                        GrovesCorrection(tree_class)]
+    def __init__(self, groves_class):
+        self.filters = [GrovesCorrection(groves_class),
+                        GrovesCorrection(groves_class),
+                        GrovesCorrection(groves_class)]
 
 
 class ProcessRivers(ComposedFilter):
@@ -636,16 +633,6 @@ class DetectApplyFourier(ComposedFilter):
                         FourierIShift(), FourierITransform(), AbsolutValues()]
         content = None
         return super().apply(content)
-
-
-class SRTMProcess(ComposedFilter):
-
-    def apply(self, srtm_to_process, tree_class_raw):
-        tree_class = \
-            BinaryClosing(structure=np.ones((3, 3))).apply(tree_class_raw)
-        self.filters = [DetectApplyFourier(),
-                        GrovesCorrectionsIter(tree_class)]
-        return super().apply(srtm_to_process)
 
 
 class PostProcessingFinal(ComposedFilter):
