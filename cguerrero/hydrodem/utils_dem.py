@@ -7,12 +7,11 @@ __status__ = "Developing"
 
 import os
 import zipfile
-
 import ogr
 import osr
+import glob
 from osgeo import gdal
-
-TEMP_REPROJECTED_TO_CUT = "temp_reprojected.tif"
+from config_loader import Config
 
 
 def array2raster(new_rasterfn, array, rasterfn=None):
@@ -71,15 +70,16 @@ def resample_and_cut(orig_image, shape_file, target_path):
 
     pixel_size = 90
     in_file = gdal.Open(orig_image)
-    gdal.Warp(TEMP_REPROJECTED_TO_CUT, in_file, dstSRS='EPSG:22184')
+    temp_file = Config.temp('TEMP_REPROJECTED_TO_CUT')
+    gdal.Warp(temp_file, in_file, dstSRS='EPSG:22184')
     gdw_options = gdal.WarpOptions(cutlineDSName=shape_file,
                                    cropToCutline=True,
                                    xRes=pixel_size, yRes=pixel_size,
                                    outputType=gdal.GDT_Float32)
-    gdal.Warp(target_path, TEMP_REPROJECTED_TO_CUT, dstSRS='EPSG:22184',
+    gdal.Warp(target_path, temp_file, dstSRS='EPSG:22184',
               options=gdw_options)
     try:
-        os.remove(TEMP_REPROJECTED_TO_CUT)
+        os.remove(temp_file)
     except OSError:
         pass
 
@@ -187,7 +187,6 @@ def rasterize_rivers(rivers_shape, rivers_tif):
                                         yRes=pixel_size, xRes=pixel_size,
                                         outputType=gdal.GDT_Float32,
                                         layers=layer)
-    # layers='rivers_area_interest')
     gdal.Rasterize(rivers_tif, rivers_shape, options=gdr_options)
 
 
@@ -201,12 +200,47 @@ def unzip_resource(zip_file):
     zip_ref.extractall(dir_name)
     zip_ref.close()
 
-# def clean_workspace():
-#     to_clean = [TREE_CLASS_AREA, SRTM_AREA_OVER, SRTM_FILE_TIF,
-#                 HSHEDS_AREA_OVER, RIVERS_TIF, HSHEDS_FILE_TIFF,
-#                 TREE_CLASS_INPUT]
-#     for file in to_clean:
-#         try:
-#             os.remove(file)
-#         except OSError:
-#             pass
+
+def clean_workspace():
+    shapes_files = [Config.rivers('RIVERS_AREA'), Config.rivers('RIVERS_FULL'),
+                    Config.shapes('AREA_ENVELOPE')]
+    files_to_clean = [Config.groves('GROVES_TIF'),
+                      Config.groves('GROVES_AREA'),
+                      Config.srtm('SRTM_TIF'), Config.srtm('SRTM_AREA'),
+                      Config.hsheds('HSHEDS_TIF'),
+                      Config.hsheds('HSHEDS_AREA'),
+                      Config.rivers('RIVERS_TIF')]
+    for shape in shapes_files:
+        files_to_clean += _list_shape_elements(shape)
+    files_to_clean += _list_hsheds_files()
+
+    for file in files_to_clean:
+        try:
+            os.remove(file)
+        except OSError:
+            pass
+    try:
+        os.rmdir(_folder_hsheds())
+    except FileNotFoundError:
+        pass
+
+
+def _list_shape_elements(shape_filename):
+    file_name_no_ext = os.path.splitext(os.path.basename(shape_filename))[0]
+    files = os.path.join(os.path.dirname(shape_filename),
+                         file_name_no_ext + ".*")
+    return glob.glob(files)
+
+
+def _list_hsheds_files():
+    file_pack = Config.hsheds('HSHEDS_ZIP')
+    file_name_no_ext = os.path.splitext(os.path.basename(file_pack))[0]
+    files = os.path.join(os.path.dirname(file_pack), file_name_no_ext, "*")
+    return glob.glob(files)
+
+
+def _folder_hsheds():
+    file_pack = Config.hsheds('HSHEDS_ZIP')
+    file_name_no_ext = os.path.splitext(os.path.basename(file_pack))[0]
+    folder = os.path.join(os.path.dirname(file_pack), file_name_no_ext, "")
+    return folder

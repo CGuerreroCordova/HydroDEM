@@ -9,18 +9,11 @@ from utils_dem import (resample_and_cut, unzip_resource, rasterize_rivers,
                        clip_lines_vector)
 from config_loader import Config
 
-# from settings import (GROVES_ZIP, SRTM_ZIP,
-#                       GROVES_TIF, AREA_ENVELOPE, GROVES_AREA,
-#                       SRTM_AREA, SRTM_TIF, HSHEDS_ZIP,
-#                       HSHEDS_TIF, HSHEDS_ADF, HSHEDS_AREA,
-#                       RIVERS_AREA, RIVERS_TIF, RIVERS_FULL, RIVERS_ZIP)
-
-
 Config.initialize()
 
 class Image(ABC):
-    # TODO: Ver de incluir area_envelope aca, ya que es comun a todas las
-    #  clases
+    def __init__(self):
+        self.aoi = Config.shapes('AREA_ENVELOPE')
 
     @abstractmethod
     def prepare(self):
@@ -34,16 +27,16 @@ class Image(ABC):
 class SRTM(Image):
 
     def __init__(self):
+        super().__init__()
         self.srtm_zip = Config.srtm('SRTM_ZIP')
         self.srtm_tif = Config.srtm('SRTM_TIF')
-        self.area_polygon = Config.shapes('AREA_ENVELOPE')
         self.srtm_interest = Config.srtm('SRTM_AREA')
         self.fourier = Fourier(self.srtm_interest)
         self.groves = Groves()
 
     def prepare(self):
         unzip_resource(self.srtm_zip)
-        resample_and_cut(self.srtm_tif, self.area_polygon, self.srtm_interest)
+        resample_and_cut(self.srtm_tif, self.aoi, self.srtm_interest)
         return self
 
     def process(self):
@@ -55,28 +48,27 @@ class SRTM(Image):
 class Fourier(Image):
 
     def __init__(self, area_of_interest):
-        self.aoi = area_of_interest
+        self.srtm_interest = area_of_interest
 
     def prepare(self):
         pass
 
     def process(self):
-        srtm_raw = gdal.Open(self.aoi).ReadAsArray()
+        srtm_raw = gdal.Open(self.srtm_interest).ReadAsArray()
         return DetectApplyFourier().apply(srtm_raw)
 
 
 class Groves(Image):
 
     def __init__(self):
+        super().__init__()
         self.groves_class_zip = Config.groves('GROVES_ZIP')
         self.groves_class_tif = Config.groves('GROVES_TIF')
-        self.area_polygon = Config.shapes('AREA_ENVELOPE')
         self.groves_interest = Config.groves('GROVES_AREA')
 
     def prepare(self):
         unzip_resource(self.groves_class_zip)
-        resample_and_cut(self.groves_class_tif, self.area_polygon,
-                         self.groves_interest)
+        resample_and_cut(self.groves_class_tif, self.aoi, self.groves_interest)
         groves_class_raw = gdal.Open(self.groves_interest).ReadAsArray()
         return BinaryClosing(structure=np.ones((3, 3))).apply(groves_class_raw)
 
@@ -88,10 +80,10 @@ class Groves(Image):
 class HSHEDS(Image):
 
     def __init__(self):
+        super().__init__()
         self.hsheds_zip = Config.hsheds('HSHEDS_ZIP')
         self.hsheds_adf = Config.hsheds('HSHEDS_ADF')
         self.hsheds_tif = Config.hsheds('HSHEDS_TIF')
-        self.area_polygon = Config.shapes('AREA_ENVELOPE')
         self.hsheds_interest = Config.hsheds('HSHEDS_AREA')
         self.lagoons = Lagoons(self.hsheds_interest)
         self.rivers = Rivers()
@@ -100,8 +92,7 @@ class HSHEDS(Image):
         unzip_resource(self.hsheds_zip)
         gdt_options = gdal.TranslateOptions(format='GTIFF')
         gdal.Translate(self.hsheds_tif, self.hsheds_adf, options=gdt_options)
-        resample_and_cut(self.hsheds_tif, self.area_polygon,
-                         self.hsheds_interest)
+        resample_and_cut(self.hsheds_tif, self.aoi, self.hsheds_interest)
         return self
 
     def process(self):
@@ -113,13 +104,13 @@ class HSHEDS(Image):
 class Lagoons(Image):
 
     def __init__(self, area_of_interest):
-        self.aoi = area_of_interest
+        self.hsheds_interest = area_of_interest
 
     def prepare(self):
         pass
 
     def process(self):
-        hydro_sheds = gdal.Open(self.aoi).ReadAsArray()
+        hydro_sheds = gdal.Open(self.hsheds_interest).ReadAsArray()
         lagoons = LagoonsDetection()
         lagoons.apply(hydro_sheds)
         return lagoons
@@ -127,16 +118,15 @@ class Lagoons(Image):
 
 class Rivers(Image):
     def __init__(self):
+        super().__init__()
         self.rivers_zip = Config.rivers('RIVERS_ZIP')
         self.rivers_full = Config.rivers('RIVERS_FULL')
         self.rivers_tif = Config.rivers('RIVERS_TIF')
-        self.area_polygon = Config.shapes('AREA_ENVELOPE')
         self.rivers_interest = Config.rivers('RIVERS_AREA')
 
     def prepare(self):
         unzip_resource(self.rivers_zip)
-        clip_lines_vector(self.rivers_full, self.area_polygon,
-                          self.rivers_interest)
+        clip_lines_vector(self.rivers_full, self.aoi, self.rivers_interest)
         rasterize_rivers(self.rivers_interest, self.rivers_tif)
 
     def process(self, lagoons):

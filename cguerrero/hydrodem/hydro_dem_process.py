@@ -11,11 +11,9 @@ from io import StringIO
 import cProfile, pstats
 from datetime import datetime
 import logging
-from .utils_dem import (shape_enveloping, array2raster)
-# from .settings import (AREA_INTEREST,
-#                        AREA_ENVELOPE, SRTM_AREA, DEM_READY, PROFILE_FILE)
-from filters import (SubtractionFilter, ProductFilter,
-                     AdditionFilter, PostProcessingFinal)
+from .utils_dem import (shape_enveloping, array2raster, clean_workspace)
+from filters import (SubtractionFilter, ProductFilter, AdditionFilter,
+                     PostProcessingFinal)
 
 from .config_loader import Config
 
@@ -66,7 +64,7 @@ class HydroDEMProcess(object):
         # Profile tool
         pr = cProfile.Profile()
         pr.enable()
-        # clean_workspace()
+        clean_workspace()
         self._define_shape_area()
         srtm_proc = SRTM().prepare().process()
         lagoons, rivers = HSHEDS().prepare().process()
@@ -79,7 +77,7 @@ class HydroDEMProcess(object):
         final_dem = PostProcessingFinal().apply(dem_complete)
         array2raster(Config.final('DEM_READY'), final_dem,
                      Config.srtm('SRTM_AREA'))
-        # clean_workspace()
+        clean_workspace()
 
         # Profile tool
         # current, peak = tracemalloc.get_traced_memory()
