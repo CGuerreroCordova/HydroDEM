@@ -8,7 +8,7 @@ class Config:
 
     config_parser = ConfigParser()
     config_parser.optionxform = str
-    config_ini = (os.path.join(os.getcwd(), 'config.ini'))
+    config_ini = os.path.join(os.getcwd(), 'config.ini')
     config_parser.read(config_ini)
 
     @classmethod
@@ -26,9 +26,7 @@ class Config:
                            'profiles': Config._profiles_folder}
                 return os.path.join(os.getcwd(), folders[folder](),
                                     func(*args, **kwargs))
-
             return wrapper
-
         return inner_function
 
     @classmethod
