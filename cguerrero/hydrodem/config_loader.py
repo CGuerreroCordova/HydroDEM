@@ -2,7 +2,6 @@ import os
 from functools import wraps
 from configparser import ConfigParser
 
-
 class Config:
     """Interact with configuration variables."""
 
@@ -10,12 +9,6 @@ class Config:
     config_parser.optionxform = str
     config_ini = os.path.join(os.getcwd(), 'config.ini')
     config_parser.read(config_ini)
-
-    @classmethod
-    def initialize(cls, config_file=None):
-        """To read an specific config file"""
-        if config_file:
-            cls.config_parser.read(config_file)
 
     def add_folder(folder):
         def inner_function(func):
@@ -28,6 +21,12 @@ class Config:
                                     func(*args, **kwargs))
             return wrapper
         return inner_function
+
+    @classmethod
+    def initialize(cls, config_file=None):
+        """To read an specific config file"""
+        if config_file:
+            cls.config_parser.read(config_file)
 
     @classmethod
     def _input_folder(cls):

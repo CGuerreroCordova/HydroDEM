@@ -24,18 +24,16 @@ class ConfigTests:
                 folders = {'resources': ConfigTests._resources_folder,
                            'inputs': ConfigTests.inputs_folder,
                            'expected': ConfigTests.expected_folder,
-                           'output': ConfigTests.output_folder}
+                           'output': ConfigTests.output_folder,
+                           'complete': ConfigTests.complete_folder}
                 return os.path.join(folders[folder](), func(*args, **kwargs))
-
             return wrapper
-
         return inner_function
 
     def add_base_folder(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             return os.path.join(ConfigTests.BASEDIR, func(*args, **kwargs))
-
         return wrapper
 
     @classmethod
@@ -59,6 +57,11 @@ class ConfigTests:
         return cls.config_parser.get('FOLDERS', 'OUTPUT_FOLDER')
 
     @classmethod
+    @add_base_folder
+    def complete_folder(cls):
+        return cls.config_parser.get('FOLDERS', 'COMPLETE_FOLDER')
+
+    @classmethod
     @add_folder('resources')
     def resources(cls, key):
         return cls.config_parser.get('RESOURCES', key)
@@ -77,3 +80,8 @@ class ConfigTests:
     @add_folder('output')
     def outputs(cls, key):
         return cls.config_parser.get('OUTPUTS', key)
+
+    @classmethod
+    @add_folder('complete')
+    def complete(cls, key):
+        return cls.config_parser.get('COMPLETE', key)

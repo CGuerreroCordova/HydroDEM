@@ -129,6 +129,7 @@ def shape_enveloping(shape_area_input, shape_over_area):
 
     # Save and close DataSource
     outDataSource.Destroy()
+    return shape_over_area
 
 
 def clip_lines_vector(lines_vector, polygon_vector, lines_output):
