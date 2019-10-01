@@ -1,4 +1,5 @@
-from images import SRTM, HSHEDS
+from image_srtm import SRTM
+from image_hsheds import HSHEDS
 from functools import wraps
 
 __author__ = "Cristian Guerrero Cordova"
@@ -13,8 +14,9 @@ import cProfile, pstats
 from datetime import datetime
 import logging
 from .utils_dem import (shape_enveloping, array2raster, clean_workspace)
-from filters import (SubtractionFilter, ProductFilter, AdditionFilter,
-                     PostProcessingFinal)
+from filters.custom_filters import (SubtractionFilter, ProductFilter,
+                                    AdditionFilter,
+                                    PostProcessingFinal)
 from .config_loader import Config
 from arguments_manager import ArgumentsManager
 

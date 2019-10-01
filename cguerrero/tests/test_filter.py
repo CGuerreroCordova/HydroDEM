@@ -7,11 +7,16 @@ import numpy as np
 from numpy import testing
 from osgeo import gdal
 
-from cguerrero.hydrodem.filters import (MajorityFilter, ExpandFilter,
-                                        EnrouteRivers, QuadraticFilter,
-                                        CorrectNANValues, IsolatedPoints,
-                                        BlanksFourier, MaskFourier,
-                                        LagoonsDetection, DetectApplyFourier)
+from cguerrero.hydrodem.filters.custom_filters import (MajorityFilter,
+                                                       ExpandFilter,
+                                                       EnrouteRivers,
+                                                       QuadraticFilter,
+                                                       CorrectNANValues,
+                                                       IsolatedPoints,
+                                                       BlanksFourier,
+                                                       MaskFourier,
+                                                       LagoonsDetection,
+                                                       DetectApplyFourier)
 from cguerrero.hydrodem.utils_dem import (array2raster, resample_and_cut,
                                           shape_enveloping, clip_lines_vector,
                                           unzip_resource)

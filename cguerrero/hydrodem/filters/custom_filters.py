@@ -1,65 +1,22 @@
 """
 Provide the abstract class for filters
 """
-from abc import ABC, abstractmethod
+
 import copy
 from collections import Counter
 import numpy as np
+from filters.simple_filters import LowerThan, BooleanToInteger, GreaterThan, \
+    ProductFilter, SubtractionFilter, AdditionFilter
 from hydrodem.sliding_window import (SlidingWindow, CircularWindow,
                                      NoCenterWindow, IgnoreBorderInnerSliding)
-from scipy.ndimage import (binary_erosion, binary_closing, grey_dilation,
-                           convolve)
-from scipy import fftpack
-
-class Filter(ABC):
-    """
-    Representd a filter
-    """
-
-    @abstractmethod
-    def apply(self, *args):
-        """
-        Apply the filter
-        Raises
-        ------
-        NotImplementedError
-            If the method was not implemented in the subclass
-        """
-        raise NotImplementedError
+from filters import Filter, ComposedFilter, ComposedFilterResults
+from filters.extension_filters import (BitwiseXOR, BinaryErosion,
+                                       BinaryClosing, GreyDilation,
+                                       FourierITransform, FourierTransform,
+                                       FourierShift, FourierIShift,
+                                       AbsolutValues, Around, Convolve)
 
 
-class ComposedFilter(Filter):
-
-    def __init__(self):
-        self.filters = []
-
-    def apply(self, image_to_filter):
-        content = image_to_filter
-        for filter in self.filters:
-            content = filter.apply(content)
-        return content
-
-
-class ComposedFilterResults(Filter):
-
-    def __init__(self):
-        self.results = dict()
-
-    def apply(self, image_to_filter):
-        content = image_to_filter
-        for filter in self.filters:
-            content = filter.apply(content)
-            self.results[filter.__class__.__name__] = content
-        return content
-
-
-class BitwiseXOR(Filter):
-
-    def __init__(self, *, operand):
-        self.operand = copy.deepcopy(operand)
-
-    def apply(self, image_to_filter):
-        return np.bitwise_xor(self.operand, image_to_filter)
 
 class MajorityFilter(Filter):
     """
@@ -81,28 +38,6 @@ class MajorityFilter(Filter):
         return filtered_image
 
 
-class BinaryErosion(Filter):
-    """
-    Represents the Mmajority Filter
-    """
-
-    def __init__(self, *, iterations):
-        self.iterations = iterations
-
-    def apply(self, image_to_filter):
-        return binary_erosion(image_to_filter, iterations=self.iterations)
-
-
-class BinaryClosing(Filter):
-    """
-    Represents the Mmajority Filter
-    """
-
-    def __init__(self, *, structure=None):
-        self.structure = structure
-
-    def apply(self, image_to_filter):
-        return binary_closing(image_to_filter, structure=self.structure)
 
 class ExpandFilter(Filter):
     """
@@ -198,33 +133,6 @@ class CorrectNANValues(Filter):
         return dem
 
 
-class LowerThan(Filter):
-
-    def __init__(self, *, value):
-        self.value = value
-
-    def apply(self, image_to_filter):
-        # TODO: Condition about values, Exceptions
-        return image_to_filter < self.value
-
-
-class GreaterThan(Filter):
-
-    def __init__(self, *, value):
-        self.value = value
-
-    def apply(self, image_to_filter):
-        # TODO: Condition about values, Exceptions
-        return image_to_filter > self.value
-
-
-class BooleanToInteger(Filter):
-
-    def apply(self, image_to_filter):
-        # TODO: conditions about type of values
-        return image_to_filter * 1
-
-
 class MaskNegatives(ComposedFilter):
 
     def __init__(self):
@@ -310,44 +218,6 @@ class MaskFourier(ComposedFilter):
                         ExpandFilter(window_size=13)]
 
 
-class ProductFilter(Filter):
-
-    def __init__(self, factor=1):
-        # TODO Conditions about types.
-        self.factor = factor
-
-    def apply(self, factor):
-        return self.factor * factor
-
-
-class AdditionFilter(Filter):
-
-    def __init__(self, adding=0):
-        # TODO Conditions about types.
-        self.adding = adding
-
-    def apply(self, adding):
-        return self.adding + adding
-
-
-class SubtractionFilter(Filter):
-
-    def __init__(self, *, minuend=0.0):
-        self.minuend = minuend
-
-    def apply(self, subtracting):
-        return self.minuend - subtracting
-
-
-class GreyDilation(Filter):
-
-    def __init__(self, *, size):
-        self.size = size
-
-    def apply(self, image_to_filter):
-        return grey_dilation(image_to_filter, size=self.size)
-
-
 class TidyingLagoons(ComposedFilter):
 
     def __init__(self):
@@ -371,11 +241,9 @@ class LagoonsDetection(ComposedFilterResults):
 
     def apply(self, image_to_filter):
         result = super().apply(image_to_filter)
-
         self.hsheds_nan_fixed = self.results["CorrectNANValues"]
         self.mask_lagoons = self.results["MaskPositives"]
         self.lagoons_values = self.results["TidyingLagoons"]
-
         return result
 
 
@@ -392,7 +260,6 @@ class GrovesCorrection(ComposedFilter):
         for filter in self.filters:
             content = filter.apply(content)
             self.partial_results.append(copy.deepcopy(content))
-
         final_addition = AdditionFilter(adding=self.partial_results[0])
         final_product = ProductFilter(factor=self.partial_results[1])
         self.filters = [final_product, final_addition]
@@ -423,64 +290,16 @@ class ClipLagoonsRivers(ComposedFilter):
                         BitwiseXOR(operand=rivers_routed_closing)]
 
 
-class FourierTransform(Filter):
-
-    def apply(self, image_to_filter):
-        return fftpack.fft2(image_to_filter)
-
-
-class FourierITransform(Filter):
-
-    def apply(self, image_to_filter):
-        return fftpack.ifft2(image_to_filter)
-
-
-class FourierShift(Filter):
-
-    def apply(self, image_to_filter):
-        return fftpack.fftshift(image_to_filter)
-
-
-class FourierIShift(Filter):
-
-    def apply(self, image_to_filter):
-        return fftpack.ifftshift(image_to_filter)
-
-
-class AbsolutValues(Filter):
-
-    def apply(self, image_to_filter):
-        return np.abs(image_to_filter)
-
-
-class Around(Filter):
-
-    def apply(self, image_to_filter):
-        return np.around(image_to_filter)
-
-
-class Convolve(Filter):
-
-    def __init__(self, weights=np.ones((3, 3))):
-        self.weights = weights
-
-    def apply(self, image_to_filter):
-        return convolve(image_to_filter, weights=self.weights) / \
-               self.weights.size
-
-
-class FourierInitial(ComposedFilter):
-    # TODO Cambiar de quien hereda esta clase ComposedFilterResults
+class FourierInitial(ComposedFilterResults):
     def __init__(self):
-        self.results = dict()
+        super().__init__()
         self.filters = [FourierTransform(), FourierShift(), AbsolutValues()]
 
     def apply(self, image_to_filter):
-        content = image_to_filter
-        for filter in self.filters:
-            content = filter.apply(content)
-            self.results[filter.__class__.__name__] = content
-        return content
+        result = super().apply(image_to_filter)
+        self.fourier_shift = self.results["FourierShift"]
+        return result
+
 
 
 class FourierProcessQuarters(Filter):
@@ -628,8 +447,7 @@ class DetectApplyFourier(ComposedFilter):
         self.fft_transform_abs = self.initial.apply(image_to_filter)
         self.filters = [FourierProcessQuarters(self.fft_transform_abs),
                         SubtractionFilter(minuend=1),
-                        ProductFilter(
-                            factor=self.initial.results["FourierShift"]),
+                        ProductFilter(factor=self.initial.fourier_shift),
                         FourierIShift(), FourierITransform(), AbsolutValues()]
         content = None
         return super().apply(content)
