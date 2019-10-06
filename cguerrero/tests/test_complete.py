@@ -24,7 +24,7 @@ class Test_complete(TestCase):
             os.remove(file)
         os.removedirs(ConfigTests.complete_folder())
 
-    @skip
+    # @skip
     @patch('argparse.ArgumentParser.parse_args', autospec=True)
     def test_complete_process(self, mock_arg_parser):
         mock_arg_parser.return_value = \

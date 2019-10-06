@@ -1,33 +1,63 @@
-"""
-Provide the abstract class for filters
-"""
-
 import copy
 from collections import Counter
 import numpy as np
-from filters.simple_filters import LowerThan, BooleanToInteger, GreaterThan, \
-    ProductFilter, SubtractionFilter, AdditionFilter
+from filters.simple_filters import (LowerThan, BooleanToInteger, GreaterThan,
+                                    ProductFilter, SubtractionFilter,
+                                    AdditionFilter)
 from hydrodem.sliding_window import (SlidingWindow, CircularWindow,
                                      NoCenterWindow, IgnoreBorderInnerSliding)
 from filters import Filter, ComposedFilter, ComposedFilterResults
-from filters.extension_filters import (BitwiseXOR, BinaryErosion,
-                                       BinaryClosing, GreyDilation,
+from filters.extension_filters import (BitwiseXOR, BinaryErosion, Around,
+                                       BinaryClosing, GreyDilation, Convolve,
                                        FourierITransform, FourierTransform,
                                        FourierShift, FourierIShift,
-                                       AbsolutValues, Around, Convolve)
-
+                                       AbsolutValues)
 
 
 class MajorityFilter(Filter):
     """
-    The value assigned to the center will be the most frequent value,
-    contained in a windows of window_size x window_size
+    Use a Circular Sliding Window to go through the image and filter it
+    assigning to the center of the window the most frequent value contained in
+    the sliding window.
+
+    Attributes
+    ----------
+    window_size : int
+        Window size of circular sliding windows used to compute the filter.
+
+    Methods
+    -------
+    apply
+        apply the filter
     """
 
     def __init__(self, *, window_size):
+        """
+        Parameters
+        ----------
+        window_size : int
+            Window size of circular sliding windows used to compute the filter.
+        """
         self.window_size = window_size
 
     def apply(self, image_to_filter):
+        """
+        Apply the filter. Create a zeros grid to store the filtered image.
+        Create a Circular Sliding Window. The frequency taken into account to
+        decide if it the most frequency value is if the value is presente more
+        than 70 percent of elements of the window. Not taking into account the
+        center value as an element.
+
+        Parameters
+        ----------
+        image_to_filter: ndarray
+            Image to apply the majority filter
+
+        Returns
+        -------
+        ndarray
+            New object containing the filtered image.
+        """
         filtered_image = np.zeros(image_to_filter.shape)
         sliding = CircularWindow(image_to_filter, self.window_size)
         for window, center in sliding:
@@ -38,19 +68,51 @@ class MajorityFilter(Filter):
         return filtered_image
 
 
-
 class ExpandFilter(Filter):
     """
-    The value assigned to the center will be 1 if at least one pixel
-    inside the circular window is 1
+    Use a Circular Sliding Window to go through the image and filter it
+    assigning to the center of the window the value 1 if at least one pixel
+    inside the circular window is 1, 0 otherwise.
+
+    Attributes
+    ----------
+    window_size : int
+        Window size of circular sliding windows used to compute the filter.
+
+    Methods
+    -------
+    apply
+        apply the filter
     """
 
     def __init__(self, *, window_size):
+        """
+        Parameters
+        ----------
+        window_size : int
+            Window size of circular sliding windows used to compute the filter.
+        """
         self.window_size = window_size
 
-    def apply(self, img_to_expand):
-        expanded_image = np.zeros(img_to_expand.shape)
-        sliding = CircularWindow(img_to_expand, self.window_size)
+    def apply(self, image_to_filter):
+        """
+        Apply the filter. Create a zeros grid to store the filtered image.
+        Create a Circular Sliding Window. Remove nan value coming from the
+        sliding window. The value for the center of the window will be 1 if at
+        least one pixel inside the circular window is 1, 0 otherwise.
+
+        Parameters
+        ----------
+        image_to_filter: ndarray
+            Image to apply the majority filter
+
+        Returns
+        -------
+        ndarray
+            New object containing the expanded new image.
+        """
+        expanded_image = np.zeros(image_to_filter.shape)
+        sliding = CircularWindow(image_to_filter, self.window_size)
         for window, center in sliding:
             window = window[~np.isnan(window)]
             if np.any(window > 0):
@@ -60,14 +122,62 @@ class ExpandFilter(Filter):
 
 class EnrouteRivers(Filter):
     """
-    Apply homogeneity to canyons. Specific defined for images with flow stream.
+    Enroute and/or expand rivers coming from a mask image. Use another dem
+    image as reference to decide the enrouting of rivers. Reference DEM must
+    be provided in the constructor, the mask image when the filter is applied.
+    Use a sliding window iterating through the mask image with values 1.
+    With the center value as reference, check values contained in the window
+    of dem of reference to add new candidates to be river from the low values
+    inside the window.
+
+    Attributes
+    ----------
+    window_size : int
+        Window size of circular sliding windows used to compute the filter.
+    dem : ndarray
+        Dem used as a valus reference to decide the belonging of elements to
+        rivers
+
+    Methods
+    -------
+    apply
+        apply the filter
     """
 
     def __init__(self, *, window_size, dem):
+        """
+        Parameters
+        ----------
+        window_size : int
+            Window size of circular sliding windows used to compute the filter.
+        dem : ndarray
+            Dem used as a valus reference to decide the belonging of elements
+            to rivers
+        """
         self.window_size = window_size
         self.dem = copy.deepcopy(dem)
 
     def apply(self, mask_rivers):
+        """
+        Apply the filter. Create a zeros grid to store the enrouted rivers.
+        Create a sliding window to iterate over ones on mask rivers and
+        another sliding window to get values from DEM of reference. Get the
+        minimum value from the DEM and the indices of the windows equal to
+        this minimum values, all these elements will be new values of rivers.
+        Minimum values in DEM are set whith a high value to not interfere with
+        neighbours.
+
+        Parameters
+        ----------
+        mask_rivers: ndarray
+            mask rivers to iterate over elements with value 1
+
+        Returns
+        -------
+        ndarray
+            Mask with enrouted rivers
+        """
+
         left_up = self.window_size // 2
         rivers_enrouted = np.zeros(self.dem.shape)
         sliding = SlidingWindow(mask_rivers, window_size=self.window_size,
@@ -86,14 +196,41 @@ class EnrouteRivers(Filter):
 
 class QuadraticFilter(Filter):
     """
-    Smoothness filter: Apply a quadratic filter of smoothness
-    :param dem: dem image
+    Apply a quadratic filter of smoothness
+
+    Attributes
+    ----------
+    window_size : int
+        Window size of circular sliding windows used to compute the filter.
+
+    Methods
+    -------
+    apply
+        apply the filter
     """
 
     def __init__(self, *, window_size):
+        """
+        Parameters
+        ----------
+        window_size : int
+            Window size of circular sliding windows used to compute the filter.
+        """
         self.window_size = window_size
 
     def apply(self, dem):
+        """
+        Apply the quadratic filter of smoothness
+
+        Parameters
+        ----------
+        dem : ndarray
+            image to apply the quadratic smoothness filter
+
+        Returns
+        -------
+        Smoothed image
+        """
         values = np.linspace(-self.window_size / 2 + 1, self.window_size / 2,
                              self.window_size)
         xx, yy = np.meshgrid(values, values)
@@ -228,8 +365,8 @@ class TidyingLagoons(ComposedFilter):
 
     def apply(self, image_to_filter):
         self.filters[2].factor = content = image_to_filter
-        for filter in self.filters:
-            content = filter.apply(content)
+        for filter_ in self.filters:
+            content = filter_.apply(content)
         return content
 
 
@@ -257,8 +394,8 @@ class GrovesCorrection(ComposedFilter):
 
     def apply(self, image_to_filter):
         self.filters[1].minuend = content = image_to_filter
-        for filter in self.filters:
-            content = filter.apply(content)
+        for filter_ in self.filters:
+            content = filter_.apply(content)
             self.partial_results.append(copy.deepcopy(content))
         final_addition = AdditionFilter(adding=self.partial_results[0])
         final_product = ProductFilter(factor=self.partial_results[1])
@@ -318,8 +455,8 @@ class FourierProcessQuarters(Filter):
 
     def apply(self, *args):
         content = None
-        for filter in self._filters:
-            content = filter(content)
+        for filter_ in self._filters:
+            content = filter_(content)
         return content
 
     def _get_firsts_quarters(self, args=None):
@@ -449,8 +586,7 @@ class DetectApplyFourier(ComposedFilter):
                         SubtractionFilter(minuend=1),
                         ProductFilter(factor=self.initial.fourier_shift),
                         FourierIShift(), FourierITransform(), AbsolutValues()]
-        content = None
-        return super().apply(content)
+        return super().apply(image_to_filter)
 
 
 class PostProcessingFinal(ComposedFilter):
