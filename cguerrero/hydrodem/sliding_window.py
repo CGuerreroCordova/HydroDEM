@@ -405,9 +405,8 @@ class SlidingIgnoreBorder(SlidingWindow):
         ndarray
             The new grid with an extra margin added.
         """
-        ny, nx = self.grid.shape
-        ny = ny + self.window_size - 1
-        nx = nx + self.window_size - 1
+        ny, nx = tuple(map(lambda x: x + self.window_size - 1,
+                           self.grid.shape))
         middle = self.window_size // 2
         grid_expanded = np.empty((ny, nx))
         grid_expanded[:] = np.nan

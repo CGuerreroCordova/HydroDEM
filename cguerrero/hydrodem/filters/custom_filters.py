@@ -44,7 +44,7 @@ class MajorityFilter(Filter):
         """
         Apply the filter. Create a zeros grid to store the filtered image.
         Create a Circular Sliding Window. The frequency taken into account to
-        decide if it the most frequency value is if the value is presente more
+        decide if it the most frequency value is if the value is present more
         than 70 percent of elements of the window. Not taking into account the
         center value as an element.
 
@@ -120,10 +120,10 @@ class ExpandFilter(Filter):
         return expanded_image
 
 
-class EnrouteRivers(Filter):
+class RouteRivers(Filter):
     """
-    Enroute and/or expand rivers coming from a mask image. Use another dem
-    image as reference to decide the enrouting of rivers. Reference DEM must
+    Route and/or expand rivers coming from a mask image. Use another dem
+    image as reference to decide the routing of rivers. Reference DEM must
     be provided in the constructor, the mask image when the filter is applied.
     Use a sliding window iterating through the mask image with values 1.
     With the center value as reference, check values contained in the window
@@ -135,7 +135,7 @@ class EnrouteRivers(Filter):
     window_size : int
         Window size of circular sliding windows used to compute the filter.
     dem : ndarray
-        Dem used as a valus reference to decide the belonging of elements to
+        Dem used as a value reference to decide the belonging of elements to
         rivers
 
     Methods
@@ -151,7 +151,7 @@ class EnrouteRivers(Filter):
         window_size : int
             Window size of circular sliding windows used to compute the filter.
         dem : ndarray
-            Dem used as a valus reference to decide the belonging of elements
+            Dem used as a value reference to decide the belonging of elements
             to rivers
         """
         self.window_size = window_size
@@ -159,12 +159,12 @@ class EnrouteRivers(Filter):
 
     def apply(self, mask_rivers):
         """
-        Apply the filter. Create a zeros grid to store the enrouted rivers.
+        Apply the filter. Create a zeros grid to store the routed rivers.
         Create a sliding window to iterate over ones on mask rivers and
         another sliding window to get values from DEM of reference. Get the
         minimum value from the DEM and the indices of the windows equal to
         this minimum values, all these elements will be new values of rivers.
-        Minimum values in DEM are set whith a high value to not interfere with
+        Minimum values in DEM are set with a high value to not interfere with
         neighbours.
 
         Parameters
@@ -175,23 +175,22 @@ class EnrouteRivers(Filter):
         Returns
         -------
         ndarray
-            Mask with enrouted rivers
+            Mask with routed rivers
         """
-
         left_up = self.window_size // 2
-        rivers_enrouted = np.zeros(self.dem.shape)
+        rivers_routed = np.zeros(self.dem.shape)
         sliding = SlidingWindow(mask_rivers, window_size=self.window_size,
                                 iter_over_ones=True)
         dem_sliding = SlidingWindow(self.dem, window_size=self.window_size)
         for _, (j, i) in sliding:
             window_dem = dem_sliding[j, i]
-            neighbour_min = np.amin(window_dem.ravel())
+            neighbour_min = np.amin(window_dem)
             indices_min = np.nonzero(window_dem == neighbour_min)
             for min_j, min_i in zip(indices_min[0], indices_min[1]):
                 indices = (j - left_up + min_j, i - left_up + min_i)
-                rivers_enrouted[indices] = 1
+                rivers_routed[indices] = 1
                 dem_sliding.grid[indices] = 10000
-        return rivers_enrouted
+        return rivers_routed
 
 
 class QuadraticFilter(Filter):
@@ -252,50 +251,104 @@ class QuadraticFilter(Filter):
 
 
 class CorrectNANValues(Filter):
+    """
+    Correct Non Available Number (NaN) values in the image, generally with
+    extremely lowest values. Use mean of neighbours inside a window as value
+    for the element with NaN problems
+
+    Attributes
+    ----------
+    window_size : int
+        Window size of circular sliding windows used to compute the filter.
+
+    Methods
+    -------
+    apply
+        apply the filter
+    """
+
+    def __init__(self, *, window_size=3):
+        """
+        Parameters
+        ----------
+        window_size : int
+            Window size of circular sliding windows used to compute the filter.
+        """
+        self.window_size = window_size
 
     def apply(self, dem):
         """
-        Correct values lower than zero, generally with extremely lowest values.
+        Apply the filter. Create a mask of negatives values (negatives values
+        are considered as NaN values).
+        Create a sliding window that iterates over ones values (on negatives
+        mask initially created). Create a sliding window avoiding center value
+        to get values from the original image. Remove true NaN values (coming
+        from sliding window probably), filter values greater than zero and
+        assign to the center value (potential NaN value) the mean of
+        neighbours non NaN and greater than zero).
+
+        Parameters
+        ----------
+        dem : ndarray
+            Image to correct NaN values.
+
+        Returns
+        -------
+        The image corrected, the values are modified on the same input image.
+        No copy are done with this filter
         """
         mask_nan = MaskNegatives().apply(dem)
-        sliding_nans = SlidingWindow(mask_nan, window_size=3,
+        sliding_nans = SlidingWindow(mask_nan, window_size=self.window_size,
                                      iter_over_ones=True)
-        dem_sliding = NoCenterWindow(dem, window_size=3)
+        dem_sliding = NoCenterWindow(dem, window_size=self.window_size)
         for _, center in sliding_nans:
-            neighbours_of_nan = dem_sliding[center].ravel()
+            neighbours_of_nan = dem_sliding[center]
             neighbours_of_nan = neighbours_of_nan[~np.isnan(neighbours_of_nan)]
-            neighbours_positives = \
-                list(filter(lambda x: x >= 0, neighbours_of_nan))
-            dem[center] = sum(neighbours_positives) / len(neighbours_positives)
+            neighbours_positives = neighbours_of_nan[neighbours_of_nan >= 0]
+            dem[center] = neighbours_positives.mean()
         return dem
 
 
-class MaskNegatives(ComposedFilter):
-
-    def __init__(self):
-        # TODO check to put in properties
-        self.filters = [LowerThan(value=0.0), BooleanToInteger()]
-
-
-class MaskPositives(ComposedFilter):
-
-    def __init__(self):
-        self.filters = [GreaterThan(value=0.0), BooleanToInteger()]
-
-
-class MaskTallGroves(ComposedFilter):
-
-    def __init__(self):
-        self.filters = [GreaterThan(value=1.5), BooleanToInteger()]
-
 class IsolatedPoints(Filter):
+    """
+    Remove isolated pixels from a mask. That is, elements in the sliding
+    window with no neighbours  are converted to zero.
+
+    Attributes
+    ----------
+    window_size : int
+        Window size of circular sliding windows used to compute the filter.
+
+    Methods
+    -------
+    apply
+        apply the filter
+    """
 
     def __init__(self, *, window_size):
+        """
+        Parameters
+        ----------
+        window_size : int
+            Window size of circular sliding windows used to compute the filter.
+        """
         self.window_size = window_size
 
     def apply(self, image_to_filter):
         """
-        Remove isolated pixels detected to be part of a mask.
+        Apply the filter. Create a sliding window with no center element and
+        iterating over ones and check if the window contain any element with 1
+
+        Parameters
+        ----------
+        image_to_filter : ndarray
+            Image to remove isolated point
+
+        Returns
+        -------
+        ndarray
+            The image corrected, the values are modified on the same input image.
+        No copy are done with this filter
         """
         sliding = NoCenterWindow(image_to_filter, window_size=self.window_size,
                                  iter_over_ones=True)
@@ -306,13 +359,50 @@ class IsolatedPoints(Filter):
 
 
 class BlanksFourier(Filter):
+    """
+    Detect brilliant points in a fourier transform and convert to a binary
+    mask. Modified the original image (fourier transform) elements detected
+    for the next iteration.
+
+    Attributes
+    ----------
+    window_size : int
+        Window size of circular sliding windows used to compute the filter.
+
+    Methods
+    -------
+    apply
+        apply the filter
+    """
 
     def __init__(self, *, window_size):
+        """
+        Parameters
+        ----------
+        window_size : int
+            Window size of circular sliding windows used to compute the filter.
+        """
         self.window_size = window_size
 
     def apply(self, image_to_filter):
         """
-        Define the filter to detect blanks in a fourier transform image.
+        Apply the filter. Create a zeros ndarray to store the blanks detected.
+        Use a sliding windows that ignores borders and has a inner window to
+        prevent very close neighbours interfere with each other. If the center
+        element is higher than neighbor mean in 4 times, the element is set as
+        a brilliant point. The original element of the image is modified to no
+        interfere with other neighbour in another iteration.
+
+        Parameters
+        ----------
+        image_to_filter : ndarray
+            Fourier transform where brilliant points can be present
+
+        Returns
+        -------
+        tuple(ndarray, ndarray)
+            Brilliant points detected (blanks) and the oirginal image
+            modified, the elements founded as blank
         """
         filtered_image = np.zeros(image_to_filter.shape)
         fourier_transform = \
@@ -321,12 +411,83 @@ class BlanksFourier(Filter):
                                      inner_size=5)
         for window, center in fourier_transform:
             mean_neighbor = np.nanmean(window)
-            real_center = center[0] - self.window_size // 2, \
-                          center[1] - self.window_size // 2,
+            real_center = tuple(map(lambda x: x - self.window_size // 2,
+                                    center))
             if image_to_filter[real_center] > (4 * mean_neighbor):
                 filtered_image[real_center] = 1.0
         image_modified = image_to_filter * (1 - filtered_image)
         return filtered_image, image_modified
+
+
+class MaskNegatives(ComposedFilter):
+    """
+    Get a mask of Negatives Values. The image will have 1 if the value is
+    negative 0 otherwise
+
+    Attributes
+    ----------
+    filters : list(Filter)
+        List of filter to apply in a sequential chain. First creating a
+        boolean mask of values lower than zero, then converting this boolean
+        values to integer (binary) values.
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilter, the method "apply" of
+    the super class is prepared to compute filters in the list filters. Filter
+    included in this list must be subclasses of Filter and must have
+    implemented the method apply.
+    """
+    def __init__(self):
+        self.filters = [LowerThan(value=0.0), BooleanToInteger()]
+
+
+class MaskPositives(ComposedFilter):
+    """
+    Get a mask of Positives Values. The image will have 1 if the value is
+    positive 0 otherwise
+
+    Attributes
+    ----------
+    filters : list(Filter)
+        List of filter to apply in a sequential chain. First creating a
+        boolean mask of values greather than zero, then converting this boolean
+        values to integer (binary) values.
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilter, the method "apply" of
+    the super class is prepared to compute filters in the list filters. Filter
+    included in this list must be subclasses of Filter and must have
+    implemented the method apply.
+    """
+
+    def __init__(self):
+        self.filters = [GreaterThan(value=0.0), BooleanToInteger()]
+
+
+class MaskTallGroves(ComposedFilter):
+    """
+    Get a mask of values greather than 1.5. The image will have 1 if the value
+    is greather than 1.5, 0 otherwise.
+
+    Attributes
+    ----------
+    filters : list(Filter)
+        List of filter to apply in a sequential chain. First creating a
+        boolean mask of values greather than 1.5, then converting this boolean
+        values to integer (binary) values.
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilter, the method "apply" of
+    the super class is prepared to compute filters in the list filters. Filter
+    included in this list must be subclasses of Filter and must have
+    implemented the method "apply".
+    """
+
+    def __init__(self):
+        self.filters = [GreaterThan(value=1.5), BooleanToInteger()]
 
 
 class DetectBlanksFourier(Filter):
@@ -343,19 +504,52 @@ class DetectBlanksFourier(Filter):
 
 class MaskFourier(ComposedFilter):
     """
-    Perform iterations of filter blanks functions and produce a final mask
-    with blanks of fourier transform.
-    :param quarter_fourier: fourier transform image.
-    :return: mask with detected blanks
-    """
+    Apply the chain of filters sequentially to:
+    Detect blanks fourier
+    Remove isolated points
+    Expands blanks detected.
 
+    Attributes
+    ----------
+    filters : list(Filter)
+        List of filter to apply in a sequential chain. This composed filter is
+        set to: First detecting blanks in fourier transform, then removing
+        isolated points and finishing expanding the blanks detected
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilter, the method "apply" of
+    the super class is prepared to compute filters in the list filters. Filters
+    included in this list of filters must be subclass of Filter and must have
+    implemented the method apply.
+    """
     def __init__(self):
-        # TODO check to put in properties
         self.filters = [DetectBlanksFourier(), IsolatedPoints(window_size=3),
                         ExpandFilter(window_size=13)]
 
 
 class TidyingLagoons(ComposedFilter):
+    """
+    Apply the chain of filters sequentially to tidy the shape of lagoons:
+    Erode borders of detected lagoons
+    Expand eroded lagoons
+    Multiply with the origin image to filter
+    Dilate the result to cover the borders of lagoons
+
+    Attributes
+    ----------
+    filters : list(Filter)
+        List of filter to apply in a sequential chain. This composed filter is
+        set to: Erode borders, expand eroded lagoons, mupltiply with the
+        origin mask, dilate to cover borders
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilter, the method "apply" of
+    the super class is prepared to compute filters in the list filters. Filters
+    included in this list of filters must be subclass of Filter and must have
+    implemented the method apply.
+    """
 
     def __init__(self):
         self.filters = [BinaryErosion(iterations=2),
@@ -364,6 +558,19 @@ class TidyingLagoons(ComposedFilter):
                         GreyDilation(size=(7, 7))]
 
     def apply(self, image_to_filter):
+        """
+        Apply the filter. First of all, save the original mask to the product
+         filter attribute
+
+        Parameters
+        ----------
+        image_to_filter : ndarray
+            Initial lagoons detected
+
+        Returns
+        -------
+            Lagoons tidied
+        """
         self.filters[2].factor = content = image_to_filter
         for filter_ in self.filters:
             content = filter_.apply(content)
@@ -416,7 +623,7 @@ class ProcessRivers(ComposedFilter):
 
     def __init__(self, hsheds):
         self.filters = [MaskPositives(), ExpandFilter(window_size=3),
-                        EnrouteRivers(window_size=3, dem=hsheds),
+                        RouteRivers(window_size=3, dem=hsheds),
                         BinaryClosing()]
 
 

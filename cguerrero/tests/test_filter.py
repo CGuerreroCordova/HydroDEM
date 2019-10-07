@@ -9,7 +9,7 @@ from osgeo import gdal
 
 from cguerrero.hydrodem.filters.custom_filters import (MajorityFilter,
                                                        ExpandFilter,
-                                                       EnrouteRivers,
+                                                       RouteRivers,
                                                        QuadraticFilter,
                                                        CorrectNANValues,
                                                        IsolatedPoints,
@@ -87,7 +87,7 @@ class Test_filter(TestCase):
         mask_rivers = \
             gdal.Open(ConfigTests.inputs('MASK_RIVERS_ROUTING')).ReadAsArray()
         rivers_routed = \
-            EnrouteRivers(window_size=3, dem=hsheds_input).apply(mask_rivers)
+            RouteRivers(window_size=3, dem=hsheds_input).apply(mask_rivers)
         rivers_routed_expected = \
             gdal.Open(ConfigTests.expected('RIVERS_ROUTED')).ReadAsArray()
         testing.assert_array_equal(rivers_routed, rivers_routed_expected)
