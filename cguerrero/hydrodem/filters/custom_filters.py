@@ -264,7 +264,7 @@ class CorrectNANValues(Filter):
     Methods
     -------
     apply
-        apply the filter
+        Apply the filter
     """
 
     def __init__(self, *, window_size=3):
@@ -347,8 +347,8 @@ class IsolatedPoints(Filter):
         Returns
         -------
         ndarray
-            The image corrected, the values are modified on the same input image.
-        No copy are done with this filter
+            The image corrected, the values are modified on the same input
+            image.
         """
         sliding = NoCenterWindow(image_to_filter, window_size=self.window_size,
                                  iter_over_ones=True)
@@ -401,7 +401,7 @@ class BlanksFourier(Filter):
         Returns
         -------
         tuple(ndarray, ndarray)
-            Brilliant points detected (blanks) and the oirginal image
+            Brilliant points detected (blanks) and the original image
             modified, the elements founded as blank
         """
         filtered_image = np.zeros(image_to_filter.shape)
@@ -417,6 +417,41 @@ class BlanksFourier(Filter):
                 filtered_image[real_center] = 1.0
         image_modified = image_to_filter * (1 - filtered_image)
         return filtered_image, image_modified
+
+
+class DetectBlanksFourier(Filter):
+    """
+    Detect blanks in transform fourier applying iterations of blank detection,
+    images obtained in different iterations are added.
+
+    Methods
+    -------
+    apply
+        Apply the filter to an expected fourier image.
+    """
+
+    def apply(self, quarter_fourier):
+        """
+        Apply the detection of brilliant points on the image performing two
+        iterations, and adding the results of each iteration
+
+        Parameters
+        ----------
+        quarter_fourier : ndarray
+            Image to apply the filter
+
+        Returns
+        -------
+        ndarray
+            Mask with blanks detection performed.
+        """
+        final_mask_image = np.zeros(quarter_fourier.shape)
+        blanks_fourier = BlanksFourier(window_size=55)
+        for _ in (0, 1):
+            filtered_blanks, quarter_fourier = \
+                blanks_fourier.apply(quarter_fourier)
+            final_mask_image += filtered_blanks
+        return final_mask_image
 
 
 class MaskNegatives(ComposedFilter):
@@ -451,7 +486,7 @@ class MaskPositives(ComposedFilter):
     ----------
     filters : list(Filter)
         List of filter to apply in a sequential chain. First creating a
-        boolean mask of values greather than zero, then converting this boolean
+        boolean mask of values greater than zero, then converting this boolean
         values to integer (binary) values.
 
     Notes
@@ -469,7 +504,7 @@ class MaskPositives(ComposedFilter):
 class MaskTallGroves(ComposedFilter):
     """
     Get a mask of values greather than 1.5. The image will have 1 if the value
-    is greather than 1.5, 0 otherwise.
+    is greater than 1.5, 0 otherwise.
 
     Attributes
     ----------
@@ -488,18 +523,6 @@ class MaskTallGroves(ComposedFilter):
 
     def __init__(self):
         self.filters = [GreaterThan(value=1.5), BooleanToInteger()]
-
-
-class DetectBlanksFourier(Filter):
-
-    def apply(self, quarter_fourier):
-        final_mask_image = np.zeros(quarter_fourier.shape)
-        blanks_fourier = BlanksFourier(window_size=55)
-        for i in (0, 1):
-            filtered_blanks, quarter_fourier = \
-                blanks_fourier.apply(quarter_fourier)
-            final_mask_image += filtered_blanks
-        return final_mask_image
 
 
 class MaskFourier(ComposedFilter):
@@ -578,28 +601,113 @@ class TidyingLagoons(ComposedFilter):
 
 
 class LagoonsDetection(ComposedFilterResults):
+    """
+    Perform the lagoons detection composing filters sequentially. Intermediate
+    results are stored in instance variable for future purposes.
+
+    Attributes
+    ----------
+    filters : list(Filter)
+        List of filter to apply in a sequential chain. First correction of
+        NaN values, majority filter for lagoon detection, tidiness of
+        their shape and creation of mask of values.
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilterResults, the method
+    "apply" of the super class is prepared to compute filters in the list
+    filters. Filter included in this list must be subclasses of Filter and
+    must have implemented the method apply.
+    """
+
     def __init__(self):
         super().__init__()
         self.filters = [CorrectNANValues(), MajorityFilter(window_size=11),
                         TidyingLagoons(), MaskPositives()]
 
     def apply(self, image_to_filter):
-        result = super().apply(image_to_filter)
+        """
+        Call to super class "apply" method to apply the chain sequence and get
+        results to return and to store intermediate results in instance
+        attributes for future purposes.
+
+        Parameters
+        ----------
+        image_to_filter : ndarray
+            Image to apply the filter. It is espected a hsheds image.
+
+        Returns
+        -------
+        ndarray
+            Mask with lagoons detected.
+        """
+        image_result = super().apply(image_to_filter)
         self.hsheds_nan_fixed = self.results["CorrectNANValues"]
         self.mask_lagoons = self.results["MaskPositives"]
         self.lagoons_values = self.results["TidyingLagoons"]
-        return result
+        return image_result
 
 
 class GrovesCorrection(ComposedFilter):
+    """
+    Perform the groves correction on SRTM DEM image. Apply quadratic filter
+    of smoothnesss, substract images with original to get highlighted dem,
+    apply mask of greather than 1.5, multiply with groves classification and
+    get the complement of the result
 
+    Attributes
+    ----------
+    partial_result : list(ndarray)
+        A list of partial results of applying filters, are useful for to do
+        some computation among them
+    filters: list(Filter)
+
+    Methods
+    -------
+    apply
+        apply the filter. In this case apply the filter define in the
+        constructor, perform some intermediate operations to create another
+        list of filter and call to super class apply method.
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilter, the method "apply" of
+    the super class is prepared to compute filters in the list filters. Filters
+    included in this list of filters must be subclass of Filter and must have
+    implemented the method apply. In this case only filters added at the end
+    of apply method will be computed for the super class method, for the
+    filters defined in the constructor the override of method apply has sense,
+    and additional operations are done after the filters applying.
+    """
     def __init__(self, groves_class):
+        """
+        Parameters
+        ----------
+        groves_class : ndarray
+            Groves classification to initialize ProductFilter filter.
+        """
         self.partial_results = []
         self.filters = [QuadraticFilter(window_size=15), SubtractionFilter(),
                         MaskTallGroves(), ProductFilter(factor=groves_class),
                         SubtractionFilter(minuend=1)]
 
     def apply(self, image_to_filter):
+        """
+        Apply the filter. Save the content of the initial image as one of the
+        attributes of the second filter in the chain. Process the chain of
+        sequential filters saving the intermediate result to use as the final
+        chain of filter to process
+
+        Parameters
+        ----------
+        image_to_filter : ndarray
+            Initial image to process, is espected srtm dem.
+
+        Returns
+        -------
+        ndarray
+            Image with groves corrections done
+        """
         self.filters[1].minuend = content = image_to_filter
         for filter_ in self.filters:
             content = filter_.apply(content)
@@ -611,44 +719,168 @@ class GrovesCorrection(ComposedFilter):
 
 
 class GrovesCorrectionsIter(ComposedFilter):
+    """
+    Perform three iterations of GrovesCorrection in a chain sequence. The
+    Groves Correction filter are specified in the constructor.
 
-    # TODO: Ver de modificar esto
-    def __init__(self, groves_class):
-        self.filters = [GrovesCorrection(groves_class),
-                        GrovesCorrection(groves_class),
-                        GrovesCorrection(groves_class)]
+    Attributes
+    ----------
+    filters : list(GrovesCorrection)
+        List of filter to apply in a sequential chain. Depending on the
+        parameter of constructor the quantity of instances of GrovesCorrection
+        and hence the iterations of correction.
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilter, the method "apply" of
+    the super class is prepared to compute filters in the list filters. Filter
+    included in this list must be subclasses of Filter and must have
+    implemented the method apply.
+    """
+
+    def __init__(self, groves_class, iterations=3):
+        """
+
+        Parameters
+        ----------
+        groves_class : ndarray
+            Groves classification needed to perform each iteration of groves correction
+        iterations
+        """
+        self.filters = []
+        for _ in range(iterations):
+            self.filters.append(GrovesCorrection(groves_class))
 
 
 class ProcessRivers(ComposedFilter):
+    """
+    Perform processing of rivers. From rasterized rivers.
+
+    Attributes
+    ----------
+    filters : list(GrovesCorrection)
+        List of filter to apply in a sequential chain: Create a mask of
+        positives values, expand this mask, route rivers and finally applying
+        closing filter this routed rivers.
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilter, the method "apply" of
+    the super class is prepared to compute filters in the list filters. Filter
+    included in this list must be subclasses of Filter and must have
+    implemented the method apply.
+    """
 
     def __init__(self, hsheds):
+        """
+        Parameters
+        ----------
+        hsheds : ndarray
+            image of hydrosheds dem to perform the filter of routing rivers.
+        """
         self.filters = [MaskPositives(), ExpandFilter(window_size=3),
                         RouteRivers(window_size=3, dem=hsheds),
                         BinaryClosing()]
 
 
 class ClipLagoonsRivers(ComposedFilter):
+    """
+    Seporate lagoons from rivers
+
+    Attributes
+    ----------
+    filters : list(Filter)
+        List of filter to apply in a sequential chain:
+        Product filter to get intersection between maskm of lagoons and rivers
+        Bitwise-xor operator between images to remove intersection from rivers
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilter, the method "apply" of
+    the super class is prepared to compute filters in the list filters. Filter
+    included in this list must be subclasses of Filter and must have
+    implemented the method apply.
+    """
 
     def __init__(self, mask_lagoons, rivers_routed_closing):
-        self.filters = [ProductFilter(factor=mask_lagoons), MaskPositives(),
+        """
+        Parameters
+        ----------
+        mask_lagoons : ndarray
+            Lagoons mask to detect intersection between rivers and lagoons
+        rivers_routed_closing
+            Rivers mask to detect intersection between rivers and lagoons
+        """
+        self.filters = [ProductFilter(factor=mask_lagoons),
                         BitwiseXOR(operand=rivers_routed_closing)]
 
 
 class FourierInitial(ComposedFilterResults):
+    """
+    Process the initial part of the srtm image to get the Fourier transform
+    ready to process.
+
+    Attributes
+    ----------
+    filters : list(Filter)
+        List of filter to apply in a sequential chain. Apply the Fourier
+        transform, apply the Shift to the fourier transform to center the
+        frequencies and finally getting the absolut values of the Fourier
+        trasnform.
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilterResults, the method
+    "apply" of the super class is prepared to compute filters in the list
+    filters. Filter included in this list must be subclasses of Filter and
+    must have implemented the method apply.
+    """
     def __init__(self):
         super().__init__()
         self.filters = [FourierTransform(), FourierShift(), AbsolutValues()]
 
     def apply(self, image_to_filter):
+        """
+        Call to super class "apply" method to apply the chain sequence and get
+        results to return, previous to return the result, store intermediate
+        results in instance attributes for future purposes.
+
+        Parameters
+        ----------
+        image_to_filter : ndarray
+            Image to apply the filter. It is espected a srtm dem image.
+
+        Returns
+        -------
+        ndarray
+            Fourier transform ready to process.
+        """
         result = super().apply(image_to_filter)
         self.fourier_shift = self.results["FourierShift"]
         return result
 
 
-
 class FourierProcessQuarters(Filter):
+    """
+    Process the Fourier Transform detection disassembling the image fourier
+    transform in quarters.
+    This class apply filter in a different way, providind private function to
+    this tasks. It contains an apply filter but is different of otherones
+    because it uses internal functions to disarm and rearm the image
+    """
 
     def __init__(self, fft_transform_abs):
+        """
+        The class constructor class take as parameter the complete fourier
+        transform image, in this constructor important values useful throughout
+        the process, class and methods are stored in instance attributes. All
+        these attributes can be obtained from the input parameter
+
+        Parameters
+        ----------
+        fft_transform_abs : ndarray
+            Fourier Transform image complete
+        """
         self._filters = [self._get_firsts_quarters,
                          self._apply_mask_fourier,
                          self._fill_complete_quarters,
@@ -658,9 +890,27 @@ class FourierProcessQuarters(Filter):
         self._ny, self._nx = fft_transform_abs.shape
         self._mid_y, self._y_odd = divmod(self._ny, 2)
         self._mid_x, self._x_odd = divmod(self._nx, 2)
+        self.pair_mid = self._mid_y, self._mid_x
         self._margin = 10
 
-    def apply(self, *args):
+    def apply(self, image_to_filter):
+        """
+        Apply the filter. In this case composed by private functions to
+        disassemble in quarters, process quarters, and reassemble thi pieces
+        again
+
+        Parameters
+        ----------
+        image_to_filter : ndarray
+            complete fourier transform to process in sequentially chain of
+            private functions (filters)
+
+        Returns
+        -------
+        ndarray
+            Fourier trasnform with blanks point corrected.
+        """
+
         content = None
         for filter_ in self._filters:
             content = filter_(content)
@@ -692,8 +942,8 @@ class FourierProcessQuarters(Filter):
 
         Returns
         -------
-            tuple(ndarray, ndarray)
-                tuple of masks of blank fourier detected for each quarter
+        mask_quarters : tuple(ndarray, ndarray)
+            tuple of masks of blank fourier detected for each quarter
         """
         mask_quarters = tuple(map(MaskFourier().apply, quarters))
         return mask_quarters
@@ -716,8 +966,8 @@ class FourierProcessQuarters(Filter):
         first and second quarters of real size of the image filled with mask
         fourier detected.
         """
-        fst_complete_quarter = np.zeros((self._mid_y, self._mid_x))
-        snd_complete_quarter = np.zeros((self._mid_y, self._mid_x))
+        fst_complete_quarter = np.zeros(self.pair_mid)
+        snd_complete_quarter = np.zeros(self.pair_mid)
         fst_complete_quarter[:self._mid_y - self._margin,
         :self._mid_x - self._margin] = quarters[0]
         snd_complete_quarter[:self._mid_y - self._margin,
@@ -732,9 +982,9 @@ class FourierProcessQuarters(Filter):
         -------
             Combination of pairs of indices to reverse some image.
         """
-        reverse_x = (self._mid_x - 1) - np.arange(self._mid_x)
-        reverse_y = (self._mid_y - 1) - np.arange(self._mid_y)
-        indices = np.ix_(reverse_y, reverse_x)
+        reversed_axis = tuple(map(lambda x: x - 1 - np.arange(x),
+                                  self.pair_mid))
+        indices = np.ix_(*reversed_axis)
         return indices
 
     def _getting_reversed_masks(self, quarters):
@@ -774,8 +1024,8 @@ class FourierProcessQuarters(Filter):
         """
         masks_fourier = np.zeros((self._ny, self._nx))
         masks_fourier[:self._mid_y, :self._mid_x] = quarters[0]
-        masks_fourier[:self._mid_y,
-        self._mid_x + self._x_odd:self._nx] = quarters[1]
+        masks_fourier[:self._mid_y, self._mid_x +
+                                    self._x_odd:self._nx] = quarters[1]
         masks_fourier[self._mid_y + self._y_odd:self._ny,
         :self._mid_x] = quarters[2]
         masks_fourier[self._mid_y + self._y_odd:self._ny,
@@ -784,10 +1034,46 @@ class FourierProcessQuarters(Filter):
 
 
 class DetectApplyFourier(ComposedFilter):
+    """
+    Detect and apply Fourier transform blanks points detection, correction
+    and image restoration
+
+    Attributes
+    ----------
+    initial : FourierInitial
+        An element to process the first part of Fourier transforming
+    filters : Chain of Filters to detect blanks of Fourier to correct, applying
+    the correction and get the image restored and corrected
+
+    Methods
+    -------
+    apply
+        Apply the filter to detect Fourier correction, apply this correction
+        on image, divide the image in quarters and rearm the fourier tranform
+        to apply inverse and get the original image corrected.
+    """
     def __init__(self):
         self.initial = FourierInitial()
 
     def apply(self, image_to_filter):
+        """
+        Apply the filter. First apply the initial part of fourier transform
+        to get the intermediate result necessary to initialize the Filter of
+        processing quarters. Then Apply the filters of the sequential chain to
+        correct the fourier image and to apply the inverse of Fourier transform
+        and get the result image corrected without strips.
+
+        Parameters
+        ----------
+        image_to_filter: ndarray
+            Image to correct Fourier. An SRTM dem image is expected
+
+        Returns
+        -------
+        ndarray
+            SRTM dem image with strips corrected by mean Fourier transform
+            method.
+        """
         self.fft_transform_abs = self.initial.apply(image_to_filter)
         self.filters = [FourierProcessQuarters(self.fft_transform_abs),
                         SubtractionFilter(minuend=1),
@@ -797,6 +1083,23 @@ class DetectApplyFourier(ComposedFilter):
 
 
 class PostProcessingFinal(ComposedFilter):
+    """
+    Process the last part of ready dem. Some filter to smooth the dem and
+    around the values to 1 meter resolution
+
+    Attributes
+    ----------
+    filters : list(Filter)
+        List of filter to apply in a sequential chain. Convolve filter to
+        smoothness and arounding of values to get a 1 meter resolution
+
+    Notes
+    -----
+    Because this class is a subclass of ComposedFilterResults, the method
+    "apply" of the super class is prepared to compute filters in the list
+    filters. Filter included in this list must be subclasses of Filter and
+    must have implemented the method apply.
+    """
 
     def __init__(self):
         self.filters = [Convolve(), Around()]

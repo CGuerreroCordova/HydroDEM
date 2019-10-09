@@ -55,7 +55,4 @@ class Groves(Image):
 
     def process(self, srtm):
         groves_class = self._prepare()
-        return GrovesCorrectionsIter(groves_class).apply(srtm)
-
-
-
+        return GrovesCorrectionsIter(groves_class, iterations=3).apply(srtm)
