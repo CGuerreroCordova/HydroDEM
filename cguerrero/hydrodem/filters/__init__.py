@@ -35,7 +35,6 @@ class Filter(ABC):
         NumpyArrayExpectedError
             If image_to_filter provided is not ndarray type
         """
-        # TODO: Check if it necesary include NotImplementedError
         if not isinstance(image_to_filter, ndarray):
             raise NumpyArrayExpectedError(image_to_filter)
 

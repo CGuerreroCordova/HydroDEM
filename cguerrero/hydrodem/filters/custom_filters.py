@@ -11,7 +11,7 @@ from filters.extension_filters import (BitwiseXOR, BinaryErosion, Around,
                                        BinaryClosing, GreyDilation, Convolve,
                                        FourierITransform, FourierTransform,
                                        FourierShift, FourierIShift,
-                                       AbsolutValues)
+                                       AbsoluteValues)
 
 
 class MajorityFilter(Filter):
@@ -474,6 +474,7 @@ class MaskNegatives(ComposedFilter):
     implemented the method apply.
     """
     def __init__(self):
+        super().__init__()
         self.filters = [LowerThan(value=0.0), BooleanToInteger()]
 
 
@@ -503,14 +504,14 @@ class MaskPositives(ComposedFilter):
 
 class MaskTallGroves(ComposedFilter):
     """
-    Get a mask of values greather than 1.5. The image will have 1 if the value
+    Get a mask of values greater than 1.5. The image will have 1 if the value
     is greater than 1.5, 0 otherwise.
 
     Attributes
     ----------
     filters : list(Filter)
         List of filter to apply in a sequential chain. First creating a
-        boolean mask of values greather than 1.5, then converting this boolean
+        boolean mask of values greater than 1.5, then converting this boolean
         values to integer (binary) values.
 
     Notes
@@ -563,7 +564,7 @@ class TidyingLagoons(ComposedFilter):
     ----------
     filters : list(Filter)
         List of filter to apply in a sequential chain. This composed filter is
-        set to: Erode borders, expand eroded lagoons, mupltiply with the
+        set to: Erode borders, expand eroded lagoons, multiply with the
         origin mask, dilate to cover borders
 
     Notes
@@ -624,6 +625,9 @@ class LagoonsDetection(ComposedFilterResults):
         super().__init__()
         self.filters = [CorrectNANValues(), MajorityFilter(window_size=11),
                         TidyingLagoons(), MaskPositives()]
+        self.hsheds_nan_fixed = None
+        self.mask_lagoons = None
+        self.lagoons_values = None
 
     def apply(self, image_to_filter):
         """
@@ -634,7 +638,7 @@ class LagoonsDetection(ComposedFilterResults):
         Parameters
         ----------
         image_to_filter : ndarray
-            Image to apply the filter. It is espected a hsheds image.
+            Image to apply the filter. It is expected a hsheds image.
 
         Returns
         -------
@@ -651,13 +655,13 @@ class LagoonsDetection(ComposedFilterResults):
 class GrovesCorrection(ComposedFilter):
     """
     Perform the groves correction on SRTM DEM image. Apply quadratic filter
-    of smoothnesss, substract images with original to get highlighted dem,
-    apply mask of greather than 1.5, multiply with groves classification and
+    of smoothness, subtract images with original to get highlighted dem,
+    apply mask of greater than 1.5, multiply with groves classification and
     get the complement of the result
 
     Attributes
     ----------
-    partial_result : list(ndarray)
+    partial_results : list(ndarray)
         A list of partial results of applying filters, are useful for to do
         some computation among them
     filters: list(Filter)
@@ -701,7 +705,7 @@ class GrovesCorrection(ComposedFilter):
         Parameters
         ----------
         image_to_filter : ndarray
-            Initial image to process, is espected srtm dem.
+            Initial image to process, is expected srtm dem.
 
         Returns
         -------
@@ -744,8 +748,8 @@ class GrovesCorrectionsIter(ComposedFilter):
         Parameters
         ----------
         groves_class : ndarray
-            Groves classification needed to perform each iteration of groves correction
-        iterations
+            Groves classification needed to perform each iteration of groves
+            correction iterations
         """
         self.filters = []
         for _ in range(iterations):
@@ -785,13 +789,13 @@ class ProcessRivers(ComposedFilter):
 
 class ClipLagoonsRivers(ComposedFilter):
     """
-    Seporate lagoons from rivers
+    Separate lagoons from rivers
 
     Attributes
     ----------
     filters : list(Filter)
         List of filter to apply in a sequential chain:
-        Product filter to get intersection between maskm of lagoons and rivers
+        Product filter to get intersection between mask of lagoons and rivers
         Bitwise-xor operator between images to remove intersection from rivers
 
     Notes
@@ -817,7 +821,7 @@ class ClipLagoonsRivers(ComposedFilter):
 
 class FourierInitial(ComposedFilterResults):
     """
-    Process the initial part of the srtm image to get the Fourier transform
+    Process the initial part of the SRTM image to get the Fourier transform
     ready to process.
 
     Attributes
@@ -825,8 +829,8 @@ class FourierInitial(ComposedFilterResults):
     filters : list(Filter)
         List of filter to apply in a sequential chain. Apply the Fourier
         transform, apply the Shift to the fourier transform to center the
-        frequencies and finally getting the absolut values of the Fourier
-        trasnform.
+        frequencies and finally getting the absolute values of the Fourier
+        transform.
 
     Notes
     -----
@@ -836,8 +840,8 @@ class FourierInitial(ComposedFilterResults):
     must have implemented the method apply.
     """
     def __init__(self):
-        super().__init__()
-        self.filters = [FourierTransform(), FourierShift(), AbsolutValues()]
+        self.filters = [FourierTransform(), FourierShift(), AbsoluteValues()]
+        self.fourier_shift = None
 
     def apply(self, image_to_filter):
         """
@@ -848,7 +852,7 @@ class FourierInitial(ComposedFilterResults):
         Parameters
         ----------
         image_to_filter : ndarray
-            Image to apply the filter. It is espected a srtm dem image.
+            Image to apply the filter. It is expected a SRTM dem image.
 
         Returns
         -------
@@ -864,8 +868,8 @@ class FourierProcessQuarters(Filter):
     """
     Process the Fourier Transform detection disassembling the image fourier
     transform in quarters.
-    This class apply filter in a different way, providind private function to
-    this tasks. It contains an apply filter but is different of otherones
+    This class apply filter in a different way, providing private function to
+    this tasks. It contains an apply filter but is different of other ones
     because it uses internal functions to disarm and rearm the image
     """
 
@@ -908,7 +912,7 @@ class FourierProcessQuarters(Filter):
         Returns
         -------
         ndarray
-            Fourier trasnform with blanks point corrected.
+            Fourier transform with blanks point corrected.
         """
 
         content = None
@@ -952,8 +956,8 @@ class FourierProcessQuarters(Filter):
         """
         Create quarters of base image with zeros values (these quarters
         contains also margin and central line). After creation these quarters
-        are filled with quarters input. They suposed to be mask of blank fourier
-        detected previously.
+        are filled with quarters input. They supposed to be mask of blank
+        fourier detected previously.
 
         Parameters
         ----------
@@ -1024,10 +1028,10 @@ class FourierProcessQuarters(Filter):
         """
         masks_fourier = np.zeros((self._ny, self._nx))
         masks_fourier[:self._mid_y, :self._mid_x] = quarters[0]
-        masks_fourier[:self._mid_y, self._mid_x +
-                                    self._x_odd:self._nx] = quarters[1]
-        masks_fourier[self._mid_y + self._y_odd:self._ny,
-        :self._mid_x] = quarters[2]
+        masks_fourier[:self._mid_y, self._mid_x + self._x_odd:self._nx] = \
+            quarters[1]
+        masks_fourier[self._mid_y + self._y_odd:self._ny, :self._mid_x] = \
+            quarters[2]
         masks_fourier[self._mid_y + self._y_odd:self._ny,
         self._mid_x + self._x_odd:self._nx] = quarters[3]
         return masks_fourier
@@ -1049,11 +1053,12 @@ class DetectApplyFourier(ComposedFilter):
     -------
     apply
         Apply the filter to detect Fourier correction, apply this correction
-        on image, divide the image in quarters and rearm the fourier tranform
+        on image, divide the image in quarters and rearm the fourier transform
         to apply inverse and get the original image corrected.
     """
     def __init__(self):
         self.initial = FourierInitial()
+        self.fft_transform_abs = None
 
     def apply(self, image_to_filter):
         """
@@ -1078,7 +1083,7 @@ class DetectApplyFourier(ComposedFilter):
         self.filters = [FourierProcessQuarters(self.fft_transform_abs),
                         SubtractionFilter(minuend=1),
                         ProductFilter(factor=self.initial.fourier_shift),
-                        FourierIShift(), FourierITransform(), AbsolutValues()]
+                        FourierIShift(), FourierITransform(), AbsoluteValues()]
         return super().apply(image_to_filter)
 
 
