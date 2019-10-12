@@ -55,7 +55,7 @@ class SRTM(Image):
     def _prepare(self):
         """
         Some prepocessing needed to perform the SRTM processing. Unzip the zip
-        file containing the SRTM DEM Image tile containing the area of
+        file containing the SRTM DEM Image tile that include the area of
         interest. Resample and Cut SRTM using path to the shapefile and path
         and name with which the cropped area will be saved.
         """
