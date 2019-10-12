@@ -45,7 +45,7 @@ class HydroDEMProcess(object):
 
     def _prepare_final_terms(self, srtm, lagoons, rivers):
         mask_rivers_lagoons = \
-            AdditionFilter(adding=lagoons.mask_lagoons).apply(rivers)
+            AdditionFilter(addend=lagoons.mask_lagoons).apply(rivers)
         not_rivers_lagoons = \
             SubtractionFilter(minuend=1).apply(mask_rivers_lagoons)
         first_term_srtm = \

@@ -13,6 +13,11 @@ class BitwiseXOR(Filter):
     """
     Provide a wrap for Bitwise-Xor numpy filter
 
+    Attributes
+    ----------
+    operand : ndarray
+            First operand to apply the filter
+
     Methods
     -------
     apply
@@ -51,6 +56,7 @@ class BitwiseXOR(Filter):
         ndarray
             Result of applying filter using operands
         """
+        super().apply(image_to_filter)
         return bitwise_xor(self.operand, image_to_filter)
 
 
@@ -85,6 +91,7 @@ class AbsoluteValues(Filter):
         ndarray
             Result of applying filter
         """
+        super().apply(image_to_filter)
         return abs(image_to_filter)
 
 
@@ -119,6 +126,7 @@ class Around(Filter):
         ndarray
             Result of applying filter
         """
+        super().apply(image_to_filter)
         return around(image_to_filter)
 
 
@@ -127,6 +135,11 @@ class Convolve(Filter):
     Provide a wrap to apply the convolve function of scipy library.
     Multidimensional convolution. The array is convolved with the given kernel.
 
+    Attributes
+    ----------
+    weights : array_like, optional
+            Array of weights, same number of dimensions as input (default is
+            ones((3, 3)))
 
     Methods
     -------
@@ -145,8 +158,8 @@ class Convolve(Filter):
         Parameters
         ----------
         weights : array_like, optional
-            Array of weights, same number of dimensions as input
-            (default is ones((3, 3)))
+            Array of weights, same number of dimensions as input (default is
+            ones((3, 3)))
         """
         self.weights = weights
 
@@ -166,13 +179,19 @@ class Convolve(Filter):
         ndarray
             Result of applying filter
         """
+        super().apply(image_to_filter)
         return convolve(image_to_filter,
                         weights=self.weights) / self.weights.size
 
 
 class BinaryErosion(Filter):
     """
-    Provide a wrap for Binary Erosion scipy filter
+    Provide a wrap for Binary Erosion scipy filter.
+
+    Attributes
+    ----------
+    iterations : int
+            Amount of iterations to apply the filter
 
     Methods
     -------
@@ -212,12 +231,22 @@ class BinaryErosion(Filter):
         ndarray
             Result of applying filter
         """
+        super().apply(image_to_filter)
         return binary_erosion(image_to_filter, iterations=self.iterations)
 
 
 class BinaryClosing(Filter):
     """
-    Provide a wrap for Binary Closing scipy filter
+    Provide a wrap for Binary Closing scipy filter.
+
+    Attributes
+    ----------
+    structure : array_like, optional
+        Structuring element used for the closing. Non-zero elements are
+        considered True. If no structuring element is provided an element
+        is generated with a square connectivity equal to one (i.e., only
+        nearest neighbour are connected to the center, diagonally-connected
+        elements are not considered neighbour).
 
     Methods
     -------
@@ -260,12 +289,19 @@ class BinaryClosing(Filter):
         ndarray
             Result of applying filter
         """
+        super().apply(image_to_filter)
         return binary_closing(image_to_filter, structure=self.structure)
 
 
 class GreyDilation(Filter):
     """
-    Provide a wrap for Grey Dilation scipy filter
+    Provide a wrap for Grey Dilation scipy filter.
+
+    Attributes
+    ----------
+    size : tuple of ints
+        Shape of a flat and full structuring element used for the grayscale
+        dilation. Optional if `footprint` or `structure` is provided.
 
     Methods
     -------
@@ -305,6 +341,7 @@ class GreyDilation(Filter):
         ndarray
             Result of applying filter
         """
+        super().apply(image_to_filter)
         return grey_dilation(image_to_filter, size=self.size)
 
 
@@ -338,6 +375,7 @@ class FourierTransform(Filter):
             The two-dimensional discrete Fourier transform of the 2-D argument
             `x`.
         """
+        super().apply(image_to_filter)
         return fftpack.fft2(image_to_filter)
 
 
@@ -372,6 +410,7 @@ class FourierITransform(Filter):
             Inverse two-dimensional discrete Fourier transform of arbitrary
             type sequence x.
         """
+        super().apply(image_to_filter)
         return fftpack.ifft2(image_to_filter)
 
 
@@ -404,6 +443,7 @@ class FourierShift(Filter):
         ndarray
             The shifted array
         """
+        super().apply(image_to_filter)
         return fftpack.fftshift(image_to_filter)
 
 
@@ -436,4 +476,5 @@ class FourierIShift(Filter):
         ndarray
             The shifted array
         """
+        super().apply(image_to_filter)
         return fftpack.ifftshift(image_to_filter)

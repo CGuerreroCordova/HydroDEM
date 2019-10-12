@@ -716,7 +716,7 @@ class GrovesCorrection(ComposedFilter):
         for filter_ in self.filters:
             content = filter_.apply(content)
             self.partial_results.append(copy.deepcopy(content))
-        final_addition = AdditionFilter(adding=self.partial_results[0])
+        final_addition = AdditionFilter(addend=self.partial_results[0])
         final_product = ProductFilter(factor=self.partial_results[1])
         self.filters = [final_product, final_addition]
         return super().apply(content)
@@ -840,6 +840,7 @@ class FourierInitial(ComposedFilterResults):
     must have implemented the method apply.
     """
     def __init__(self):
+        super().__init__()
         self.filters = [FourierTransform(), FourierShift(), AbsoluteValues()]
         self.fourier_shift = None
 

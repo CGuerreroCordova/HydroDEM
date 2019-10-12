@@ -17,9 +17,9 @@ from config_loader import Config
 def array2raster(new_rasterfn, array, rasterfn=None):
     """
     Save image contained in an array format to a tiff georeferenced file.
-    New image file will be located in new_rasterfn pathfile.
+    New image file will be located in new_rasterfn filepath.
     Georeference is taken from rasterfn file.
-    rasterfn and new_rasterfn must be strings with pathfile.
+    rasterfn and new_rasterfn must be strings with filepath.
     """
     rows, cols = array.shape
     driver = gdal.GetDriverByName('GTiff')
