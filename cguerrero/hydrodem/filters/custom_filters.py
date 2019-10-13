@@ -1,20 +1,25 @@
+# pylint: disable=too-many-lines
+"""
+Provides own filters developed according to the processing needs.
+"""
+
 import copy
 from collections import Counter
 import numpy as np
 from filters.simple_filters import (LowerThan, BooleanToInteger, GreaterThan,
                                     ProductFilter, SubtractionFilter,
                                     AdditionFilter)
-from hydrodem.sliding_window import (SlidingWindow, CircularWindow,
-                                     NoCenterWindow, IgnoreBorderInnerSliding)
 from filters import Filter, ComposedFilter, ComposedFilterResults
 from filters.extension_filters import (BitwiseXOR, BinaryErosion, Around,
                                        BinaryClosing, GreyDilation, Convolve,
                                        FourierITransform, FourierTransform,
                                        FourierShift, FourierIShift,
                                        AbsoluteValues)
+from hydrodem.sliding_window import (SlidingWindow, CircularWindow,
+                                     NoCenterWindow, IgnoreBorderInnerSliding)
 
 
-class MajorityFilter(Filter):
+class MajorityFilter(Filter):  # pylint: disable=too-few-public-methods
     """
     Use a Circular Sliding Window to go through the image and filter it
     assigning to the center of the window the most frequent value contained in
@@ -68,7 +73,7 @@ class MajorityFilter(Filter):
         return filtered_image
 
 
-class ExpandFilter(Filter):
+class ExpandFilter(Filter):  # pylint: disable=too-few-public-methods
     """
     Use a Circular Sliding Window to go through the image and filter it
     assigning to the center of the window the value 1 if at least one pixel
@@ -120,7 +125,7 @@ class ExpandFilter(Filter):
         return expanded_image
 
 
-class RouteRivers(Filter):
+class RouteRivers(Filter):  # pylint: disable=too-few-public-methods
     """
     Route and/or expand rivers coming from a mask image. Use another dem
     image as reference to decide the routing of rivers. Reference DEM must
@@ -157,7 +162,7 @@ class RouteRivers(Filter):
         self.window_size = window_size
         self.dem = copy.deepcopy(dem)
 
-    def apply(self, mask_rivers):
+    def apply(self, image_to_filter):  # pylint: disable=too-many-locals
         """
         Apply the filter. Create a zeros grid to store the routed rivers.
         Create a sliding window to iterate over ones on mask rivers and
@@ -169,7 +174,7 @@ class RouteRivers(Filter):
 
         Parameters
         ----------
-        mask_rivers: ndarray
+        image_to_filter: ndarray
             mask rivers to iterate over elements with value 1
 
         Returns
@@ -177,6 +182,7 @@ class RouteRivers(Filter):
         ndarray
             Mask with routed rivers
         """
+        mask_rivers = image_to_filter
         left_up = self.window_size // 2
         rivers_routed = np.zeros(self.dem.shape)
         sliding = SlidingWindow(mask_rivers, window_size=self.window_size,
@@ -193,7 +199,7 @@ class RouteRivers(Filter):
         return rivers_routed
 
 
-class QuadraticFilter(Filter):
+class QuadraticFilter(Filter):  # pylint: disable=too-few-public-methods
     """
     Apply a quadratic filter of smoothness
 
@@ -217,40 +223,41 @@ class QuadraticFilter(Filter):
         """
         self.window_size = window_size
 
-    def apply(self, dem):
+    def apply(self, image_to_filter):  # pylint: disable=too-many-locals
         """
         Apply the quadratic filter of smoothness
 
         Parameters
         ----------
-        dem : ndarray
+        image_to_filter : ndarray
             image to apply the quadratic smoothness filter
 
         Returns
         -------
         Smoothed image
         """
+        dem = image_to_filter
         values = np.linspace(-self.window_size / 2 + 1, self.window_size / 2,
                              self.window_size)
-        xx, yy = np.meshgrid(values, values)
-        r0 = self.window_size ** 2
-        r1 = (xx * xx).sum()
-        r2 = (xx * xx * xx * xx).sum()
-        r3 = (xx * xx * yy * yy).sum()
+        xx, yy = np.meshgrid(values, values)  # pylint: disable=invalid-name
+        r0 = self.window_size ** 2  # pylint: disable=invalid-name
+        r1 = (xx * xx).sum()  # pylint: disable=invalid-name
+        r2 = (xx * xx * xx * xx).sum()  # pylint: disable=invalid-name
+        r3 = (xx * xx * yy * yy).sum()  # pylint: disable=invalid-name
 
         dem_sliding = SlidingWindow(dem, window_size=self.window_size)
         smoothed = dem.copy()
 
         for window, center in dem_sliding:
-            s1 = window.sum()
-            s2 = (window * xx * xx).sum()
-            s3 = (window * yy * yy).sum()
+            s1 = window.sum()  # pylint: disable=invalid-name
+            s2 = (window * xx * xx).sum()  # pylint: disable=invalid-name
+            s3 = (window * yy * yy).sum()  # pylint: disable=invalid-name
             smoothed[center] = ((s2 + s3) * r1 - s1 * (r2 + r3)) / \
                                (2 * r1 ** 2 - r0 * (r2 + r3))
         return smoothed
 
 
-class CorrectNANValues(Filter):
+class CorrectNANValues(Filter):  # pylint: disable=too-few-public-methods
     """
     Correct Non Available Number (NaN) values in the image, generally with
     extremely lowest values. Use mean of neighbours inside a window as value
@@ -276,7 +283,7 @@ class CorrectNANValues(Filter):
         """
         self.window_size = window_size
 
-    def apply(self, dem):
+    def apply(self, image_to_filter):
         """
         Apply the filter. Create a mask of negatives values (negatives values
         are considered as NaN values).
@@ -289,7 +296,7 @@ class CorrectNANValues(Filter):
 
         Parameters
         ----------
-        dem : ndarray
+        image_to_filter : ndarray
             Image to correct NaN values.
 
         Returns
@@ -297,6 +304,7 @@ class CorrectNANValues(Filter):
         The image corrected, the values are modified on the same input image.
         No copy are done with this filter
         """
+        dem = image_to_filter
         mask_nan = MaskNegatives().apply(dem)
         sliding_nans = SlidingWindow(mask_nan, window_size=self.window_size,
                                      iter_over_ones=True)
@@ -309,7 +317,7 @@ class CorrectNANValues(Filter):
         return dem
 
 
-class IsolatedPoints(Filter):
+class IsolatedPoints(Filter):  # pylint: disable=too-few-public-methods
     """
     Remove isolated pixels from a mask. That is, elements in the sliding
     window with no neighbours  are converted to zero.
@@ -358,7 +366,7 @@ class IsolatedPoints(Filter):
         return image_to_filter
 
 
-class BlanksFourier(Filter):
+class BlanksFourier(Filter):  # pylint: disable=too-few-public-methods
     """
     Detect brilliant points in a fourier transform and convert to a binary
     mask. Modified the original image (fourier transform) elements detected
@@ -419,7 +427,7 @@ class BlanksFourier(Filter):
         return filtered_image, image_modified
 
 
-class DetectBlanksFourier(Filter):
+class DetectBlanksFourier(Filter):  # pylint: disable=too-few-public-methods
     """
     Detect blanks in transform fourier applying iterations of blank detection,
     images obtained in different iterations are added.
@@ -430,7 +438,7 @@ class DetectBlanksFourier(Filter):
         Apply the filter to an expected fourier image.
     """
 
-    def apply(self, quarter_fourier):
+    def apply(self, quarter_fourier):  # pylint: disable=import-error
         """
         Apply the detection of brilliant points on the image performing two
         iterations, and adding the results of each iteration
@@ -454,7 +462,7 @@ class DetectBlanksFourier(Filter):
         return final_mask_image
 
 
-class MaskNegatives(ComposedFilter):
+class MaskNegatives(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Get a mask of Negatives Values. The image will have 1 if the value is
     negative 0 otherwise
@@ -478,7 +486,7 @@ class MaskNegatives(ComposedFilter):
         self.filters = [LowerThan(value=0.0), BooleanToInteger()]
 
 
-class MaskPositives(ComposedFilter):
+class MaskPositives(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Get a mask of Positives Values. The image will have 1 if the value is
     positive 0 otherwise
@@ -498,11 +506,11 @@ class MaskPositives(ComposedFilter):
     implemented the method apply.
     """
 
-    def __init__(self):
+    def __init__(self):  # pylint: disable=super-init-not-called
         self.filters = [GreaterThan(value=0.0), BooleanToInteger()]
 
 
-class MaskTallGroves(ComposedFilter):
+class MaskTallGroves(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Get a mask of values greater than 1.5. The image will have 1 if the value
     is greater than 1.5, 0 otherwise.
@@ -522,11 +530,11 @@ class MaskTallGroves(ComposedFilter):
     implemented the method "apply".
     """
 
-    def __init__(self):
+    def __init__(self):  # pylint: disable=super-init-not-called
         self.filters = [GreaterThan(value=1.5), BooleanToInteger()]
 
 
-class MaskFourier(ComposedFilter):
+class MaskFourier(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Apply the chain of filters sequentially to:
     Detect blanks fourier
@@ -547,12 +555,13 @@ class MaskFourier(ComposedFilter):
     included in this list of filters must be subclass of Filter and must have
     implemented the method apply.
     """
-    def __init__(self):
+
+    def __init__(self):  # pylint: disable=super-init-not-called
         self.filters = [DetectBlanksFourier(), IsolatedPoints(window_size=3),
                         ExpandFilter(window_size=13)]
 
 
-class TidyingLagoons(ComposedFilter):
+class TidyingLagoons(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Apply the chain of filters sequentially to tidy the shape of lagoons:
     Erode borders of detected lagoons
@@ -575,7 +584,7 @@ class TidyingLagoons(ComposedFilter):
     implemented the method apply.
     """
 
-    def __init__(self):
+    def __init__(self):  # pylint: disable=super-init-not-called
         self.filters = [BinaryErosion(iterations=2),
                         ExpandFilter(window_size=7),
                         ProductFilter(),
@@ -601,7 +610,8 @@ class TidyingLagoons(ComposedFilter):
         return content
 
 
-class LagoonsDetection(ComposedFilterResults):
+class LagoonsDetection(
+    ComposedFilterResults):  # pylint: disable=too-few-public-methods
     """
     Perform the lagoons detection composing filters sequentially. Intermediate
     results are stored in instance variable for future purposes.
@@ -652,7 +662,8 @@ class LagoonsDetection(ComposedFilterResults):
         return image_result
 
 
-class GrovesCorrection(ComposedFilter):
+class GrovesCorrection(
+    ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Perform the groves correction on SRTM DEM image. Apply quadratic filter
     of smoothness, subtract images with original to get highlighted dem,
@@ -683,7 +694,8 @@ class GrovesCorrection(ComposedFilter):
     filters defined in the constructor the override of method apply has sense,
     and additional operations are done after the filters applying.
     """
-    def __init__(self, groves_class):
+
+    def __init__(self, groves_class):  # pylint: disable=super-init-not-called
         """
         Parameters
         ----------
@@ -722,7 +734,8 @@ class GrovesCorrection(ComposedFilter):
         return super().apply(content)
 
 
-class GrovesCorrectionsIter(ComposedFilter):
+class GrovesCorrectionsIter(
+    ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Perform three iterations of GrovesCorrection in a chain sequence. The
     Groves Correction filter are specified in the constructor.
@@ -742,7 +755,8 @@ class GrovesCorrectionsIter(ComposedFilter):
     implemented the method apply.
     """
 
-    def __init__(self, groves_class, iterations=3):
+    def __init__(self, groves_class,
+                 iterations=3):  # pylint: disable=super-init-not-called
         """
 
         Parameters
@@ -756,7 +770,7 @@ class GrovesCorrectionsIter(ComposedFilter):
             self.filters.append(GrovesCorrection(groves_class))
 
 
-class ProcessRivers(ComposedFilter):
+class ProcessRivers(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Perform processing of rivers. From rasterized rivers.
 
@@ -775,7 +789,7 @@ class ProcessRivers(ComposedFilter):
     implemented the method apply.
     """
 
-    def __init__(self, hsheds):
+    def __init__(self, hsheds):  # pylint: disable=super-init-not-called
         """
         Parameters
         ----------
@@ -787,7 +801,8 @@ class ProcessRivers(ComposedFilter):
                         BinaryClosing()]
 
 
-class ClipLagoonsRivers(ComposedFilter):
+class ClipLagoonsRivers(
+    ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Separate lagoons from rivers
 
@@ -806,7 +821,8 @@ class ClipLagoonsRivers(ComposedFilter):
     implemented the method apply.
     """
 
-    def __init__(self, mask_lagoons, rivers_routed_closing):
+    def __init__(self, mask_lagoons,
+                 rivers_routed_closing):  # pylint: disable=super-init-not-called
         """
         Parameters
         ----------
@@ -819,7 +835,8 @@ class ClipLagoonsRivers(ComposedFilter):
                         BitwiseXOR(operand=rivers_routed_closing)]
 
 
-class FourierInitial(ComposedFilterResults):
+class FourierInitial(
+    ComposedFilterResults):  # pylint: disable=too-few-public-methods
     """
     Process the initial part of the SRTM image to get the Fourier transform
     ready to process.
@@ -865,7 +882,7 @@ class FourierInitial(ComposedFilterResults):
         return result
 
 
-class FourierProcessQuarters(Filter):
+class FourierProcessQuarters(Filter):  # pylint: disable=too-few-public-methods
     """
     Process the Fourier Transform detection disassembling the image fourier
     transform in quarters.
@@ -921,7 +938,8 @@ class FourierProcessQuarters(Filter):
             content = filter_(content)
         return content
 
-    def _get_firsts_quarters(self, args=None):
+    def _get_firsts_quarters(self,
+                             args=None):  # pylint: disable=unused-argument
         """
         Get first (upper left) and second (upper right) quarter from Fourier
         transform image, removing central strip with a .
@@ -935,7 +953,7 @@ class FourierProcessQuarters(Filter):
             self._x_odd:self._nx]
         return fst_quarter_fourier, snd_quarter_fourier
 
-    def _apply_mask_fourier(self, quarters):
+    def _apply_mask_fourier(self, quarters):  # pylint: disable=no-self-use
         """
         Apply detection blanks fourier algorithm to first two quarters of the
         image.
@@ -1038,7 +1056,8 @@ class FourierProcessQuarters(Filter):
         return masks_fourier
 
 
-class DetectApplyFourier(ComposedFilter):
+class DetectApplyFourier(
+    ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Detect and apply Fourier transform blanks points detection, correction
     and image restoration
@@ -1057,7 +1076,8 @@ class DetectApplyFourier(ComposedFilter):
         on image, divide the image in quarters and rearm the fourier transform
         to apply inverse and get the original image corrected.
     """
-    def __init__(self):
+
+    def __init__(self):  # pylint: disable=super-init-not-called
         self.initial = FourierInitial()
         self.fft_transform_abs = None
 
@@ -1088,7 +1108,8 @@ class DetectApplyFourier(ComposedFilter):
         return super().apply(image_to_filter)
 
 
-class PostProcessingFinal(ComposedFilter):
+class PostProcessingFinal(
+    ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Process the last part of ready dem. Some filter to smooth the dem and
     around the values to 1 meter resolution
@@ -1107,5 +1128,5 @@ class PostProcessingFinal(ComposedFilter):
     must have implemented the method apply.
     """
 
-    def __init__(self):
+    def __init__(self):  # pylint: disable=super-init-not-called
         self.filters = [Convolve(), Around()]

@@ -2,7 +2,7 @@ import argparse
 import sys
 
 
-class ArgumentsManager(object):
+class ArgumentsManager:
     """
     Responsible to parse the input arguments from bash
     """

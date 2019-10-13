@@ -1,12 +1,17 @@
+"""
+Provide different sort of iterators for grids.
+"""
+
 import numpy as np
 from itertools import product
 from exceptions import (WindowSizeHighError, WindowSizeEvenError,
                         CenterCloseBorderError, NumpyArrayExpectedError,
                         InnerSizeError)
 
+
 class SlidingWindow:
     """
-    Provide an interator of sliding window over a two dimensional ndarray.
+    Provide an iterator of sliding window over a two dimensional ndarray.
 
     Attributes
     ----------
@@ -146,7 +151,7 @@ class SlidingWindow:
     def window_size(self, value):
         if any(value > i for i in self.grid.shape):
             raise WindowSizeHighError(value, self.grid.shape)
-        elif value % 2 != 1:
+        if value % 2 != 1:
             raise WindowSizeEvenError(value)
         self._window_size = int(value)
 
@@ -155,7 +160,7 @@ class SlidingWindow:
         Define the iterator for the SlidingWindow class. Use window size and
         grid dimensions to create elements to produce. Allow customize the
         window produces in terms of set some values of the window as nan, this
-        way differents kind of windoes can be customized and created. For one
+        way, different kind of windows can be customized and created. For one
         instance only one type of customization is allowed.
 
         Yields
@@ -173,7 +178,7 @@ class SlidingWindow:
         Are presented two examples. One of them using 'iter' and 'next', and
         the other one using 'for, in'
         """
-        ny, nx = self.grid.shape
+        ny, nx = self.grid.shape  # pylint: disable=invalid-name
         left_up = self.window_size // 2
         right_down = left_up + 1
 
@@ -251,18 +256,16 @@ class SlidingWindow:
             """
             return slice(coord - left_up, coord + right_down)
 
-        if self._check_border(j, i, left_up, right_down):
-            neighbours = self.grid[_get_slice(j), _get_slice(i)]
-            neighbours = self._set_nan(neighbours)
-            return neighbours
-        else:
+        if not self._check_border(j, i, left_up, right_down):
             raise CenterCloseBorderError(coords, window_size=self.window_size)
+        neighbours = self.grid[_get_slice(j), _get_slice(i)]
+        return self._set_nan(neighbours)
 
     def _check_border(self, j, i, left_up, right_down):
         """
         Check if indices j, i are too close to the border
         """
-        ny, nx = self.grid.shape
+        ny, nx = self.grid.shape  # pylint: disable=invalid-name
         return all(index >= left_up for index in (j, i)) and \
                j <= (ny - right_down) + 1 and \
                i <= (nx - right_down) + 1
@@ -273,7 +276,6 @@ class SlidingWindow:
         as np.nan. For this class no one element in the window will be set as
         nan.
         """
-        pass
 
     def _set_nan(self, neighbours):
         """
@@ -300,10 +302,11 @@ class SlidingWindow:
 
 class SlidingIgnoreBorder(SlidingWindow):
     """
-    Modify the functionality of SlidingWindow iterator changing the unlerlying
-    grid by adding an extra margin to grid attribute, this way it allows to have
-    sliding window that ignores original border of the grid. The new margin
-    will be set with nan values, so it doesn't modify the values of the grid.
+    Modify the functionality of SlidingWindow iterator changing the underlying
+    grid by adding an extra margin to grid attribute, this way it allows to
+    have sliding window that ignores original border of the grid. The new
+    margin will be set with nan values, so it doesn't modify the values of the
+    grid.
 
     Examples
     --------
@@ -414,6 +417,7 @@ class SlidingIgnoreBorder(SlidingWindow):
             self.grid.astype('float32')
         return grid_expanded
 
+
 class CircularWindow(SlidingWindow):
     """
     Modify the functionality of the SlidingWindow iterator extending the
@@ -478,7 +482,7 @@ class CircularWindow(SlidingWindow):
         self._indices_nan.extend(self._remove_corners(self.window_size))
         super()._customize()
 
-    def _remove_corners(self, ny):
+    def _remove_corners(self, ny):  # pylint: disable=invalid-name
         """
         Define corners indices pairs using window size
 
@@ -490,7 +494,7 @@ class CircularWindow(SlidingWindow):
         Returns
         -------
         list(tuple(int, int))
-            List of indice pairs corresponding to window corners.
+            List of indices pairs corresponding to window corners.
         """
         return [(0, 0), (0, ny - 1), (ny - 1, 0), (ny - 1, ny - 1)]
 
@@ -617,7 +621,7 @@ class InnerWindow(SlidingWindow):
                                                     self.inner_size))
         super()._customize()
 
-    def _inner_window(self, ny, inner_size):
+    def _inner_window(self, ny, inner_size):  # pylint: disable=invalid-name
         """
         Define inner window indices pairs using inner_size
 
@@ -638,17 +642,15 @@ class InnerWindow(SlidingWindow):
         list(tuple(int, int))
             List of indices pairs corresponding to inner window.
         """
-
         if inner_size > self.window_size:
             raise InnerSizeError(inner_size, self.window_size)
-        else:
-            ratio_inner = inner_size // 2
-            center = ny // 2
-            indices = (center - ratio_inner, center + ratio_inner + 1)
-            pairs = product(range(*indices), range(*indices))
-            # Removing the center from the list to set nan
-            inner_window = ((x, y) for x, y in pairs if not x == y == center)
-            return inner_window
+        ratio_inner = inner_size // 2
+        center = ny // 2
+        indices = (center - ratio_inner, center + ratio_inner + 1)
+        pairs = product(range(*indices), range(*indices))
+        # Removing the center from the list to set nan
+        inner_window = ((x, y) for x, y in pairs if not x == y == center)
+        return inner_window
 
 
 class NoCenterWindow(SlidingWindow):
@@ -715,7 +717,7 @@ class NoCenterWindow(SlidingWindow):
         self._indices_nan.extend(self._center_index(self.window_size))
         super()._customize()
 
-    def _center_index(self, ny):
+    def _center_index(self, ny):  # pylint: disable=invalid-name
         """
         Compute the center of the window
 
@@ -789,4 +791,3 @@ class IgnoreBorderInnerSliding(SlidingIgnoreBorder, InnerWindow,
            [19., 20., 21., 22., 23.]], dtype=float32), (2, 5))
 
     """
-    pass

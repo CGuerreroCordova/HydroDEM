@@ -2,14 +2,14 @@
 Provide a wrap for already implemented filters in external libraries.
 """
 import copy
-from numpy import bitwise_xor, abs, around, ones
+import numpy as np
 from scipy.ndimage import (binary_erosion, binary_closing, grey_dilation,
                            convolve)
 from scipy import fftpack
 from filters import Filter
 
 
-class BitwiseXOR(Filter):
+class BitwiseXOR(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap for Bitwise-Xor numpy filter
 
@@ -57,10 +57,10 @@ class BitwiseXOR(Filter):
             Result of applying filter using operands
         """
         super().apply(image_to_filter)
-        return bitwise_xor(self.operand, image_to_filter)
+        return np.bitwise_xor(self.operand, image_to_filter)
 
 
-class AbsoluteValues(Filter):
+class AbsoluteValues(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap to apply the absolute function of numpy library.
     Calculate the absolute value element-wise.
@@ -92,10 +92,10 @@ class AbsoluteValues(Filter):
             Result of applying filter
         """
         super().apply(image_to_filter)
-        return abs(image_to_filter)
+        return np.abs(image_to_filter)
 
 
-class Around(Filter):
+class Around(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap to apply the absolute function of numpy library.
     Calculate the absolute value element-wise.
@@ -127,10 +127,10 @@ class Around(Filter):
             Result of applying filter
         """
         super().apply(image_to_filter)
-        return around(image_to_filter)
+        return np.around(image_to_filter)
 
 
-class Convolve(Filter):
+class Convolve(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap to apply the convolve function of scipy library.
     Multidimensional convolution. The array is convolved with the given kernel.
@@ -151,7 +151,7 @@ class Convolve(Filter):
     scipy.convolve: for detailed information
     """
 
-    def __init__(self, weights=ones((3, 3))):
+    def __init__(self, weights=np.ones((3, 3))):
         """
         Initialize the filter with the weights to apply the convolve filter
 
@@ -184,7 +184,7 @@ class Convolve(Filter):
                         weights=self.weights) / self.weights.size
 
 
-class BinaryErosion(Filter):
+class BinaryErosion(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap for Binary Erosion scipy filter.
 
@@ -235,7 +235,7 @@ class BinaryErosion(Filter):
         return binary_erosion(image_to_filter, iterations=self.iterations)
 
 
-class BinaryClosing(Filter):
+class BinaryClosing(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap for Binary Closing scipy filter.
 
@@ -293,7 +293,7 @@ class BinaryClosing(Filter):
         return binary_closing(image_to_filter, structure=self.structure)
 
 
-class GreyDilation(Filter):
+class GreyDilation(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap for Grey Dilation scipy filter.
 
@@ -345,7 +345,7 @@ class GreyDilation(Filter):
         return grey_dilation(image_to_filter, size=self.size)
 
 
-class FourierTransform(Filter):
+class FourierTransform(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap to apply 2-D discrete Fourier transform. Return the
     two-dimensional discrete Fourier transform of the 2-D argument `x`.
@@ -379,7 +379,7 @@ class FourierTransform(Filter):
         return fftpack.fft2(image_to_filter)
 
 
-class FourierITransform(Filter):
+class FourierITransform(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap to apply 2-D discrete inverse Fourier transform of real or
     complex sequence. Return inverse two-dimensional discrete Fourier transform
@@ -414,7 +414,7 @@ class FourierITransform(Filter):
         return fftpack.ifft2(image_to_filter)
 
 
-class FourierShift(Filter):
+class FourierShift(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap to shift the zero-frequency component to the center of the
     spectrum.
@@ -447,7 +447,7 @@ class FourierShift(Filter):
         return fftpack.fftshift(image_to_filter)
 
 
-class FourierIShift(Filter):
+class FourierIShift(Filter):  # pylint: disable=too-few-public-methods
     """
     Provide a wrap to apply the inverse function of shifting the
     zero-frequency component to the center of the spectrum.

@@ -1,7 +1,3 @@
-from image_srtm import SRTM
-from image_hsheds import HSHEDS
-from functools import wraps
-
 __author__ = "Cristian Guerrero Cordova"
 __copyright__ = "Copyright 2019"
 __credits__ = ["Cristian Guerrero Cordova"]
@@ -9,16 +5,18 @@ __version__ = "0.1"
 __email__ = "cguerrerocordova@gmail.com"
 __status__ = "Developing"
 
+from functools import wraps
 from io import StringIO
 import cProfile, pstats
 from datetime import datetime
 import logging
 from .utils_dem import (shape_enveloping, array2raster, clean_workspace)
 from filters.custom_filters import (SubtractionFilter, ProductFilter,
-                                    AdditionFilter,
-                                    PostProcessingFinal)
+                                    AdditionFilter, PostProcessingFinal)
 from .config_loader import Config
 from arguments_manager import ArgumentsManager
+from image_srtm import SRTM
+from image_hsheds import HSHEDS
 
 logger = logging.getLogger(__name__)
 console_handler = logging.StreamHandler()

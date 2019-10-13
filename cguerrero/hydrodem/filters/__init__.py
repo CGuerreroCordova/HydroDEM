@@ -3,11 +3,11 @@ Provide the abstract class for filters. Base classes to define filter classes.
 """
 
 from abc import ABC, abstractmethod
-from numpy import ndarray
 from exceptions import NumpyArrayExpectedError
+from numpy import ndarray
 
 
-class Filter(ABC):
+class Filter(ABC):  # pylint: disable=too-few-public-methods
     """
     Represent a basic filter with abstract method apply to implement for
     subclasses. The calling to this super class method for subclasses check
@@ -39,7 +39,7 @@ class Filter(ABC):
             raise NumpyArrayExpectedError(image_to_filter)
 
 
-class ComposedFilter(Filter):
+class ComposedFilter(Filter):  # pylint: disable=too-few-public-methods
     """
     Represent a composed filter. A Composed filter is a chain sequence of
     filters. The definition of the filters chain is defined on attribute
@@ -80,7 +80,7 @@ class ComposedFilter(Filter):
         return content
 
 
-class ComposedFilterResults(Filter):
+class ComposedFilterResults(Filter):  # pylint: disable=too-few-public-methods
     """
     The same as ComposedFilter class but saving intermediate results in an
     attribute dict for  specific purpose of the subclass filter definition

@@ -7,9 +7,9 @@ __status__ = "Developing"
 
 import os
 import zipfile
+import glob
 import ogr
 import osr
-import glob
 from osgeo import gdal
 from config_loader import Config
 
@@ -94,13 +94,13 @@ def shape_enveloping(shape_area_input, shape_over_area):
     layer = shapefile.GetLayer()
     feature = layer.GetFeature(0)
     geometry = feature.GetGeometryRef()
-    minLong, maxLong, minLat, maxLat = geometry.GetEnvelope()
+    min_long, max_long, min_lat, max_lat = geometry.GetEnvelope()
     ring = ogr.Geometry(ogr.wkbLinearRing)
-    ring.AddPoint(minLong, maxLat)
-    ring.AddPoint(maxLong, maxLat)
-    ring.AddPoint(maxLong, minLat)
-    ring.AddPoint(minLong, minLat)
-    ring.AddPoint(minLong, maxLat)
+    ring.AddPoint(min_long, max_lat)
+    ring.AddPoint(max_long, max_lat)
+    ring.AddPoint(max_long, min_lat)
+    ring.AddPoint(min_long, min_lat)
+    ring.AddPoint(min_long, max_lat)
 
     poly = ogr.Geometry(ogr.wkbPolygon)
     poly.AddGeometry(ring)
@@ -113,22 +113,22 @@ def shape_enveloping(shape_area_input, shape_over_area):
     if os.path.exists(shape_over_area):
         outDriver.DeleteDataSource(shape_over_area)
 
-    outDataSource = outDriver.CreateDataSource(shape_over_area)
-    outLayer = outDataSource.CreateLayer("shape_over_area", srs,
-                                         geom_type=ogr.wkbPolygon)
+    out_data_source = outDriver.CreateDataSource(shape_over_area)
+    out_layer = out_data_source.CreateLayer("shape_over_area", srs,
+                                            geom_type=ogr.wkbPolygon)
 
-    idField = ogr.FieldDefn("id", ogr.OFTInteger)
-    outLayer.CreateField(idField)
+    id_field = ogr.FieldDefn("id", ogr.OFTInteger)
+    out_layer.CreateField(id_field)
 
     # Create the feature and set values
-    featureDefn = outLayer.GetLayerDefn()
-    feature = ogr.Feature(featureDefn)
+    feature_defn = out_layer.GetLayerDefn()
+    feature = ogr.Feature(feature_defn)
     feature.SetGeometry(poly)
     feature.SetField("id", 1)
-    outLayer.CreateFeature(feature)
+    out_layer.CreateFeature(feature)
 
     # Save and close DataSource
-    outDataSource.Destroy()
+    out_data_source.Destroy()
     return shape_over_area
 
 
@@ -140,33 +140,33 @@ def clip_lines_vector(lines_vector, polygon_vector, lines_output):
     :param lines_output: line vector file clipped
     """
     rivers_driver = ogr.GetDriverByName("ESRI Shapefile")
-    dataSource_rivers = rivers_driver.Open(lines_vector, 0)
-    rivers_layer = dataSource_rivers.GetLayer()
+    data_source_rivers = rivers_driver.Open(lines_vector, 0)
+    rivers_layer = data_source_rivers.GetLayer()
 
     area_driver = ogr.GetDriverByName("ESRI Shapefile")
-    dataSource_area = area_driver.Open(polygon_vector, 0)
-    area_layer = dataSource_area.GetLayer()
+    data_source_area = area_driver.Open(polygon_vector, 0)
+    area_layer = data_source_area.GetLayer()
 
     # Create the output Layer
-    outDriver = ogr.GetDriverByName("ESRI Shapefile")
+    out_driver = ogr.GetDriverByName("ESRI Shapefile")
 
     srs = osr.SpatialReference()
     srs.ImportFromWkt(rivers_layer.GetSpatialRef().ExportToWkt())
 
     # Remove output shapefile if it already exists
     if os.path.exists(lines_output):
-        outDriver.DeleteDataSource(lines_output)
+        out_driver.DeleteDataSource(lines_output)
     # Create the output shapefile
-    outDataSource = outDriver.CreateDataSource(lines_output)
-    outLayer = outDataSource.CreateLayer("rivers_clipped", srs,
-                                         geom_type=ogr.wkbLineString)
+    out_data_source = out_driver.CreateDataSource(lines_output)
+    out_layer = out_data_source.CreateLayer("rivers_clipped", srs,
+                                            geom_type=ogr.wkbLineString)
     # Clip
-    rivers_layer.Clip(area_layer, outLayer)
+    rivers_layer.Clip(area_layer, out_layer)
 
     # Close DataSources
-    dataSource_rivers.Destroy()
-    dataSource_area.Destroy()
-    outDataSource.Destroy()
+    data_source_rivers.Destroy()
+    data_source_area.Destroy()
+    out_data_source.Destroy()
 
 
 # def process_rivers(hsheds, mask_lagoons, rivers):

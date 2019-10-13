@@ -32,4 +32,18 @@ class Image(ABC):
 
     @abstractmethod
     def process(self, *dem):
+        """
+        Apply the processing defined in subclasses over the dem provided as
+        parameter
+
+        Parameters
+        ----------
+        dem : ndarray
+            DEM to process and correct
+
+        Returns
+        -------
+        ndarray
+            DEM corrected
+        """
         raise NotImplementedError

@@ -4,7 +4,7 @@ Provide simple operation filters: Logical, Mathematical
 from filters import Filter
 
 
-class LowerThan(Filter):
+class LowerThan(Filter):  # pylint: disable=too-few-public-methods
     """
     Filter the values from an image that are lower than a specific value.
     Return an image with binary values (o or 1, integer)
@@ -50,7 +50,7 @@ class LowerThan(Filter):
         return image_to_filter < self.value
 
 
-class GreaterThan(Filter):
+class GreaterThan(Filter):  # pylint: disable=too-few-public-methods
     """
     Filter the values from an image that are greater than a specific value.
     Return an image with binary values (o or 1, integer)
@@ -96,7 +96,7 @@ class GreaterThan(Filter):
         return image_to_filter > self.value
 
 
-class BooleanToInteger(Filter):
+class BooleanToInteger(Filter):  # pylint: disable=too-few-public-methods
     """
     Convert the values of an image grid from boolean to integer. This is
     reached multiplying the boolean values for integer 1. True values will be
@@ -131,7 +131,7 @@ class BooleanToInteger(Filter):
         return image_to_filter * 1
 
 
-class ProductFilter(Filter):
+class ProductFilter(Filter):  # pylint: disable=too-few-public-methods
     """
     Allow the multiplication between grids, one to one elements.
 
@@ -180,7 +180,7 @@ class ProductFilter(Filter):
         return self.factor * image_to_filter
 
 
-class AdditionFilter(Filter):
+class AdditionFilter(Filter):  # pylint: disable=too-few-public-methods
     """
     Allow the addition between grids, one to one elements.
 
@@ -229,7 +229,7 @@ class AdditionFilter(Filter):
         return self.addend + image_to_filter
 
 
-class SubtractionFilter(Filter):
+class SubtractionFilter(Filter):  # pylint: disable=too-few-public-methods
     """
     Allow the subtraction between grids, one to one elements.
 
@@ -258,7 +258,7 @@ class SubtractionFilter(Filter):
         """
         self.minuend = minuend
 
-    def apply(self, subtracting):
+    def apply(self, subtracting):  # pylint: disable=arguments-differ
         """
         Apply the filter. Check the type of the image input parameter.
         Substract subtracting from minuend.
@@ -273,4 +273,3 @@ class SubtractionFilter(Filter):
         Grid with the result of subtraction.
         """
         return self.minuend - subtracting
-

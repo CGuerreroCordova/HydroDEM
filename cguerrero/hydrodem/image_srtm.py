@@ -10,7 +10,7 @@ from utils_dem import (resample_and_cut, unzip_resource)
 from config_loader import Config
 
 
-class SRTM(Image):
+class SRTM(Image):  # pylint: disable=too-few-public-methods
     """
     Contain the elements and methods to perform the SRTM DEM processing.
 
@@ -79,7 +79,7 @@ class SRTM(Image):
         return self.groves.process(fourier_corrected)
 
 
-class Fourier(Image):
+class Fourier(Image):  # pylint: disable=too-few-public-methods
     """
     Contain the elements and methods to perform the SRTM DEM Fourier
     correction.
@@ -126,7 +126,7 @@ class Fourier(Image):
         return DetectApplyFourier().apply(srtm_raw)
 
 
-class Groves(Image):
+class Groves(Image):  # pylint: disable=too-few-public-methods
     """
     Contain the elements and methods to perform the SRTM DEM groves correction.
 
@@ -177,12 +177,16 @@ class Groves(Image):
         groves_class_raw = gdal.Open(self.groves_interest).ReadAsArray()
         return BinaryClosing(structure=np.ones((3, 3))).apply(groves_class_raw)
 
-    def process(self, srtm):
+    def process(self, dem):
         """
         Perform the processing related with Groves correction. Call the prepare
         private method to get ready the resources to perform groves correction.
         Perform the Groves correction calling the GrovesCorrectionsIter Filter
         with groves classification and SRTM DEM image as parameters.
+
+        Parameters
+        ----------
+        dem
 
         Returns
         -------
@@ -190,5 +194,6 @@ class Groves(Image):
             SRTM DEM image corresponding to area of interest with fourier
             correction applied
         """
+        srtm = dem
         groves_class = self._prepare()
         return GrovesCorrectionsIter(groves_class, iterations=3).apply(srtm)

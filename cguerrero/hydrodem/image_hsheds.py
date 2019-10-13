@@ -10,7 +10,7 @@ from utils_dem import (resample_and_cut, unzip_resource, rasterize_rivers,
 from config_loader import Config
 
 
-class HSHEDS(Image):
+class HSHEDS(Image):  # pylint: disable=too-few-public-methods
     """
     Contain the elements and methods to perform the HSHEDS DEM processing.
 
@@ -87,7 +87,7 @@ class HSHEDS(Image):
         return lagoons, rivers
 
 
-class Lagoons(Image):
+class Lagoons(Image):  # pylint: disable=too-few-public-methods
     """
     Contain the elements and methods to perform the HSHEDS Lagoons detection
 
@@ -136,7 +136,7 @@ class Lagoons(Image):
         return lagoons
 
 
-class Rivers(Image):
+class Rivers(Image):  # pylint: disable=too-few-public-methods
     """
     Contain the elements and methods to perform the Rivers extraction and
     correction.
