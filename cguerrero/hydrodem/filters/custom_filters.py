@@ -610,8 +610,7 @@ class TidyingLagoons(ComposedFilter):  # pylint: disable=too-few-public-methods
         return content
 
 
-class LagoonsDetection(
-    ComposedFilterResults):  # pylint: disable=too-few-public-methods
+class LagoonsDetection(ComposedFilterResults):  # pylint: disable=too-few-public-methods
     """
     Perform the lagoons detection composing filters sequentially. Intermediate
     results are stored in instance variable for future purposes.
@@ -662,8 +661,7 @@ class LagoonsDetection(
         return image_result
 
 
-class GrovesCorrection(
-    ComposedFilter):  # pylint: disable=too-few-public-methods
+class GrovesCorrection(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Perform the groves correction on SRTM DEM image. Apply quadratic filter
     of smoothness, subtract images with original to get highlighted dem,
@@ -734,8 +732,7 @@ class GrovesCorrection(
         return super().apply(content)
 
 
-class GrovesCorrectionsIter(
-    ComposedFilter):  # pylint: disable=too-few-public-methods
+class GrovesCorrectionsIter(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Perform three iterations of GrovesCorrection in a chain sequence. The
     Groves Correction filter are specified in the constructor.
@@ -835,8 +832,7 @@ class ClipLagoonsRivers(
                         BitwiseXOR(operand=rivers_routed_closing)]
 
 
-class FourierInitial(
-    ComposedFilterResults):  # pylint: disable=too-few-public-methods
+class FourierInitial(ComposedFilterResults):  # pylint: disable=too-few-public-methods
     """
     Process the initial part of the SRTM image to get the Fourier transform
     ready to process.
