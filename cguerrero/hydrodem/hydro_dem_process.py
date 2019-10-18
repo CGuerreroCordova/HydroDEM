@@ -10,10 +10,10 @@ from io import StringIO
 import cProfile, pstats
 from datetime import datetime
 import logging
-from .utils_dem import (shape_enveloping, array2raster, clean_workspace)
+from utils_dem import (shape_enveloping, array2raster, clean_workspace)
 from filters.custom_filters import (SubtractionFilter, ProductFilter,
                                     AdditionFilter, PostProcessingFinal)
-from .config_loader import Config
+from config_loader import Config
 from arguments_manager import ArgumentsManager
 from image_srtm import SRTM
 from image_hsheds import HSHEDS
@@ -27,21 +27,50 @@ logger.addHandler(console_handler)
 logger.setLevel(logging.DEBUG)
 
 
-class HydroDEMProcess(object):
+class HydroDEMProcess:
+    """
+    Represent the main porcessing object. It is composed by area of envelope,
+    SRTM and HSHEDS attributes
+
+    Attributes
+    ----------
+    area_envelope : str (filepath)
+        Filepath to the shapefile which the Hydro DEM process will be computed.
+    srtm : SRTM
+        Element that represent the processing related to SRTM corrections.
+    hsheds : HSHEDS
+        Element that represent the processing related to HSHEDS extractions.
+    """
 
     def __init__(self):
         """
-        class constructor
+        Set and define the attributes of HydroDEMProcess. Get area of envelope
+        from config file. Create the instances of main elements to process.
         """
-
-        pass
-
-    def _define_shape_area(self, area_of_interest):
-        area_envelope = shape_enveloping(area_of_interest,
-                                         Config.shapes('AREA_ENVELOPE'))
-        return area_envelope
+        self.area_envelope = Config.shapes('AREA_ENVELOPE')
+        self.srtm = SRTM(self.area_envelope)
+        self.hsheds = HSHEDS(self.area_envelope)
 
     def _prepare_final_terms(self, srtm, lagoons, rivers):
+        """
+        After processing SRTM and HSHEDS DEM and get results, the elements are
+        combined to get the final dem ready for hydrologic purposes
+
+        Parameters
+        ----------
+        srtm : ndarray
+            SRTM corrcted cropped to the area of envelope region
+        lagoons : ndarray
+            Lagoons detected from HSHEDS DEM.
+        rivers : ndarray
+            Rivers coming from HSHEDS using the rivers vector file.
+
+        Returns
+        -------
+        tuple(ndarray, ndarray, ndarray)
+            Final terms to be combined.
+        """
+
         mask_rivers_lagoons = \
             AdditionFilter(addend=lagoons.mask_lagoons).apply(rivers)
         not_rivers_lagoons = \
@@ -56,6 +85,14 @@ class HydroDEMProcess(object):
                third_term_hsheds_rivers
 
     def profile(func):
+        """
+        Decorator function to compute profile of the execution of HydroDem
+        process
+
+        Returns
+        -------
+        Function enveloped by the starting and finishing of computing profile.
+        """
         @wraps(func)
         def wrapper(*args, **kwargs):
             pr = cProfile.Profile()
@@ -77,16 +114,27 @@ class HydroDEMProcess(object):
     @profile
     def start(self):
         """
-        starts Hydro DEM Process
-        :param cmd_line: unix command line
-        :type cmd_line: list[str]
+        Launch the execution of Hydro DEM process. First of all, clean the
+        workspace removing old temporary files created during previous
+        execution. Get arguments from command line. Get the real area of
+        envelope using the shapefile provided for the user.
+
+        References
+        ----------
+        Readme.md on github respository cointains a flow chart with the
+        processing of Hydro DEM https://github.com/CGuerreroCordova/HydroDEM
+
+        Returns
+        -------
+        final_dem : str (filepath)
+            Filepath where the ready dem for Hydrologic purposes can be found
         """
         clean_workspace()
         arg_parsed = ArgumentsManager().parse()
-        area_envelope = self._define_shape_area(arg_parsed.area_interest)
-        srtm_proc = SRTM(area_envelope).process()
-        lagoons, rivers = HSHEDS(area_envelope).process()
-        first_term, snd_term, third_term = self._prepare_final_terms(srtm_proc,
+        shape_enveloping(arg_parsed.area_interest, self.area_envelope)
+        srtm = self.srtm.process()
+        lagoons, rivers = self.hsheds.process()
+        first_term, snd_term, third_term = self._prepare_final_terms(srtm,
                                                                      lagoons,
                                                                      rivers)
         dem_complete = first_term + snd_term + third_term

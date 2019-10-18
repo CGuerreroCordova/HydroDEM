@@ -15,7 +15,7 @@ from filters.extension_filters import (BitwiseXOR, BinaryErosion, Around,
                                        FourierITransform, FourierTransform,
                                        FourierShift, FourierIShift,
                                        AbsoluteValues)
-from hydrodem.sliding_window import (SlidingWindow, CircularWindow,
+from sliding_window import (SlidingWindow, CircularWindow,
                                      NoCenterWindow, IgnoreBorderInnerSliding)
 
 
