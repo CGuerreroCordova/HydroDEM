@@ -942,7 +942,7 @@ class FourierProcessQuarters(Filter):  # pylint: disable=too-few-public-methods
         """
         fst_quarter_fourier = \
             self.fft_transform_abs[:self._mid_y - self._margin,
-            :self._mid_x - self._margin]
+                                   :self._mid_x - self._margin]
         snd_quarter_fourier = \
             self.fft_transform_abs[:self._mid_y - self._margin,
             self._mid_x + self._margin +
