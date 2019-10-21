@@ -15,8 +15,8 @@ from filters.extension_filters import (BitwiseXOR, BinaryErosion, Around,
                                        FourierITransform, FourierTransform,
                                        FourierShift, FourierIShift,
                                        AbsoluteValues)
-from sliding_window import (SlidingWindow, CircularWindow,
-                                     NoCenterWindow, IgnoreBorderInnerSliding)
+from sliding_window import (SlidingWindow, CircularWindow, NoCenterWindow,
+                            IgnoreBorderInnerSliding)
 
 
 class MajorityFilter(Filter):  # pylint: disable=too-few-public-methods
@@ -798,8 +798,7 @@ class ProcessRivers(ComposedFilter):  # pylint: disable=too-few-public-methods
                         BinaryClosing()]
 
 
-class ClipLagoonsRivers(
-    ComposedFilter):  # pylint: disable=too-few-public-methods
+class ClipLagoonsRivers(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Separate lagoons from rivers
 
@@ -934,8 +933,7 @@ class FourierProcessQuarters(Filter):  # pylint: disable=too-few-public-methods
             content = filter_(content)
         return content
 
-    def _get_firsts_quarters(self,
-                             args=None):  # pylint: disable=unused-argument
+    def _get_firsts_quarters(self, args=None):  # pylint: disable=unused-argument
         """
         Get first (upper left) and second (upper right) quarter from Fourier
         transform image, removing central strip with a .
@@ -945,8 +943,8 @@ class FourierProcessQuarters(Filter):  # pylint: disable=too-few-public-methods
                                    :self._mid_x - self._margin]
         snd_quarter_fourier = \
             self.fft_transform_abs[:self._mid_y - self._margin,
-            self._mid_x + self._margin +
-            self._x_odd:self._nx]
+                                   self._mid_x + self._margin +
+                                   self._x_odd:self._nx]
         return fst_quarter_fourier, snd_quarter_fourier
 
     def _apply_mask_fourier(self, quarters):  # pylint: disable=no-self-use
@@ -988,9 +986,9 @@ class FourierProcessQuarters(Filter):  # pylint: disable=too-few-public-methods
         fst_complete_quarter = np.zeros(self.pair_mid)
         snd_complete_quarter = np.zeros(self.pair_mid)
         fst_complete_quarter[:self._mid_y - self._margin,
-        :self._mid_x - self._margin] = quarters[0]
+                             :self._mid_x - self._margin] = quarters[0]
         snd_complete_quarter[:self._mid_y - self._margin,
-        self._margin:self._mid_x] = quarters[1]
+                             self._margin:self._mid_x] = quarters[1]
         return fst_complete_quarter, snd_complete_quarter
 
     def _getting_reverse_indices(self):
@@ -1043,17 +1041,16 @@ class FourierProcessQuarters(Filter):  # pylint: disable=too-few-public-methods
         """
         masks_fourier = np.zeros((self._ny, self._nx))
         masks_fourier[:self._mid_y, :self._mid_x] = quarters[0]
-        masks_fourier[:self._mid_y, self._mid_x + self._x_odd:self._nx] = \
-            quarters[1]
-        masks_fourier[self._mid_y + self._y_odd:self._ny, :self._mid_x] = \
-            quarters[2]
+        masks_fourier[:self._mid_y,
+                      self._mid_x + self._x_odd:self._nx] = quarters[1]
         masks_fourier[self._mid_y + self._y_odd:self._ny,
-        self._mid_x + self._x_odd:self._nx] = quarters[3]
+                      :self._mid_x] = quarters[2]
+        masks_fourier[self._mid_y + self._y_odd:self._ny,
+                      self._mid_x + self._x_odd:self._nx] = quarters[3]
         return masks_fourier
 
 
-class DetectApplyFourier(
-    ComposedFilter):  # pylint: disable=too-few-public-methods
+class DetectApplyFourier(ComposedFilter):  # pylint: disable=too-few-public-methods
     """
     Detect and apply Fourier transform blanks points detection, correction
     and image restoration

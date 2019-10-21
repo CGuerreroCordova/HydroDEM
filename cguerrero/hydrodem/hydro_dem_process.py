@@ -1,3 +1,8 @@
+"""
+Provide the class that contains main objects and methods to perform Hydro Dem
+calculation
+"""
+
 __author__ = "Cristian Guerrero Cordova"
 __copyright__ = "Copyright 2019"
 __credits__ = ["Cristian Guerrero Cordova"]
@@ -7,7 +12,8 @@ __status__ = "Developing"
 
 from functools import wraps
 from io import StringIO
-import cProfile, pstats
+import cProfile
+import pstats
 from datetime import datetime
 import logging
 from utils_dem import (shape_enveloping, array2raster, clean_workspace)
@@ -18,13 +24,13 @@ from arguments_manager import ArgumentsManager
 from image_srtm import SRTM
 from image_hsheds import HSHEDS
 
-logger = logging.getLogger(__name__)
-console_handler = logging.StreamHandler()
-console_format = logging.Formatter('%(asctime)s - %(message)s',
+LOGGER = logging.getLogger(__name__)
+CONSOLE_HANDLER = logging.StreamHandler()
+CONSOLE_FORMAT = logging.Formatter('%(asctime)s - %(message)s',
                                    datefmt='%d-%b-%y %H:%M:%S')
-console_handler.setFormatter(console_format)
-logger.addHandler(console_handler)
-logger.setLevel(logging.DEBUG)
+CONSOLE_HANDLER.setFormatter(CONSOLE_FORMAT)
+LOGGER.addHandler(CONSOLE_HANDLER)
+LOGGER.setLevel(logging.DEBUG)
 
 
 class HydroDEMProcess:
@@ -95,19 +101,21 @@ class HydroDEMProcess:
         """
         @wraps(func)
         def wrapper(*args, **kwargs):
-            pr = cProfile.Profile()
-            pr.enable()
-            f = func(*args, **kwargs)
+            profile = cProfile.Profile()
+            profile.enable()
+            function = func(*args, **kwargs)
             # current, peak = tracemalloc.get_traced_memory()
-            pr.disable()
-            s = StringIO()
+            profile.disable()
+            stream = StringIO()
             sortby = 'cumulative'
-            ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+            profile_stats = \
+                pstats.Stats(profile, stream=stream).sort_stats(sortby)
             now = datetime.now().strftime('%Y%m%d_%H%M%S')
-            ps.dump_stats(Config.profiles('PROFILE_FILE').format(now))
+            profile_stats.dump_stats(Config.profiles('PROFILE_FILE')
+                                     .format(now))
             # with open(MEMORY_TIME_FILE.format(now), 'w') as f:
             #     f.write(f'Memory Current: {current} - Memory Peak: {peak}')
-            return f
+            return function
 
         return wrapper
 

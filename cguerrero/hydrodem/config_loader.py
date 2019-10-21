@@ -16,7 +16,8 @@ class Config:
             def wrapper(*args, **kwargs):
                 folders = {'inputs': Config._input_folder,
                            'images': Config._images_folder,
-                           'profiles': Config._profiles_folder}
+                           'profiles': Config._profiles_folder,
+                           'simulation': Config._simulation_folder}
                 return os.path.join(os.getcwd(), folders[folder](),
                                     func(*args, **kwargs))
             return wrapper
@@ -30,15 +31,19 @@ class Config:
 
     @classmethod
     def _input_folder(cls):
-        return cls.config_parser.get('GENERAL', 'INPUTS_FOLDER')
+        return cls.config_parser.get('FOLDERS', 'INPUTS_FOLDER')
 
     @classmethod
     def _images_folder(cls):
-        return cls.config_parser.get('GENERAL', 'IMAGES_FOLDER')
+        return cls.config_parser.get('FOLDERS', 'IMAGES_FOLDER')
 
     @classmethod
     def _profiles_folder(cls):
-        return cls.config_parser.get('GENERAL', 'PROFILES_FOLDER')
+        return cls.config_parser.get('FOLDERS', 'PROFILES_FOLDER')
+
+    @classmethod
+    def _simulation_folder(cls):
+        return cls.config_parser.get('FOLDERS', 'SIMULATION_FOLDER')
 
 
     @classmethod
@@ -87,3 +92,9 @@ class Config:
     def profiles(cls, key):
         """Get profiles values from config.ini."""
         return cls.config_parser.get('PROFILES', key)
+
+    @classmethod
+    @add_folder('simulation')
+    def simulation(cls, key):
+        """Get srtm values from config.ini."""
+        return cls.config_parser.get('SIMULATION', key)
