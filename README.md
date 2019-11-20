@@ -20,7 +20,7 @@ To see a detailed explanation of this work, the pdf report "on work"
 
 ### The flow to process a DEM corresponds to the following diagram:
 
-![alt text](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/imagenes/DiagramaFlujo_EN.jpg)
+![alt text](doc/Latex/imagenes/DiagramaFlujo_EN.jpg)
 
 
 
