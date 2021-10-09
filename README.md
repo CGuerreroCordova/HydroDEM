@@ -16,7 +16,7 @@ filter, etc. All of these was developed using mainly python GDAL and NumPy libra
 
 To see a detailed explanation of this work, the pdf report "on work"
  can be found at: 
-[Thesis Report (spanish)](https://github.com/CGuerreroCordova/DEMProcPy/blob/master/doc/Latex/template_tesis_mearte.pdf)
+[Thesis Report (spanish)](https://github.com/CGuerreroCordova/HydroDEM/blob/master/doc/Latex/InformeTesisMaestriaCGuerrero.pdf)
 
 ### The flow to process a DEM corresponds to the following diagram:
 
