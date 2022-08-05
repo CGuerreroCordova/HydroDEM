@@ -14,8 +14,7 @@ This include several tasks related to processing rasterized images: operations
 between rasters, masks, Fourier transforms, reprojections, resampling, new and existing 
 filter, etc. All of these was developed using mainly python GDAL and NumPy libraries.
 
-To see a detailed explanation of this work, the pdf report "on work"
- can be found at: 
+To see a detailed explanation of this work, the pdf report can be found at: 
 [Thesis Report (spanish)](https://github.com/CGuerreroCordova/HydroDEM/blob/master/doc/Latex/InformeTesisMaestriaCGuerrero.pdf)
 
 ### The flow to process a DEM corresponds to the following diagram:
